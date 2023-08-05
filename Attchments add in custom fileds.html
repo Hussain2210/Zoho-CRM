@@ -1,0 +1,34 @@
+id = 20409000002886504;
+map_summary = Map();
+fmp = Map();
+rec = zoho.crm.getRecordById("Deals",id);
+Contacts_id = rec.get("Contact_Name").get("id");
+Contact_Record = zoho.crm.getRecordById("Contacts",Contacts_id);
+// info rec;
+fileid = rec.get("File_Upload_Pdf").get(0).get("attachment_Id");
+info "File ID: " + fileid;
+file = invokeurl
+[
+	url :"https://www.zohoapis.com.au/crm/v2/Deals/" + id + "/Attachments/" + fileid
+	type :GET
+	connection:"crm_connection"
+];
+info "File: " + file;
+fmp = Map();
+file.setparamname("file");
+resp1 = invokeurl
+[
+	url :"https://www.zohoapis.com.au/crm/v3/files"
+	type :POST
+	files:file
+	connection:"crm_connection"
+];
+info "Uploaded to files: " + resp1;
+fileid = resp1.getJSON("data").get(0).getJSON("details").getJSON("id");
+fmp.put("file_id",fileid);
+filelist = List();
+filelist.add(fmp);
+map_summary.put("Passport_Attachment",filelist);
+contact_updated = zoho.crm.updateRecord("Contacts",Contacts_id,map_summary);
+info contact_updated;
+return "";

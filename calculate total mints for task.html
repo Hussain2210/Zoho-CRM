@@ -1,0 +1,52 @@
+id = 5594229000000649001;
+task_dets = zoho.crm.getRecordById("Tasks",id);
+t_minutes = task_dets.get("Total_Time").toList(":");
+list_size = t_minutes.size();
+task_map1 = Map();
+// Total_Minutes = 0;
+// t_m = 0;
+// info "Total Time: " + task_dets.get("Total_Time");
+// info "list_size: " + list_size;
+// if ( list_size == 2) 
+// {
+// 	t_m = t_minutes.get(0).toLong();
+// }
+// else if ( list_size == 3 ) 
+// {
+// 	t_m = (t_minutes.get(0).toLong() * 60) + (t_minutes.get(1).toLong());
+// }
+// remainder = t_m % 6;
+// if( remainder != 0 )
+// {
+// 	if(remainder > 2)
+// 	{
+// 		t_m = t_m + (6 - remainder);
+// 	}
+// 	else if(remainder < 3)
+//     {
+// 		t_m = t_m - remainder;
+//     }
+// }
+// info "Total Minutes: " + t_m;
+// task_map1.put("Total_Minutes", t_m);
+task_det = zoho.crm.getRecordById("Tasks",id);
+etime = task_det.get("End_Time");
+stime = task_det.get("Start_Time");
+deal_id = task_det.get("What_Id").get("id");
+deal_dets = zoho.crm.getRecordById("Deals",deal_id);
+Deal_map = Map();
+Charge_Tasks = deal_dets.get("Charge_Tasks");
+Charge_Tasks_map = Map();
+Charge_Tasks_map.put("Amount",task_det.get("Total_Minutes") * task_det.get("Per_Hour_Rate"));
+Charge_Tasks_map.put("End_Date",etime.toString());
+Charge_Tasks_map.put("Start_date",stime.toString());
+Charge_Tasks_map.put("Per_Hour_Rate",task_det.get("Per_Hour_Rate"));
+Charge_Tasks_map.put("Subject",task_det.get("Subject"));
+Charge_Tasks_map.put("Total_Minutes",task_det.get("Total_Minutes"));
+Charge_Tasks_map.put("Total_Time",task_det.get("Total_Time"));
+Charge_Tasks_map.put("User",task_det.get("Owner").get("name"));
+Charge_Tasks.add(Charge_Tasks_map);
+Deal_map.put("Charge_Tasks",Charge_Tasks);
+res = zoho.crm.updateRecord("Deals",deal_id,Deal_map);
+info res;
+return "";

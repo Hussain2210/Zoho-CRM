@@ -1,0 +1,13 @@
+logs = Map();
+parameters = Map();
+parameters.put("organization_id","712209166");
+id = id.toString();
+baseUri = "https://www.zohoapis.com/books/v3/crm/contact/"+id+"/import?organization_id=712209166";
+Resp = invokeurl
+[
+	url :baseUri
+	type :POST
+	connection:"books_connection"
+];
+logs.put("REsp",Resp);
+info logs;

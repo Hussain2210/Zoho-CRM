@@ -1,0 +1,142 @@
+crmLeadId = 52201000000463681;
+crmGetLead = invokeurl
+[
+	url :"https://www.zohoapis.com.au/crm/v3/Leads/" + crmLeadId
+	type :GET
+	connection:"zoho_crm_connection"
+];
+supplierEmailForLeadsForexTemplateID = 52201000000326205;
+getCrmEmailTemplate = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/settings/email_templates/" + supplierEmailForLeadsForexTemplateID
+			type :GET
+			connection:"zoho_crm_connection"
+		];
+		contentOfEmailTemplate = getCrmEmailTemplate.get("email_templates").get(0).get("mail_content");
+		contentOfEmailTemplateUpdatedOne = contentOfEmailTemplate.replaceAll("\$\{!Leads.Request_Number\}",crmGetLead.get("data").get(0).get("Request_Number"));
+		contentOfEmailTemplateUpdatedTwo = contentOfEmailTemplateUpdatedOne.replaceAll("\$\{!Leads.Buying_currency\}",ifNull(crmGetLead.get("data").get(0).get("Buying_currency")," "));
+		contentOfEmailTemplateUpdatedThree = contentOfEmailTemplateUpdatedTwo.replaceAll("\$\{!Leads.Selling_Currency\}",ifNull(crmGetLead.get("data").get(0).get("Selling_Currency")," "));
+		contentOfEmailTemplateUpdatedFour = contentOfEmailTemplateUpdatedThree.replaceAll("\$\{!Leads.Approximate_amount\}",ifNull(crmGetLead.get("data").get(0).get("Approximate_amount")," "));
+		contentOfEmailTemplateUpdatedFive = contentOfEmailTemplateUpdatedFour.replaceAll("\$\{!Leads.Created_Time\}",crmGetLead.get("data").get(0).get("Created_Time"));
+		contentOfEmailTemplateUpdatedSix = contentOfEmailTemplateUpdatedFive.replaceAll("\$\{!Leads.Owner\}",crmGetLead.get("data").get(0).get("Owner").get("name"));
+		contentOfEmailTemplateUpdatedSeven = contentOfEmailTemplateUpdatedSix.replaceAll("\$\{!Leads.Buying_or_selling_a_property\}",ifNull(crmGetLead.get("data").get(0).get("Buying_or_selling_a_property")," "));
+		contentOfEmailTemplateUpdatedEight = contentOfEmailTemplateUpdatedSeven.replaceAll("\$\{!Leads.Move_Date\}",ifNull(crmGetLead.get("data").get(0).get("Move_Date")," "));
+		contentOfEmailTemplateUpdatedNine = contentOfEmailTemplateUpdatedEight.replaceAll("\$\{!Leads.Move_Size\}",ifNull(crmGetLead.get("data").get(0).get("Move_Size")," "));
+		contentOfEmailTemplateUpdatedTen = contentOfEmailTemplateUpdatedNine.replaceAll("\$\{!Leads.First_Name\}",ifNull(crmGetLead.get("data").get(0).get("First_Name")," "));
+		contentOfEmailTemplateUpdatedEleven = contentOfEmailTemplateUpdatedTen.replaceAll("\$\{!Leads.Last_Name\}",ifNull(crmGetLead.get("data").get(0).get("Last_Name")," "));
+		contentOfEmailTemplateUpdatedTwelve = contentOfEmailTemplateUpdatedEleven.replaceAll("\$\{!Leads.Email\}",ifNull(crmGetLead.get("data").get(0).get("Email")," "));
+		contentOfEmailTemplateUpdatedThirteen = contentOfEmailTemplateUpdatedTwelve.replaceAll("\$\{!Leads.Phone\}",ifNull(crmGetLead.get("data").get(0).get("Phone")," "));
+		contentOfEmailTemplateUpdatedFourteen = contentOfEmailTemplateUpdatedThirteen.replaceAll("\$\{!Leads.City\}",ifNull(crmGetLead.get("data").get(0).get("City")," "));
+		contentOfEmailTemplateUpdatedFifteen = contentOfEmailTemplateUpdatedFourteen.replaceAll("\$\{!Leads.Moving_To_City\}",ifNull(crmGetLead.get("data").get(0).get("Moving_To_City")," "));
+		contentOfEmailTemplateUpdatedSixteen = contentOfEmailTemplateUpdatedFifteen.replaceAll("\$\{!Leads.State\}",ifNull(crmGetLead.get("data").get(0).get("State")," "));
+		contentOfEmailTemplateUpdatedSeventeen = contentOfEmailTemplateUpdatedSixteen.replaceAll("\$\{!Leads.Moving_to_State\}",ifNull(crmGetLead.get("data").get(0).get("Moving_to_State")," "));
+		contentOfEmailTemplateUpdatedEighteen = contentOfEmailTemplateUpdatedSeventeen.replaceAll("\$\{!Leads.Moving_From_Country\}",ifNull(crmGetLead.get("data").get(0).get("Moving_From_Country")," "));
+		contentOfEmailTemplateUpdatedNineteen = contentOfEmailTemplateUpdatedEighteen.replaceAll("\$\{!Leads.Country_Moving_To\}",ifNull(crmGetLead.get("data").get(0).get("Country_Moving_To")," "));
+		contentOfEmailTemplateUpdatedTwenty = contentOfEmailTemplateUpdatedNineteen.replaceAll("\$\{!Leads.Own_a_Bank_Account_in_your_Destination_Country\}",ifNull(crmGetLead.get("data").get(0).get("Own_a_Bank_Account_in_your_Destination_Country")," "));
+		contentOfEmailTemplateUpdatedTwentyOne = contentOfEmailTemplateUpdatedTwenty.replaceAll("\$\{!Leads.Notes_for_forex\}",ifNull(crmGetLead.get("data").get(0).get("Notes_for_forex")," "));
+crmLeadData = crmGetLead.get("data").get(0);
+crmLeadsVendorList = crmGetLead.get("data").get(0).get("Vendor_For_Forex_v1");
+if(crmLeadsVendorList.size() > 0)
+{
+	check = crmGetLead.get("data").get(0).get("Vendor_For_Forex_v1").size();
+	testingLine = crmLeadData.get("Testing_line");
+	testListCreate = List();
+	if(testingLine == null || isNull(testingLine))
+	{
+		for each  crmLeadsVendor in crmLeadsVendorList
+		{
+			// get vendor
+			crmGetVendor = invokeurl
+			[
+				url :"https://www.zohoapis.com.au/crm/v3/Vendors/" + crmLeadsVendor.get("Vendor_For_Forex").get("id")
+				type :GET
+				connection:"zoho_crm_connection"
+			];
+			vendorEmail = crmGetVendor.get("data").get(0).get("Email");
+			// Code to Send Email
+			sendmail
+							[
+								from :zoho.adminuserid
+								to :vendorEmail
+								subject :"Supplier Email For Leads Forex"
+								message :contentOfEmailTemplateUpdatedTwentyOne
+							]
+			info "Email Sent";
+			testListCreate.add(vendorEmail);
+		}
+		dataMapForCrmLead = Map();
+		dataMapForCrmLead.put("Testing_line",testListCreate);
+		customList = List();
+		customList.add(dataMapForCrmLead);
+		mainMap = Map();
+		mainMap.put("data",customList);
+		crmPutLead = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/Leads/" + crmLeadId
+			type :PUT
+			parameters:mainMap.toString()
+			connection:"zoho_crm_connection"
+		];
+		info crmPutLead;
+	}
+	else
+	{
+		testingLine = crmLeadData.get("Testing_line");
+		emailList = testingLine.toList();
+		oldTestSize = emailList.size();
+		newListCreate = List();
+		newListCreate.addAll(emailList);
+		for each  crmLeadsVendor in crmLeadsVendorList
+		{
+				// get vendor
+			crmGetVendor = invokeurl
+			[
+				url :"https://www.zohoapis.com.au/crm/v3/Vendors/" + crmLeadsVendor.get("Vendor_For_Forex").get("id")
+				type :GET
+				connection:"zoho_crm_connection"
+			];
+			vendorEmail = crmGetVendor.get("data").get(0).get("Email");
+			info vendorEmail;
+			if ( emailList.contains(vendorEmail)) 
+            {
+				info "Email Already Sent";
+            }
+			else 
+            {
+				// Code to Send Email;
+				sendmail
+							[
+								from :zoho.adminuserid
+								to :vendorEmail
+								subject :"Supplier Email For Leads Forex"
+								message :contentOfEmailTemplateUpdatedTwentyOne
+							]
+				info "Email Sent";
+				newListCreate.add(vendorEmail);
+            }
+            }
+			newTestingLineSize = newListCreate.toList().size();
+			if ( oldTestSize == newTestingLineSize ) 
+            {
+				info "No New Vendor Selected in Subform";
+            }
+			else 
+            {
+				dataMapForCrmLead = Map();
+				dataMapForCrmLead.put("Testing_line",newListCreate);
+				customList = List();
+				customList.add(dataMapForCrmLead);
+				mainMap = Map();
+				mainMap.put("data",customList);
+				crmPutLead = invokeurl
+				[
+					url :"https://www.zohoapis.com.au/crm/v3/Leads/" + crmLeadId
+					type :PUT
+					parameters:mainMap.toString()
+					connection:"zoho_crm_connection"
+				];
+				info crmPutLead;
+			}
+		}
+	}
+return "";

@@ -1,0 +1,49 @@
+id = 5580594000000592293;
+Contacts = zoho.crm.getRecordById("Contacts", id);
+Contacts_id = Contacts.get("id");
+// info Contacts_id;
+Due_date = Contacts.get("Due_date");
+// info Created_Time;
+
+// info zoho.crm.getRecordById("Tasks", 5580594000000424001);
+
+mp = Map();
+startDate = zoho.currentdate.addMonth(3);  
+midDate =zoho.currentdate.addMonth(6);
+endDate = zoho.currentdate.addMonth(9);
+
+if ( Due_date == startDate ) 
+{
+	
+mp.put("Due_Date",startDate);
+mp.put("Status","Tasked");
+mp.put("Priority","High");
+mp.put("Subject","new task created" );
+mp.put("What_Id	",id);
+taskcreate0 = zoho.crm.create("Tasks",mp);
+info createResp;
+}
+else if ( Due_date == midDate) 
+{
+	mp.put("Due_Date",midDate);
+mp.put("Status","Tasked");
+mp.put("Priority","Medium");
+mp.put("Subject","new task created" );
+mp.put("What_Id	",id);
+
+createtask1 = zoho.crm.create("Tasks",mp);
+info createResp;
+}
+else 
+{
+mp.put("Due_Date",endDate);
+mp.put("Status","Tasked");
+mp.put("Priority","low");
+mp.put("Subject","new task created" );
+mp.put("What_Id	",id);
+
+createtask2 = zoho.crm.create("Tasks",mp);
+info createResp;
+}
+
+return "";

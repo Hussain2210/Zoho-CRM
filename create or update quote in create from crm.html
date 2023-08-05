@@ -1,0 +1,123 @@
+crmDealRecord = zoho.crm.getRecordById("Deals",dealID);
+crmDealStage = crmDealRecord.get("Stage");
+contactID = crmDealRecord.get("Contact_Name").get("id");
+crmContactRecord = zoho.crm.getRecordById("Contacts",contactID);
+contactEmail = crmContactRecord.get("Email");
+info contactEmail;
+Quote_related = zoho.crm.getRelatedRecords("Quotes","Deals",dealID);
+Quote_id = Quote_related.get(0).get("id");
+Quote_Number = Quote_related.get(0).get("Quote_Number");
+// Quote_creator_id = Quote_related.get(0).get("Creator_ID");
+Account_id = Quote_related.get(0).get("Account_Name").get("id");
+Account = zoho.crm.getRecordById("Accounts",Account_id);
+Phone = Account.get("Phone");
+Product_Details = Quote_related.get(0).get("Product_Details");
+// info Quote_related.get(0).get("Reference_Number");
+insert1 = Map();
+insert1.put("Quote_Owner",Quote_related.get(0).get("Owner").get("name"));
+insert1.put("Quote_Number",Quote_related.get(0).get("Quote_Number"));
+insert1.put("Deal_Name",Quote_related.get(0).get("Deal_Name").get("id"));
+insert1.put("No_of_branches",Quote_related.get(0).get("No_of_branches"));
+insert1.put("Valid_Until",Quote_related.get(0).get("Valid_Till").toDate("yyyy-MM-dd"));
+insert1.put("Service_Type",Quote_related.get(0).get("Service_Type"));
+insert1.put("CFM",Quote_related.get(0).get("CFM"));
+insert1.put("Price_per_Ton",Quote_related.get(0).get("Capacity"));
+insert1.put("Tons",Quote_related.get(0).get("Tons"));
+insert1.put("Reference_No",Quote_related.get(0).get("Reference_Number"));
+insert1.put("Subject_field",Quote_related.get(0).get("Subject"));
+insert1.put("Contact_Name",Quote_related.get(0).get("Contact_Name").get("name"));
+insert1.put("Quote_Stage",Quote_related.get(0).get("Quote_Stage"));
+insert1.put("Team",Quote_related.get(0).get("Team"));
+insert1.put("Account_Phone1",Account.get("Phone"));
+insert1.put("Customer_Email",contactEmail);
+insert1.put("Quote_CRM_Id",Quote_related.get(0).get("id"));
+insert1.put("Account_Name",Quote_related.get(0).get("Account_Name").get("name"));
+insert1.put("Billing_Street",Quote_related.get(0).get("Billing_Street"));
+insert1.put("Billing_City",Quote_related.get(0).get("Billing_City"));
+insert1.put("Billing_State",Quote_related.get(0).get("Billing_State"));
+insert1.put("Billing_Code",Quote_related.get(0).get("Billing_Code"));
+insert1.put("Billing_Country",Quote_related.get(0).get("Billing_Country"));
+insert1.put("Shipping_Street",Quote_related.get(0).get("Shipping_Street"));
+insert1.put("Shipping_City",Quote_related.get(0).get("Shipping_City"));
+insert1.put("Shipping_State",Quote_related.get(0).get("Shipping_State"));
+insert1.put("Shipping_Code",Quote_related.get(0).get("Shipping_Code"));
+insert1.put("Shipping_Country",Quote_related.get(0).get("Shipping_Country"));
+insert1.put("Terms_and_Conditions1",Quote_related.get(0).get("Terms_and_Conditions"));
+insert1.put("Description",Quote_related.get(0).get("Description"));
+insert1.put("Sub_total",ifnull(Quote_related.get(0).get("Sub_Total"),0));
+insert1.put("Disc",ifnull(Quote_related.get(0).get("Discount"),0));
+insert1.put("Tax",ifnull(Quote_related.get(0).get("Tax"),0));
+insert1.put("Adjustment",ifnull(Quote_related.get(0).get("Adjustment"),0));
+insert1.put("Grand_Total",ifnull(Quote_related.get(0).get("Grand_Total"),0));
+insert1.put("CFM",ifnull(Quote_related.get(0).get("CFM"),0));
+insert1.put("Tons",ifnull(Quote_related.get(0).get("Tons"),0));
+insert1.put("Price_per_Ton",ifnull(Quote_related.get(0).get("Capacity"),0));
+insert1.put("Calculate_CFM",ifnull(Quote_related.get(0).get("Calculate_CFM"),0));
+insert1.put("Calculate_Tons",ifnull(Quote_related.get(0).get("Calculate_Tons"),0));
+items_list = List();
+for each  item in Product_Details
+{
+	item_map = Map();
+	product_name = item.get("product").get("name");
+	Quantity = ifnull(item.get("quantity"),0);
+	List_Price = ifnull(item.get("unit_price"),0);
+	total = ifnull(item.get("total"),0);
+	Discount = ifnull(item.get("Discount"),0);
+	Tax = ifnull(item.get("Tax"),0);
+	net_total = ifnull(item.get("net_total"),0);
+	item_map.put("Product_Name1",product_name);
+	item_map.put("Quantity",Quantity);
+	item_map.put("List_Price_SAR",List_Price);
+	item_map.put("Amount",total);
+	item_map.put("Discount_SAR",Discount);
+	item_map.put("Tax",Tax);
+	item_map.put("Total",net_total);
+	items_list.add(item_map);
+}
+insert1.put("Quoted_Items",items_list);
+optional_map = Map();
+query1 = "Quote_CRM_Id==\"" + Quote_id + "\"";
+//info query1 ;
+search_ticket = zoho.creator.getRecords("ozonesmartsolution","ozone-solution","All_Quotes",query1,1,1,"creator_conect");
+// info search_ticket;
+if(search_ticket.get("message") == "No records found for the given criteria.")
+{
+	
+ info "No records found for the given criteria so the record create in Creator";
+
+ create = zoho.creator.createRecord("ozonesmartsolution","ozone-solution","Quote",insert1,optional_map,"creator_connect");
+ 
+	if(Quote_related.get(0).get("Service_Type") == "Hood Cleaning")
+	{
+
+		
+		sendmail
+		[
+			from :zoho.adminuserid
+			to :"cojohi2207@wireps.com"
+			subject :"Hoode Cleaning"
+			message :"<div style='width: 100%'><div style='width: 100%'><img src='https://www.linkpicture.com/q/ozone_3_1.png' width='100%' alt=''><br></div><h1 style='text-align: center; color: rgb(114, 114, 255)'>Hood Cleaning<br></h1><p style='margin: 3rem'>Click the CheckOut Button to CheckOut Your Quote now<br></p><a href='https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quote1/fKX5U5NDXE57gdJAVBFAByPQKeTYPmQ202wUwnGaMszrUrHPyNOfMg92gWtVwrEnTQ7zXO5zaWafOZgDAt70EEC0yKMsQdy8WSry?QuoteNumber=" + Quote_Number + "' style='padding: 10px;background-color: rgb(71, 161, 49);color: rgb(255, 255, 255);text-decoration: none;margin: 3rem;'>CheckOut</a> <div class='footer_div' style='margin-top: 10px;width:100%'><img src='https://www.linkpicture.com/q/final-foooter.png' width='100%' alt=''><br></div></div>"
+		]
+	}
+	else
+	{
+		info "No records found so the DUCT record create in Creator";
+		sendmail
+		[
+			from :zoho.adminuserid
+			to :"cojohi2207@wireps.com"
+			subject :"Duct Cleaning"
+			message :"<div style='width: 100%'><div style='width: 100%'><img src='https://www.linkpicture.com/q/ozone_3_1.png' width='100%' alt=''><br></div><h1 style='text-align: center; color: rgb(114, 114, 255)'>Duct Cleaning<br></h1><p style='margin: 3rem'>Click the Checkout Button to Checkout Your Quote now<br></p><a href='https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quote_DUCT_Cleaning/MFpAvARYHvAbVKF6bGwnFgxRYSZMhT4ZCJ6gBeO7dKJp2vYfqNY5t4BwemWAeNTO8893CbV9N5nC9E9ST9mhmqEG9AfbnQkbwT1d?QuoteNumber=" + Quote_Number + "' style='padding: 10px;background-color: rgb(71, 161, 49);color: rgb(255, 255, 255);text-decoration: none;margin: 3rem;'>CheckOut</a> <div class='footer_div' style='margin-top: 10px;width:100%'><img src='https://www.linkpicture.com/q/final-foooter.png' width='100%' alt=''><br></div></div>"
+		]
+		info "Quote Duct Cleaning";
+	}
+}
+else
+{
+	info "records found for the given criteria so the record Update in Creator";
+	//info "Updating == ";
+	cre_id = search_ticket.get("data").get(0).get("ID");
+	//info cre_id ;
+	update_ticket = zoho.creator.updateRecord("ozonesmartsolution","ozone-solution","All_Quotes",cre_id,insert1,optional_map,"update_creator");
+	info update_ticket;
+}

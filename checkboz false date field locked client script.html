@@ -1,0 +1,54 @@
+
+/** 
+ * log("sample logging statement") --> can be used to print any data in the browser console.
+ * ZDK module can be used for customising the UI and other functionalities.
+ * return false to prevent <SAVE> action
+**/
+
+var dest_1 = ZDK.Page.getField('Accounts_CTR_info_received').getValue();
+var dest_2 = ZDK.Page.getField('WIP_complete_for_annual').getValue();
+var dest_3 = ZDK.Page.getField('Cigma_annual_accounts_review_complete').getValue();
+var dest_4 = ZDK.Page.getField('Client_annual_accounts_review_complete').getValue();
+
+  var cest_21 = ZDK.Page.getField('WIP_start_date_for_annual').getValue();
+  var cest_22 = ZDK.Page.getField('Cigma_annual_accounts_review_start').getValue();
+  var cest_23 = ZDK.Page.getField('Client_annual_accounts_review_start').getValue();
+// log(test_VAL);
+
+if (dest_1 == false)
+{
+    var cest_21 = ZDK.Page.getField('WIP_start_date_for_annual');
+    cest_21.setReadOnly(true);
+}
+
+if (dest_2 == false)
+{
+    var cest_22 = ZDK.Page.getField('Cigma_annual_accounts_review_start');
+    cest_22.setReadOnly(true);
+}
+
+if (dest_3 == false)
+{
+    var cest_23 = ZDK.Page.getField('Client_annual_accounts_review_start');
+    cest_23.setReadOnly(true);
+}
+
+
+
+  if (cest_21 == null  || cest_21 == "")
+{
+   var dest_2 = ZDK.Page.getField('WIP_complete_for_annual');
+        dest_2.setReadOnly(true);
+}
+
+if (cest_22 == null  || cest_22 == "")
+{
+   var dest_3 = ZDK.Page.getField('Cigma_annual_accounts_review_complete');
+        dest_3.setReadOnly(true);
+}
+
+if (cest_23 == null  || cest_23 == "")
+{
+   var dest_4 = ZDK.Page.getField('Client_annual_accounts_review_complete');
+        dest_4.setReadOnly(true);
+}

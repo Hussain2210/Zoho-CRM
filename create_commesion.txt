@@ -1,0 +1,13 @@
+id=20409000002679160;
+recd=zoho.crm.getRecordById("Deals", id);
+Student_name= recd.getJSON("Contact_Name").getJSON("name") ;
+comissionname=Student_name+" "+recd.getJSON("Owner").getJSON("name") ;
+// info comissionname ;
+releated_list= zoho.crm.getRelatedRecords("Courses1", "Deals", id) ;
+// info releated_list ;
+// Name
+course_name= releated_list.getJSON("Name") ;
+school= releated_list.getJSON("School").getJSON("name") ;
+info course_name ;
+
+// openUrl( "https://crm.zoho.com.au/crm/org7001587292/tab/CustomModule6/create?layoutId="+commissionid, "new window");

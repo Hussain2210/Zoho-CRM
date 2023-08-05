@@ -1,0 +1,295 @@
+logs = Map();
+pageIterationList = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100};
+iterationComplete = false;
+allRecords = List();
+count = 0;
+perPage = 200;
+MainFieldsMap = Map();
+FieldsMap = Map();
+FieldsMap.put("page",1);
+FieldsMap.put("per_page",200);
+MainFieldsMap.put("fields",FieldsMap);
+next_page_token = "";
+for each  page in pageIterationList
+{
+	if(iterationComplete == false)
+	{
+		FieldsMap.put("page",page);
+		if(page == 1)
+		{
+			response = invokeurl
+			[
+				url :"https://www.zohoapis.eu/crm/v4/Contacts?fields=Last_Name,Email,Required_SA_Tax_years,Self_Assessment_info_received,Document_Type_s,Reason_for_SA,Layout,SA_Bookkeeping_Recieved,id,Full_Name&per_page=" + perPage
+				type :GET
+				connection:"zohocrm"
+			];
+		}
+		else
+		{
+			response = invokeurl
+			[
+				url :"https://www.zohoapis.eu/crm/v4/Contacts?fields=Last_Name,Email,Required_SA_Tax_years,Self_Assessment_info_received,Document_Type_s,Reason_for_SA,Layout,SA_Bookkeeping_Recieved,Full_Name&per_page=" + perPage + "&page_token=" + next_page_token
+				type :GET
+				connection:"zohocrm"
+			];
+		}
+		count = count + response.size();
+		records = response.get("data");
+		allRecords.addAll(records);
+		count = count + records.size();
+		if(response.get("info").get("more_records") == true)
+		{
+			next_page_token = response.get("info").get("next_page_token");
+		}
+		if(response.get("info").get("more_records") == false)
+		{
+			iterationComplete = true;
+		}
+	}
+}
+info count;
+logs.put("All Records",allRecords);
+// info logs;
+for each  rec in allRecords
+{
+	contact_layouts = rec.get("Layout");
+	layout_name = contact_layouts.get("name");
+	if(layout_name == "Individual")
+	{
+		Full_Name = rec.get("Full_Name");
+		Email = rec.get("Email");
+		// 				Email = "fairchanceforcrm13@gmail.com";
+		from_email = zoho.loginuserid;
+		Reason_for_SA = rec.get("Reason_for_SA");
+		id = rec.get("id");
+		info id;
+		Document_Type_s = rec.get("Document_Type_s");
+		Self_Assessment_info_received = rec.get("Self_Assessment_info_received");
+		Required_SA_Tax_years = rec.get("Required_SA_Tax_years");
+		SA_Bookkeeping_Recieved = rec.get("SA_Bookkeeping_Recieved");
+		date = "16-Jun-2023";
+		// time = "01-Jan-2024";
+		time = zoho.currentdate;
+		// No_of_weeks = 3;
+		daysbetween = date.daysBetween(time);
+		No_of_weeks = daysbetween / 7;
+		info daysbetween;
+		info No_of_weeks;
+		if(Self_Assessment_info_received == false)
+		{
+			if(SA_Bookkeeping_Recieved != Required_SA_Tax_years)
+			{
+				if(No_of_weeks < 6)
+				{
+					template1 = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/settings/email_templates/291666000019342003"
+						type :GET
+						connection:"email_template"
+					];
+					email_templates_id = template1.get("email_templates").get(0).get("id");
+					// email_template5 = template1.get("email_templates").get(0).get("mail_content");
+					// contentUpdated15 = email_template5.replaceAll("\$\{!Contacts.Full_Name\}",Full_Name);
+					// contentUpdated25 = contentUpdated15.replaceAll("\$\{!Contacts.Reason_for_SA\}",Reason_for_SA);
+					// contentUpdated35 = contentUpdated25.replaceAll("\$\{!Contacts.Document_Type_s\}",Document_Type_s);
+					info " 2022/23 sendmail 1";
+					sendfrom = Map();
+					sendfrom.put("email","info@cigmaaccounting.co.uk");
+					sendto = Map();
+					sendto.put("email",Email);
+					tolist = List();
+					tolist.add(sendto);
+					tempmp = Map();
+					tempmp.put("id",email_templates_id);
+					mp = Map();
+					mp.put("from",sendfrom);
+					mp.put("to",tolist);
+					mp.put("template",tempmp);
+					mp.put("org_email",true);
+					// info mp;
+					dlist = List();
+					dlist.add(mp);
+					data = Map();
+					data.put("data",dlist);
+					info data;
+					sendmail = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/Contacts/" + id + "/actions/send_mail"
+						type :POST
+						parameters:data.toString()
+						connection:"email_send"
+					];
+					info sendmail;
+				}
+				else if(No_of_weeks > 5 && No_of_weeks < 12)
+				{
+					template2 = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/settings/email_templates/291666000019342016"
+						type :GET
+						connection:"email_template"
+					];
+					email_templates_id = template1.get("email_templates").get(0).get("id");
+					// email_template5 = template1.get("email_templates").get(0).get("mail_content");
+					// contentUpdated15 = email_template5.replaceAll("\$\{!Contacts.Full_Name\}",Full_Name);
+					// contentUpdated25 = contentUpdated15.replaceAll("\$\{!Contacts.Reason_for_SA\}",Reason_for_SA);
+					// contentUpdated35 = contentUpdated25.replaceAll("\$\{!Contacts.Document_Type_s\}",Document_Type_s);
+					info " 2022/23 sendmail 1";
+					sendfrom = Map();
+					sendfrom.put("email","info@cigmaaccounting.co.uk");
+					sendto = Map();
+					sendto.put("email",Email);
+					tolist = List();
+					tolist.add(sendto);
+					tempmp = Map();
+					tempmp.put("id",email_templates_id);
+					mp = Map();
+					mp.put("from",sendfrom);
+					mp.put("to",tolist);
+					mp.put("template",tempmp);
+					mp.put("org_email",true);
+					// info mp;
+					dlist = List();
+					dlist.add(mp);
+					data = Map();
+					data.put("data",dlist);
+					info data;
+					sendmail = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/Contacts/" + id + "/actions/send_mail"
+						type :POST
+						parameters:data.toString()
+						connection:"email_send"
+					];
+					info sendmail;
+				}
+				else if(No_of_weeks > 11 && No_of_weeks < 19)
+				{
+					template3 = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/settings/email_templates/291666000019342029"
+						type :GET
+						connection:"email_template"
+					];
+					email_templates_id = template1.get("email_templates").get(0).get("id");
+					// email_template5 = template1.get("email_templates").get(0).get("mail_content");
+					// contentUpdated15 = email_template5.replaceAll("\$\{!Contacts.Full_Name\}",Full_Name);
+					// contentUpdated25 = contentUpdated15.replaceAll("\$\{!Contacts.Reason_for_SA\}",Reason_for_SA);
+					// contentUpdated35 = contentUpdated25.replaceAll("\$\{!Contacts.Document_Type_s\}",Document_Type_s);
+					info " 2022/23 sendmail 1";
+					sendfrom = Map();
+					sendfrom.put("email","info@cigmaaccounting.co.uk");
+					sendto = Map();
+					sendto.put("email",Email);
+					tolist = List();
+					tolist.add(sendto);
+					tempmp = Map();
+					tempmp.put("id",email_templates_id);
+					mp = Map();
+					mp.put("from",sendfrom);
+					mp.put("to",tolist);
+					mp.put("template",tempmp);
+					mp.put("org_email",true);
+					// info mp;
+					dlist = List();
+					dlist.add(mp);
+					data = Map();
+					data.put("data",dlist);
+					info data;
+					sendmail = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/Contacts/" + id + "/actions/send_mail"
+						type :POST
+						parameters:data.toString()
+						connection:"email_send"
+					];
+					info sendmail;
+				}
+				else if(No_of_weeks > 17 && No_of_weeks < 26)
+				{
+					template4 = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/settings/email_templates/291666000019342042"
+						type :GET
+						connection:"email_template"
+					];
+					email_templates_id = template1.get("email_templates").get(0).get("id");
+					// email_template5 = template1.get("email_templates").get(0).get("mail_content");
+					// contentUpdated15 = email_template5.replaceAll("\$\{!Contacts.Full_Name\}",Full_Name);
+					// contentUpdated25 = contentUpdated15.replaceAll("\$\{!Contacts.Reason_for_SA\}",Reason_for_SA);
+					// contentUpdated35 = contentUpdated25.replaceAll("\$\{!Contacts.Document_Type_s\}",Document_Type_s);
+					info " 2022/23 sendmail 1";
+					sendfrom = Map();
+					sendfrom.put("email","info@cigmaaccounting.co.uk");
+					sendto = Map();
+					sendto.put("email",Email);
+					tolist = List();
+					tolist.add(sendto);
+					tempmp = Map();
+					tempmp.put("id",email_templates_id);
+					mp = Map();
+					mp.put("from",sendfrom);
+					mp.put("to",tolist);
+					mp.put("template",tempmp);
+					mp.put("org_email",true);
+					// info mp;
+					dlist = List();
+					dlist.add(mp);
+					data = Map();
+					data.put("data",dlist);
+					info data;
+					sendmail = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/Contacts/" + id + "/actions/send_mail"
+						type :POST
+						parameters:data.toString()
+						connection:"email_send"
+					];
+					info sendmail;
+				}
+				else if(No_of_weeks > 25 && No_of_weeks < 31)
+				{
+					template5 = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/settings/email_templates/291666000019342055"
+						type :GET
+						connection:"email_template"
+					];
+					email_templates_id = template1.get("email_templates").get(0).get("id");
+					// email_template5 = template1.get("email_templates").get(0).get("mail_content");
+					// contentUpdated15 = email_template5.replaceAll("\$\{!Contacts.Full_Name\}",Full_Name);
+					// contentUpdated25 = contentUpdated15.replaceAll("\$\{!Contacts.Reason_for_SA\}",Reason_for_SA);
+					// contentUpdated35 = contentUpdated25.replaceAll("\$\{!Contacts.Document_Type_s\}",Document_Type_s);
+					info " 2022/23 sendmail 1";
+					sendfrom = Map();
+					sendfrom.put("email","info@cigmaaccounting.co.uk");
+					sendto = Map();
+					sendto.put("email",Email);
+					tolist = List();
+					tolist.add(sendto);
+					tempmp = Map();
+					tempmp.put("id",email_templates_id);
+					mp = Map();
+					mp.put("from",sendfrom);
+					mp.put("to",tolist);
+					mp.put("template",tempmp);
+					mp.put("org_email",true);
+					// info mp;
+					dlist = List();
+					dlist.add(mp);
+					data = Map();
+					data.put("data",dlist);
+					info data;
+					sendmail = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/Contacts/" + id + "/actions/send_mail"
+						type :POST
+						parameters:data.toString()
+						connection:"email_send"
+					];
+					info sendmail;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,13 @@
+
+
+var tons_val = ZDK.Page.getField("Tons").getValue();
+
+ZDK.Page.getField("Cal_CFM").setValue(tons_val * 400);
+// log(cfm_val);
+
+
+var cfm_val = ZDK.Page.getField("CFM").getValue();
+ZDK.Page.getField("Cal_Tons").setValue(cfm_val/400);
+log(cfm_val);
+
+

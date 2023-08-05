@@ -1,0 +1,67 @@
+id = 291666000020302159;
+Contacts = zoho.crm.getRecordById("Contacts",id);
+Email = Contacts.get("Email");
+Full_Name = Contacts.get("Full_Name");
+info zoho.loginuserid ;
+from_email = zoho.loginuserid;
+Reason_for_SA = Contacts.get("Reason_for_SA");
+Document_Type_s = Contacts.get("Document_Type_s");
+Self_Assessment_info_received = Contacts.get("Self_Assessment_info_received");
+Required_SA_Tax_years = Contacts.get("Required_SA_Tax_years");
+SA_Bookkeeping_Recieved = Contacts.get("SA_Bookkeeping_Recieved");
+
+subject = "Enjoy Your Summer Tax-Free!";
+template1 = invokeurl
+					[
+						url :"https://www.zohoapis.eu/crm/v4/settings/email_templates/291666000019342003"
+						type :GET
+						connection:"email_template"
+					];
+			email_templates_id = template1.get("email_templates").get(0).get("id");
+			email_template5 = template1.get("email_templates").get(0).get("mail_content");
+			contentUpdated15 = email_template5.replaceAll("\$\{!Contacts.Full_Name\}",Full_Name);
+		    contentUpdated25 = contentUpdated15.replaceAll("\$\{!Contacts.Reason_for_SA\}",Reason_for_SA);
+			contentUpdated35 = contentUpdated25.replaceAll("\$\{!Contacts.Document_Type_s\}",Document_Type_s);
+info " 2022/23 sendmail 1";
+alist = List();
+attmp = Map();
+attmp.put("id",email_templates_id);
+alist.add(contentUpdated35);
+sendfrom = Map();
+sendfrom.put("email",from_email);
+sendto = Map();
+sendto.put("email",Email);
+tolist = List();
+tolist.add(sendto);
+tempmp = Map();
+tempmp.put("id",email_templates_id);
+mp = Map();
+mp.put("from",sendfrom);
+mp.put("to",tolist);
+mp.put("attachments",alist);
+mp.put("template",tempmp);
+// info mp;
+dlist = List();
+dlist.add(mp);
+data = Map();
+data.put("data",dlist);
+// info data;
+sendmail = invokeurl
+[
+url :"https://www.zohoapis.eu/crm/v4/Contacts/" + id + "/actions/send_mail"
+type :POST
+parameters:data + ""
+connection:"email_send"
+];
+info sendmail;
+
+
+
+// 					sendmail
+// 					[
+// 						from :zoho.adminuserid
+// 						to :Email
+// 						subject :"Enjoy Your Summer Tax-Free!"
+// 						message :contentUpdatedThree
+// 					]
+return "";

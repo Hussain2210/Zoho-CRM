@@ -1,0 +1,103 @@
+Quote = zoho.crm.getRecordById("Quote",id);
+new = Map();
+new.put("Account_Name",Quote.get("Customer_Name").get("id"));
+new.put("Subject",Quote.get("Name"));
+new.put("Ship_From_Location","None");
+new.put("Shipping_Contact","None");
+new.put("Shipping_Contact_Email","None");
+new.put("Shipping_Mobile_No","None");
+new.put("SO_Status","Open");
+new.put("Shipping_Status","CHKSTK");
+
+if(Quote.get("Contact_Name") != null)
+{
+	new.put("Contact_Name",Quote.get("Contact_Name").get("id"));
+}
+if(Quote.get("Opportunity_Name") != null)
+{
+	new.put("Deal_Name",Quote.get("Opportunity_Name").get("id"));
+}
+if(Quote.get("Currency") != null)
+{
+	new.put("Currency",Quote.get("Currency"));
+}
+if(Quote.get("External_Document_No") != null)
+{
+	new.put("External_Document_No",Quote.get("External_Document_No"));
+}
+if(Quote.get("Work_Description") != null)
+{
+	new.put("Work_Description",Quote.get("Work_Description"));
+}
+if(Quote.get("Branch") != null)
+{
+	new.put("AE_Branch",Quote.get("Branch"));
+}
+if(Quote.get("Billing_Street") != null)
+{
+	new.put("Billing_Street",Quote.get("Billing_Street"));
+}
+if(Quote.get("Billing_City") != null)
+{
+	new.put("Billing_City",Quote.get("Billing_City"));
+}
+if(Quote.get("Billing_State") != null)
+{
+	new.put("Billing_State",Quote.get("Billing_State"));
+}
+if(Quote.get("Billing_Code") != null)
+{
+	new.put("Billing_Code",Quote.get("Billing_State"));
+}
+if(Quote.get("Billing_Country") != null)
+{
+	new.put("Billing_Country",Quote.get("Billing_Country"));
+}
+if(Quote.get("Shipping_Street") != null)
+{
+	new.put("Shipping_Street",Quote.get("Shipping_Street"));
+}
+if(Quote.get("Shipping_City") != null)
+{
+	new.put("Shipping_City",Quote.get("Shipping_City"));
+}
+if(Quote.get("Shipping_State") != null)
+{
+	new.put("Shipping_State",Quote.get("Shipping_State"));
+}
+if(Quote.get("Shipping_Code") != null)
+{
+	new.put("Shipping_Code",Quote.get("Shipping_Code"));
+}
+if(Quote.get("Shipping_Country") != null)
+{
+	new.put("Shipping_Country",Quote.get("Shipping_Country"));
+}
+lis = List();
+Quoted_Items1 = Quote.get("Quoted_Items1");
+for each  ITEM in Quoted_Items1
+{
+	Product_Name = ITEM.get("Product_Name").get("id");
+	Quantity = ITEM.get("Quantity");
+	List_Price = ITEM.get("List_Price");
+	Total = ITEM.get("Total");
+	Date = zoho.currentdate.toDate();
+	item_map = Map();
+	item_map.put("product",ITEM.get("Product_Name").get("id"));
+	item_map.put("quantity",ITEM.get("Quantity"));
+	item_map.put("list_price",ITEM.get("List_Price"));
+	item_map.put("total",ITEM.get("Total"));
+	item_map.put("Discount","0");
+	item_map.put("Tax","0");
+	item_map.put("Shipment_Date",Date);
+	lis.add(item_map);
+}
+new.put("Product_Details",lis);
+new.put("Sub_Total",Quote.get("Sub_total"));
+new.put("Grand_Total",Quote.get("Aggregate_Field_1"));
+info new;
+Sales_Orders = zoho.crm.createRecord("Sales_Orders",new);
+info Sales_Orders;
+Sales_Orders_id = Sales_Orders.get("id");
+openUrl("https://crm.zoho.eu/crm/org20085250235/tab/SalesOrders/" + Sales_Orders_id,"same window");
+return "";

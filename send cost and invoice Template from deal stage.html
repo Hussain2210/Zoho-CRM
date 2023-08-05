@@ -1,0 +1,138 @@
+// changing only fields in sunform of CRM Deals
+deal_det = zoho.crm.getRecordById("Deals",id);
+contact_id = deal_det.get("Contact_Name").get("id");
+contact_dets = zoho.crm.getRecordById("Contacts",contact_id);
+student_email = contact_dets.get("Email");
+info student_email;
+contact_name = contact_dets.get("Full_Name");
+// info "contact_name" + contact_name;
+// info "student_email: " + student_email;
+// --- Cost disclosure --- //
+crmDealRecord = zoho.crm.getRecordById("Deals",id);
+crmDealProducts = crmDealRecord.get("Item");
+crmDealProductSubTotal = crmDealRecord.get("Sub_Total");
+crmDealProductGrandTotal = crmDealRecord.get("Grand_Total");
+crmDealListItem = List();
+for each  product in crmDealProducts
+{
+	crmDealProductName = product.get("Product_Name").get("name");
+	crmDealProductQuantity = product.get("Quantity");
+	crmDealProductAmount = product.get("Amount");
+	crmDealProductDescription = product.get("Product_Description");
+	crmDealProductid = product.get("id");
+	dataMapForCrmDealProducts = Map();
+	dataMapForCrmDealProducts.put("Item.Product_Name",crmDealProductName);
+	dataMapForCrmDealProducts.put("Item.Quantity",crmDealProductQuantity);
+	dataMapForCrmDealProducts.put("Item.Amount",crmDealProductAmount);
+	dataMapForCrmDealProducts.put("Item.Description",crmDealProductDescription);
+	dataMapForCrmDealProducts.put("Item.ID",crmDealProductid);
+	crmDealListItem.add(dataMapForCrmDealProducts);
+}
+dataMapForCrmDeals = Map();
+dataMapForCrmDeals.put("Item",crmDealListItem);
+dataMapForCrmDeals.put("Sub_Total",crmDealProductSubTotal);
+dataMapForCrmDeals.put("Grand_Total",crmDealProductGrandTotal);
+dataMapForCrmDeals.put("id",id);
+merge_data_list = List();
+merge_data_list.add(dataMapForCrmDeals);
+json_data = Map();
+json_data.put("data",merge_data_list);
+mergeData = Map();
+mergeData.put("merge_data",json_data);
+mergeData.put("subject","Cost Disclosure from Kingsbridge Management Australia");
+mergeData.put("message","Hi " + contact_name + " Please find the Cost Disclosure document attached below from Kingsbridge Management Australia. Thanks and Regards,Kingsbridge Management");
+emailSent = zoho.writer.mergeAndSend("srt7a282606d174574a3e8e01494a189c2f61","pdf",student_email,mergeData,"crm_connection");
+info emailSent;
+// info "Cost Disclosure Sent!";
+// --- Deposit Request --- //
+crmDealListItem = List();
+crmDealProducts = deal_det.get("Item");
+for each  product in crmDealProducts
+{
+	dataMapForCrmDealProducts = Map();
+	dataMapForCrmDealProducts.put("Item.Product_Name",product.get("Product_Name").get("name"));
+	dataMapForCrmDealProducts.put("Item.Quantity",product.get("Quantity"));
+	dataMapForCrmDealProducts.put("Item.Amount",product.get("Amount"));
+	dataMapForCrmDealProducts.put("Item.Tax",product.get("Tax"));
+	dataMapForCrmDealProducts.put("Item.Total",product.get("Total"));
+	crmDealListItem.add(dataMapForCrmDealProducts);
+}
+dataMapForCrmDeals = Map();
+dataMapForCrmDeals.put("Deal_Name",deal_det.get("Deal_Name"));
+dataMapForCrmDeals.put("Address_onshore",deal_det.get("Address_onshore"));
+dataMapForCrmDeals.put("City_onshore",deal_det.get("City_onshore"));
+dataMapForCrmDeals.put("Zipcode_onshore",deal_det.get("Zipcode_onshore"));
+dataMapForCrmDeals.put("Country_onshore",deal_det.get("Country_onshore"));
+dataMapForCrmDeals.put("Unique_Identifier",deal_det.get("Unique_Identifier"));
+dataMapForCrmDeals.put("Issue_Date",deal_det.get("Issue_Date"));
+dataMapForCrmDeals.put("Expiry_Date",deal_det.get("Expiry_Date"));
+dataMapForCrmDeals.put("Sub_Total",deal_det.get("Sub_Total"));
+dataMapForCrmDeals.put("Grand_Total",deal_det.get("Grand_Total"));
+dataMapForCrmDeals.put("Issue_Date",zoho.currentdate);
+dataMapForCrmDeals.put("Expiry_Date",zoho.currentdate.addMonth(1));
+dataMapForCrmDeals.put("Item",crmDealListItem);
+dataMapForCrmDeals.put("id",id);
+mergeData = Map();
+mergeData.put("merge_data",{"data":dataMapForCrmDeals});
+mergeData.put("subject","Deposit Request from Kingsbridge Management Australia");
+mergeData.put("message","<div>Hi " + contact_name + ",<br>Please find the Cost Deposit document attached below from Kingsbridge Management Australia.</div><div><br>Thanks and Regards,</div><div>Kingsbridge Management<br></div>");
+emailSent = zoho.writer.mergeAndSend("4dnlp9dfcbf938d414b4cb6cf269a3fc4b00e","pdf",student_email,mergeData,"crm_connection");
+info "Deposit Request Sent!" + emailSent;
+// //  --- Create Invioce  ---  //
+Invoice_map = Map();
+items_list = LIST();
+subject = contact_dets.get("Full_Name");
+invoice_date = zoho.currentdate;
+due_date = zoho.currentdate.addMonth(1);
+status = "Created";
+desc = deal_det.get("Description_for_invoice");
+terms_and_condtion = deal_det.get("Terms_and_Condition");
+Invoice_map.put("Deal",id);
+Invoice_map.put("Contact_Name",contact_id);
+Invoice_map.put("Subject","invoice for " + subject);
+Invoice_map.put("Invoice_Date",invoice_date);
+Invoice_map.put("Due_Date",due_date);
+Invoice_map.put("Status",status);
+Invoice_map.put("Description",desc);
+Invoice_map.put("Terms_and_Conditions",terms_and_condtion);
+line_items = deal_det.get("Item");
+for each  item in line_items
+{
+	item_map = Map();
+	product_name = item.get("Product_Name").get("id");
+	Quantity = ifnull(item.get("Quantity"),0);
+	List_Price = ifnull(item.get("List_Price"),0);
+	Amount = ifnull(item.get("Amount"),0);
+	Discount = ifnull(item.get("Amount"),0);
+	Tax = ifnull(item.get("Tax"),0);
+	Total = ifnull(item.get("Total"),0);
+	item_map.put("product",product_name);
+	item_map.put("quantity",Quantity);
+	item_map.put("list_price",List_Price);
+	item_map.put("unit_price",Amount);
+	item_map.put("Discount",Discount);
+	item_map.put("Tax",Tax);
+	item_map.put("total",Total);
+	items_list.add(item_map);
+}
+Invoice_map.put("Product_Details",items_list);
+invioce_created = zoho.crm.createRecord("Invoices",Invoice_map);
+invoice_id = invioce_created.get("id");
+info "Invoice Created!" + invoice_id;
+//  --- Send Invoice ---   //
+crmGetInventoryTemplate = invokeurl
+[
+	url :"https://www.zohoapis.com.au/crm/v2/settings/inventory_templates/20409000000162151/actions/print_preview?record_id=" + invoice_id + "&print_type=pdf"
+	type :GET
+	connection:"crm_connection"
+];
+crmGetInventoryTemplate.setParamName("file");
+sendmail
+[
+	from :zoho.adminuserid
+	to :student_email
+	subject :"Invoice from Kingsbridge Management Australia"
+	message :"<div>Hi " + contact_name + ",<br>Please find the Invoice pdf attached below from Kingsbridge Management Australia.</div><div><br>Thanks and Regards,</div><div>Kingsbridge Management<br></div>"
+	Attachments :file:crmGetInventoryTemplate
+]
+info "Invoice Sent!";

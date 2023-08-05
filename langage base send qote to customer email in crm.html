@@ -1,0 +1,104 @@
+quote = Quote[Quote_Number == input.Quote_Number.toString()];
+input.Email_to = quote.Company_Email;
+// input.Email_from = zoho.adminuserid;
+// input.Email_from = quote.owner_Email;
+if(File_upload.isEmpty() == false)
+{
+	resp = invokeurl
+	[
+		url :"https://creator.zoho.eu/api/v2/fairchanceforcrm10/crm-language/report/Email_form_Report/" + input.ID + "/File_upload/download"
+		type :GET
+		connection:"creator1"
+	];
+	if(resp.isFile())
+	{
+		info "this is a file";
+	}
+}
+if(quote.Branch == "Adam Equipment Co Ltd")
+{
+	if(quote.Language == "English")
+	{
+		if(quote.English_template == "Quote template")
+		{
+			sendmail
+			[
+				from :input.Email_from
+				to :input.Email_to
+				subject :"English Quote"
+				message :input.Email_content
+				Attachments :template:English_Quote:Quote quote.ID as PDF,file:resp
+			]
+		}
+		else if(quote.English_template == "Proforma template")
+		{
+			sendmail
+			[
+				from :input.Email_from
+				to :input.Email_to
+				subject :"English Proforma"
+				message :input.Email_content
+				Attachments :template:English_Proforma:Quote quote.ID as PDF,file:resp
+			]
+		}
+	}
+}
+else if(quote.Branch == "AE Adam GmbH")
+{
+	if(quote.Language == "German")
+	{
+		if(quote.German_template == "Quote template")
+		{
+			sendmail
+			[
+				from :input.Email_from
+				to :input.Email_to
+				subject :"German Quote template"
+				message :input.Email_content
+				Attachments :template:German_Quote_template:Quote quote.ID as PDF,file:resp
+			]
+		}
+		else if(quote.German_template == "Proforma template")
+		{
+			sendmail
+			[
+				from :input.Email_from
+				to :input.Email_to
+				subject :"German Performa template"
+				message :input.Email_content
+				Attachments :template:German_Performa_template:Quote quote.ID as PDF,file:resp
+			]
+		}
+	}
+}
+if(quote.Branch == "AE Adam GmbH")
+{
+	info "first";
+	if(quote.Language == "French")
+	{
+		info "second";
+		if(quote.French_template == "Quote template")
+		{
+			info "third";
+			sendmail
+			[
+				from :input.Email_from
+				to :input.Email_to
+				subject :"French Quote template"
+				message :input.Email_content
+				Attachments :template:French_Quote_template:Quote quote.ID as PDF,file:resp
+			]
+		}
+		else if(quote.French_template == "Proforma template")
+		{
+			sendmail
+			[
+				from :input.Email_from
+				to :input.Email_to
+				subject :"French Proforma template"
+				message :input.Email_content
+				Attachments :template:French_Proforma_template:Quote quote.ID as PDF,file:resp
+			]
+		}
+	}
+}

@@ -1,0 +1,52 @@
+id = 5642053000000443077;
+deals = zoho.crm.getRecordById("Deals",id);
+Contact_id = deals.get("Contact_Name").get("id");
+Contacts = zoho.crm.getRecordById("Contacts",Contact_id);
+Contact_phone = Contacts.get("Phone");
+Quote_related = zoho.crm.getRelatedRecords("Quotes","Deals",id);
+Quote_id = Quote_related.get(0).get("id");
+info Quote_id;
+Quotes = zoho.crm.getRecordById("Quotes",Quote_id);
+// info Quotes;
+Customer_Email = Quotes.get("Customer_Email");
+Reference_No = Quotes.get("Reference_No");
+Created_Time = Quotes.get("Created_Time");
+Valid_Till = Quotes.get("Valid_Till");
+Account_Name_id = Quotes.get("Account_Name").get("id");
+Contact_Name_id = Quotes.get("Contact_Name").get("id");
+contact = Quotes.get("Phone");
+// Quote_template = invokeurl
+// [
+// 	url :"https://www.zohoapis.com/crm/v3/settings/inventory_templates/5642053000000512043"
+// 	type :GET
+// 	connection:"crm_connection"
+// ];
+// mail_content = Quote_template.get("inventory_templates").get(0).get("content");
+// Reference_No = mail_content.replaceAll("\$\{!Quotes.Reference_No\}",Reference_No);
+// sendmail
+// [
+// 	from :zoho.adminuserid
+// 	to :Customer_Email
+// 	subject :"Quote_template"
+// 	message :Reference_No
+// ]
+// =====================================
+// quoteID = 20409000002745029;
+// Mian Sumair Imtiaz
+crmGetInventoryTemplate = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v2/settings/inventory_templates/5642053000000512043/actions/print_preview?record_id=" + Quote_id + "&print_type=pdf"
+	type :GET
+	connection:"crm_connection"
+];
+info crmGetInventoryTemplate;
+crmGetInventoryTemplate.setParamName("file");
+sendmail
+[
+	from :zoho.adminuserid
+	to :Customer_Email
+	subject :"Quote_template"
+	message :"Quote_template"
+	Attachments :file:crmGetInventoryTemplate
+]
+info "email sent";

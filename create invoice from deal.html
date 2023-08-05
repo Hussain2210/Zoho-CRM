@@ -1,0 +1,90 @@
+// inv_data = zoho.crm.getRecordById("Invoices", 20409000003151079);
+
+id = 20409000003163185;
+Invoice_map = Map();
+items_list = LIST();
+deal_dets = zoho.crm.getRecordById("Deals",id);
+contact_id = deal_dets.get("Contact_Name").get("id");
+contact_dets = zoho.crm.getRecordById("Contacts",contact_id);
+subject = contact_dets.get("Full_Name");
+// invoice_date = zoho.currentdate;
+// due_date = zoho.currentdate.addMonth(1);
+// status = "Created";
+desc = deal_dets.get("Description_for_invoice");
+terms_and_condtion = deal_dets.get("Terms_and_Condition");
+// Invoice_map.put("Deal",id);
+// Invoice_map.put("Contact_Name",contact_id);
+Invoice_map.put("Subject","invoice for " + subject);
+// Invoice_map.put("Invoice_Date",invoice_date);
+// Invoice_map.put("Due_Date",due_date);
+// Invoice_map.put("Status",status);
+// Invoice_map.put("Description",desc);
+// Invoice_map.put("Terms_and_Conditions",terms_and_condtion);
+line_items = deal_dets.get("Item");
+response = invokeurl
+[
+	url :"https://www.zohoapis.com.au/crm/v3/Deals/20409000003163185"
+	type :GET
+	connection:"crm_connection"
+];
+inv_data = response.get("data").get(0);
+// info response;
+all_products = inv_data.get("Item");
+for each  pro in all_products
+{
+	item_map = Map();
+	product_name = pro.get("Product_Name").get("id");
+	Quantity = ifnull(pro.get("Quantity"),0);
+	List_Price = ifnull(pro.get("Unit_Price"),0);
+	Amount = ifnull(pro.get("Amount"),0);
+	Discount = ifnull(pro.get("Discount"),0);
+	Tax = ifnull(pro.get("Tax_Rate"),0);
+	item_map.put("product",product_name);
+	item_map.put("quantity",Quantity);
+	item_map.put("list_price",List_Price);
+	item_map.put("Discount",Discount);
+	item_map.put("Tax1_1",Tax);
+	items_list.add(item_map);
+}
+Invoice_map.put("Product_Details",items_list);
+
+// invioce_created = zoho.crm.createRecord("Invoices",Invoice_map);
+// invoice_id = invioce_created.get("id");
+// info "Invoice Created!" + invoice_id;
+// // info Invoice_map;
+// info zoho.crm.getRecordById("Invoices",invoice_id);
+
+invoice_create = invokeurl
+[
+	url: "https://www.zohoapis.com.au/invoices/v3/invoices"
+	type: POST
+	parameters: Invoice_map
+	connection: "crm_connectionv2"
+
+];
+info invoice_create;
+invoice_id = invoice_create.get("id");
+info "Invoice Created!" + invoice_id;
+// for each  item in line_items
+// {
+// 	item_map = Map();
+// 	product_name = item.get("Product_Name").get("id");
+// 	Quantity = ifnull(item.get("Quantity"),0);
+// 	List_Price = ifnull(item.get("List_Price"),0);
+// 	Amount = ifnull(item.get("Amount"),0);
+// 	Discount = ifnull(item.get("Amount"),0);
+// 	Tax = ifnull(item.get("Tax"),0);
+// 	Total = ifnull(item.get("Total"),0);
+// 	item_map.put("product",product_name);
+// 	item_map.put("quantity",Quantity);
+// 	item_map.put("list_price",List_Price);
+// 	item_map.put("unit_price",Amount);
+// 	item_map.put("Discount",Discount);
+// 	item_map.put("Tax",Tax);
+// 	item_map.put("total",Total);
+// 	items_list.add(item_map);
+// }
+// Invoice_map.put("Product_Details",items_list);
+// info Invoice_map;
+// info zoho.crm.createRecord("Invoices",Invoice_map);
+return "";

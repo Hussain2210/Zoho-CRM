@@ -1,0 +1,57 @@
+attachments = zoho.crm.getRelatedRecords("Attachments","Contacts",idContact);
+info attachments;
+
+for each ele in attachments
+{
+file = invokeurl
+[
+url :"https://www.zohoapis.com/crm/v2/Contacts/" + idContact + "/Attachments/" + ele.get("id")
+type :GET
+connection:"customfunction"
+];
+info file;
+
+file.setparamname("file");
+
+
+
+filelist = List();
+
+resp = invokeurl
+[
+url :"https://www.zohoapis.com/crm/v2/files"
+type :POST
+files:file
+connection:"customfunction"
+];
+info resp;
+
+fileid = resp.getJSON("data").get(0).getJSON("details").getJSON("id");
+
+fmp = Map();
+fmp.put("Encrypted_Id",fileid);
+
+
+filelist.add(fmp);
+
+
+data = Map();
+data.put("Foto_Mascota",filelist);
+
+dataList = List();
+dataList.add(data);
+
+param = Map();
+param.put("data",dataList);
+info param;
+
+update = invokeurl
+[
+url :"https://www.zohoapis.com/crm/v2.1/Contacts/" + idContact
+type :PUT
+parameters:param.toString()
+connection:"customfunction"
+];
+
+info update;
+}

@@ -1,0 +1,115 @@
+deal = zoho.crm.getRecordById("Deals",id);
+Attachement_IDs = deal.get("Attachement_IDs");
+Attachement_IDs_list = LIST();
+new_ids = "";
+if(Attachement_IDs != null)
+{
+	Attachement_IDs_list = Attachement_IDs.toList(",");
+	new_ids = Attachement_IDs + ",";
+}
+info "available ids: " + Attachement_IDs_list;
+visas_recs = zoho.crm.getRelatedRecords("Visas","Deals",id);
+for each  visas_rec in visas_recs
+{
+	visas_id = visas_rec.get("id");
+	visasRecords = zoho.crm.getRecordById("Visas",visas_id);
+	fileId1 = visasRecords.get("Attachment").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId1))
+	{
+		crmGetAttachment1 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId1
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded1 = zoho.crm.attachFile("Deals",id,crmGetAttachment1);
+		if(new_ids == "")
+		{
+			new_ids = fileId1;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId1;
+		}
+	}
+}
+Travel_recs = zoho.crm.getRelatedRecords("Travel","Deals",id);
+for each  Travel_rec in Travel_recs
+{
+	Travel_id = Travel_rec.get("id");
+	crmtravelRecord = zoho.crm.getRecordById("Travels",Travel_id);
+	fileId2 = crmtravelRecord.get("Attachment").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId2))
+	{
+		crmGetAttachment2 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId2
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded2 = zoho.crm.attachFile("Deals",id,crmGetAttachment2);
+		if(new_ids == "")
+		{
+			new_ids = fileId2;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId2;
+		}
+	}
+}
+course_recs = zoho.crm.getRelatedRecords("Courses1","Deals",id);
+for each  course_rec in course_recs
+{
+	course_id = course_rec.get("id");
+	crmCourseRecord = zoho.crm.getRecordById("Courses",course_id);
+	fileId3 = crmCourseRecord.get("COE").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId3))
+	{
+		crmGetAttachment3 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId3
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded3 = zoho.crm.attachFile("Deals",id,crmGetAttachment3);
+		if(new_ids == "")
+		{
+			new_ids = fileId3;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId3;
+		}
+	}
+}
+Insurance_recs = zoho.crm.getRelatedRecords("Insurance","Deals",id);
+for each  Insurance_rec in Insurance_recs
+{
+	ins_id = Insurance_rec.get("id");
+	crminsRecord = zoho.crm.getRecordById("Insurances",ins_id);
+	fileId4 = crminsRecord.get("Attachment").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId4))
+	{
+		crmGetAttachment4 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId4
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded4 = zoho.crm.attachFile("Deals",id,crmGetAttachment4);
+		if(new_ids == "")
+		{
+			new_ids = fileId4;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId4;
+		}
+	}
+}
+info "New found ids: " + new_ids;
+map_update = Map();
+map_update.put("Attachement_IDs",new_ids);
+info zoho.crm.updateRecord("Deals",id,map_update);
+return " Attachments Added";

@@ -1,0 +1,43 @@
+Contact_Record = zoho.crm.getRecordById("Contacts",id);
+Related_recd = zoho.crm.getRelatedRecords("Deals","Contacts" ,id);
+deals_id = Related_recd.get(0).get("id");
+layout_id = Contact_Record.get("Layout").get("name");
+if(layout_id == "Student Contact")
+{
+	update_deal = Map();
+	// 	update_deal.put("First_Name",Contact_Record.get("First_Name"));
+	// 	update_deal.put("Last_Name",Contact_Record.get("Last_Name"));
+	// 	update_deal.put("Email",Contact_Record.get("Email"));
+	update_deal.put("Prefered_Name",Contact_Record.get("Preferred_Name"));
+	update_deal.put("Gender",Contact_Record.get("Gender"));
+	update_deal.put("DOB",Contact_Record.get("Date_of_Birth"));
+	update_deal.put("Passport_County",Contact_Record.get("Passport_Country"));
+	update_deal.put("Phone",Contact_Record.get("Phone"));
+	update_deal.put("Passport_County",Contact_Record.get("Nationality"));
+	update_deal.put("Mobile",Contact_Record.get("Mobile"));
+	//Onshore Information
+	update_deal.put("Address_onshore",Contact_Record.get("Address_onshore"));
+	update_deal.put("City_onshore",Contact_Record.get("City_onshore"));
+	update_deal.put("Phone_onshore",Contact_Record.get("Phone_onshore"));
+	update_deal.put("Zipcode_onshore",Contact_Record.get("Zipcode_onshore"));
+	update_deal.put("Country_onshore",Contact_Record.get("Country_onshore"));
+	//offsure 
+	update_deal.put("City_Offshore",Contact_Record.get("City_offshore"));
+	update_deal.put("Country_Offshore",Contact_Record.get("Country_offshore"));
+	update_deal.put("Address_Offshore",Contact_Record.get("Address_offshore"));
+	update_deal.put("Phone_Offshore",Contact_Record.get("Phone_offshore"));
+	update_deal.put("Zipcode_Offshore",Contact_Record.get("Zipcode_offshore"));
+	//Passport
+	update_deal.put("Passport_Country",Contact_Record.get("Passport_Country"));
+	update_deal.put("Number",Contact_Record.get("Passport_Number"));
+	update_deal.put("Issue_Date",Contact_Record.get("Issue_Date"));
+	update_deal.put("Expiry_Date",Contact_Record.get("Expiry_Date"));
+	update_deal.put("Comments",Contact_Record.get("Comments"));
+	update_deal.put("Passport_Attachment",Contact_Record.get("Passport_Attachment"));
+	created = zoho.crm.updateRecord("Deals",deals_id,update_deal);
+	info created;
+}
+else
+{
+	info "Not Found";
+}

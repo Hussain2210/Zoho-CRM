@@ -1,0 +1,83 @@
+// ==================== GETTING REOCRDS =================================================
+// crmQuoteRecordID = 5642053000000839068;
+crmQuoteRecord = zoho.crm.getRecordById("Quotes",crmQuoteRecordID);
+crmDealRecordID = crmQuoteRecord.get("Deal_Name").get("id");
+crmContactRecordID = crmQuoteRecord.get("Contact_Name").get("id");
+crmAccountRecordID = crmQuoteRecord.get("Account_Name").get("id");
+crmDealRecord = zoho.crm.getRecordById("Deals",crmDealRecordID);
+crmContactRecord = zoho.crm.getRecordById("Contacts",crmContactRecordID);
+crmAccountRecord = zoho.crm.getRecordById("Accounts",crmAccountRecordID);
+// ======================= GETTING FIELDS DATA ===============================================
+crmAccountName = crmAccountRecord.get("Account_Name");
+crmAccountRegistrationNumber = crmAccountRecord.get("Registration_No");
+crmAccountPhone = crmAccountRecord.get("Phone");
+crmDealOwnerEmail = crmDealRecord.get("Owner").get("email");
+crmContactEmail = crmContactRecord.get("Email");
+// ======================= Zoho Sign Work ===============================================
+zohoSignTemplateID = 317511000000022065;
+zohoSignTemplate = zoho.sign.getTemplateById(zohoSignTemplateID);
+// info zohoSignTemplate;
+// info zohoSignTemplate.get("templates").get("document_fields").get(0).get("fields").get(0).get("field_label");
+// a.alnaame@ozonesolution.net
+actionMap1 = Map();
+actionMap1.put("recipient_name","Client");
+actionMap1.put("recipient_email",crmContactEmail);
+actionMap1.put("action_type","SIGN");
+actionMap1.put("action_id","317511000000022086");
+actionMap1.put("role","Client");
+actionMap1.put("verify_recipient",false);
+actionMap2 = Map();
+actionMap2.put("recipient_name","Owner");
+actionMap2.put("recipient_email","a.alnaame@ozonesolution.net");
+actionMap2.put("action_type","SIGN");
+actionMap2.put("action_id","317511000000022088");
+actionMap2.put("role","Owner");
+actionMap2.put("verify_recipient",false);
+actionList = List();
+actionList.add(actionMap1);
+actionList.add(actionMap2);
+actionMap = Map();
+actionMap.put("actions",actionList);
+fieldTextData = Map();
+fieldTextData.put("Text1",crmAccountName);
+fieldTextData.put("Text2",crmAccountRegistrationNumber);
+fieldTextData.put("Text3",crmAccountPhone);
+fieldTextData.put("Text4",crmAccountName);
+fieldTextData.put("Text5",crmAccountName);
+fieldTextData.put("Email",crmContactEmail);
+actionMap.put("field_data",{"field_text_data":fieldTextData});
+submitMap = Map();
+submitMap.put("templates",actionMap);
+parameters = Map();
+parameters.put("is_quicksend","true");
+parameters.put("data",submitMap);
+response = zoho.sign.createUsingTemplate(zohoSignTemplateID,parameters);
+// info response;
+// then install zoho sign extension, then go to further below
+zohoSignTemplateName = zohoSignTemplate.get("templates").get("template_name");
+// Get the Zoho Sign Document ID  
+requests = response.get("requests");
+docs = requests.get("document_ids");
+docinfo = docs.get(0);
+docid = docinfo.get("document_id");
+info "document id " + docid;
+//Get the Zoho Sign Request ID  
+reqid = requests.get("request_id");
+info "request id " + reqid;
+//Create Map for CRM Record - ZohoSign Documents  
+recordmap = Map();
+recordmap.put("Name",zohoSignTemplateName);
+recordmap.put("zohosign__Contact",crmContactRecord.get("id"));
+recordmap.put("Owner",crmContactRecord.get("Owner").get("id"));
+recordmap.put("zohosign__Date_Sent",today);
+recordmap.put("zohosign__ZohoSign_Document_ID",docid);
+recordmap.put("zohosign__Document_Deadline",today.addDay(3));
+// --> This is arbitrary   
+recordmap.put("zohosign__Document_Status","Out for Signature");
+//Check Date and Frequency are additional fields created in the "ZohoSign Documents" CRM Module to control the email notification triggering and field update via workflow rule  
+// recordmap.put("Check_Date",today.addDay(1));
+// recordmap.put("Frequency",0);
+// recordmap.put("Request_ID",reqid);
+//Create a Record in the "ZohoSign Documents" module in Zoho CRM  
+create1 = zoho.crm.createRecord("zohosign__ZohoSign_Documents",recordmap);
+info create1;

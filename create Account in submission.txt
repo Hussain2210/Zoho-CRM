@@ -1,0 +1,57 @@
+id = 291666000012096043;
+Contacts = zoho.crm.getRecordById("Contacts",id);
+Contacts_id = Contacts.get("id");
+Accounts_Due_Date = Contacts.get("Accounts_Due_Date");
+contactFull_Name = Contacts.get("Full_Name");
+insert_map = Map();
+insert_map.put("Contact_Name",Contacts_id);
+insert_map.put("Submission_Type","Annual Accounts");
+insert_map.put("Accounts_Start_Date",Contacts.get("Accounts_Start_Date"));
+insert_map.put("Name",contactFull_Name);
+insert_map.put("Agreement_Signed",Contacts.get("Agreement_Signed"));
+insert_map.put("Next_accounts_made_up_to",Contacts.get("Next_accounts_made_up_to"));
+insert_map.put("Accounts_Deadline",Contacts.get("Accounts_Deadline"));
+insert_map.put("Accounts_Due_Date",Contacts.get("Accounts_Due_Date"));
+insert_map.put("Accounts_CTR_Submission_Date",Contacts.get("Accounts_CTR_Submission_Dat"));
+insert_map.put("Last_accounts_made_up_to",Contacts.get("Last_accounts_made_up_to"));
+insert_map.put("Accounts_CTR_bookkeeping_received",Contacts.get("Accounts_CTR_info_received"));
+insert_map.put("Company_UTR",Contacts.get("Tax_Reference_number"));
+insert_map.put("Company_Authentication_Code",Contacts.get("Company_Authentication_Code"));
+insert_map.put("Accounts_Due_Priority",Contacts.get("Accounts_Due_Priority"));
+insert_map.put("Submitted_Accounts_CTR1",Contacts.get("Submitted_Accounts_CTR1"));
+create_submission = zoho.crm.createRecord("Submission",insert_map);
+info create_submission;
+submision_id = create_submission.get("id");
+idmap = Map();
+idmap.put("Annual_Account_previous_record",submision_id);
+idmap.put("Submission_Account_ID",submision_id);
+contact_update = zoho.crm.updateRecord("Contacts",id,idmap);
+info contact_update;
+
+
+Accounts_CTR_Submission_Dat = Contacts.get("Accounts_CTR_Submission_Dat").toString("dd-MM-YY");
+info "Accounts/CTR Submission Date: "+Accounts_CTR_Submission_Dat ;
+submision_id = Contacts.get("Submission_Account_ID");
+// info submision_id;
+submission_rec = zoho.crm.getRecordById("Submission",submision_id);
+// info submission_rec;
+submission_rec_date = submission_rec.get("Accounts_CTR_Submission_Date").toString("dd-MM-YY");
+info "Submission Rec Date :"+submission_rec_date;
+
+if ( Accounts_CTR_Submission_Dat.toDate() > submission_rec_date.toDate() ) 
+{
+	create_submission = zoho.crm.createRecord("Submission",insert_map);
+info create_submission;
+
+	submision_id = create_submission.get("id");
+idmap = Map();
+idmap.put("Priority_Vat_Return_Due_Date","None");
+idmap.put("Vat_Return_Previous_record",submision_id);
+contact_update = zoho.crm.updateRecord("Contacts",id,idmap);
+info contact_update;
+}
+else 
+{
+	info "not matched" ;
+}
+return "";

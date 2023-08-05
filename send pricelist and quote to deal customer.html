@@ -1,0 +1,35 @@
+// dealID = 5642053000000518153;
+crmDealRecord = zoho.crm.getRecordById("Deals",dealID);
+crmDealStage = crmDealRecord.get("Stage");
+contactID = crmDealRecord.get("Contact_Name").get("id");
+crmContactRecord = zoho.crm.getRecordById("Contacts",contactID);
+contactEmail = crmContactRecord.get("Email");
+// Below is the, triggering workflow to send price list template
+priceListRelatedRecordOfDeal = zoho.crm.getRelatedRecords("Price_list","Deals",dealID);
+crmPriceListID = priceListRelatedRecordOfDeal.get(0).get("id");
+crmPriceListRecord = zoho.crm.getRecordById("Price_List",crmPriceListID);
+dataMapForCrmPriceList = Map();
+dataMapForCrmPriceList.put("Decision_box",True);
+dataMapForCrmPriceList.put("Customer_Email",contactEmail);
+crmPriceListUpdated = zoho.crm.updateRecord("Price_List",crmPriceListID,dataMapForCrmPriceList,{"trigger":{"workflow"}});
+info crmPriceListUpdated;
+// Below is the quote sending
+Quote_related = zoho.crm.getRelatedRecords("Quotes","Deals",dealID);
+Quote_id = Quote_related.get(0).get("id");
+crmGetInventoryTemplate = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v2/settings/inventory_templates/5642053000000512043/actions/print_preview?record_id=" + Quote_id + "&print_type=pdf"
+	type :GET
+	connection:"crm_connection"
+];
+// info crmGetInventoryTemplate;
+crmGetInventoryTemplate.setParamName("file");
+sendmail
+[
+	from :zoho.adminuserid
+	to :contactEmail
+	subject :"Quote_template"
+	message :"Quote_template"
+	Attachments :file:crmGetInventoryTemplate
+]
+info "quotation email sent";
