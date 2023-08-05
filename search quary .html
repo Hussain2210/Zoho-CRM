@@ -1,0 +1,17 @@
+query1 = "Ticket_ID==\"" + ticketid + "\"";
+//info query1 ;
+search_ticket = zoho.creator.getRecords("syntegra","syntegra-unified-portal","All_Tickets",query1,1,1,"from_desk_to_creator");
+//info search_ticket;
+if(search_ticket.get("message") == "No records found for the given criteria.")
+{
+	create_ticket = zoho.creator.createRecord("syntegra","syntegra-unified-portal","Ticket_form",creator_map,optional_map,"from_desk_to_creator");
+	//info create_ticket;
+}
+else
+{
+	//info "Updating == ";
+	cre_id = search_ticket.get("data").get(0).get("ID");
+	//info cre_id ;
+	update_ticket = zoho.creator.updateRecord("syntegra","syntegra-unified-portal","All_Tickets",cre_id,creator_map,optional_map,"from_desk_to_creator");
+	info update_ticket;
+}

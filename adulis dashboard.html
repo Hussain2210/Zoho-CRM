@@ -1,0 +1,184 @@
+<%{
+	CustomerLink = Sign_Up[Email == zoho.loginuserid];
+	WorkdriveExternalShareLink = CustomerLink.External_collection_link;
+	UserData = Map();
+	UserData.put("Name",zoho.loginuser);
+	UserData.put("Email",zoho.loginuserid);
+	Task = Task[Sign_Up_Id == CustomerLink.ID];
+	%>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+			integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+			crossorigin="anonymous"
+			referrerpolicy="no-referrer"
+		/>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+			crossorigin="anonymous"
+		/>
+		<style>
+			body {
+				font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+					sans-serif;
+			}
+			.Welcome {
+				width: 60%;
+				border-radius: 20px;
+				color: white;
+				background-color: black;
+				margin: 2rem auto;
+			}
+			.Welcome p {
+				text-align: center;
+				font-size: 2.5vmax;
+				padding-top:3px !important;
+			}
+
+			.icon {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				width: 100px;
+				height: 100px;
+				border-radius: 50%;
+				border: 1px solid rgba(129, 129, 129, 0.69);
+				background-color: rgba(214, 214, 214, 0.6);
+				box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+			}
+			.icon i {
+				font-size: 40px;
+			}
+			.col-4 {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+			.col-4 p{
+				margin:10px auto !important;
+			}
+			.col-4 a{
+				text-decoration:none !important;
+				text-align:center;
+			}
+			.UploadFiles .icon {
+				background-color: black;
+			}
+			
+			
+			.row {
+				margin-left: 0px !important;
+				margin-right: 0px !important;
+			}
+			
+			@media screen and (max-width:500px){
+				.icon{
+					width:65px !important;
+					height:65px !important;
+				}
+				.col-4 p:nth-child(1), .col-4 p:nth-child(2) , .col-4 p:nth-child(3){
+					font-size:2vmax;
+					text-align:center;
+				}
+				.icon i{
+					font-size:25px !important;
+				}
+			}
+		</style>
+	</head>
+	<body>
+<%
+	if(thisapp.portal.isUserInProfile("Customer"))
+	{
+		if(WorkdriveExternalShareLink.isEmpty() == true)
+		{
+			%>
+<h1>Your Workdrive url is not created yet. Please Contact the App admin.</h1>
+<%
+		}
+		else
+		{
+			%>
+<div class="col-4 UploadFiles">
+					<a href="<%=WorkdriveExternalShareLink%>" target="_blank">
+						<div class="icon">
+							<i class="fa-regular fa-folder-open"></i>
+						</div>
+					</a>
+					<p>My Files</p>
+				</div>
+		</div>
+<%
+		}
+	}
+	else
+	{
+		url = "https://workdrive.zoho.com/home/k4wwh636ba712b8404217990065cf1a5d4ff2/privatespace/folders/6009v20dd9a78543142f685963aa68b46a28e";
+		%>
+<div class="col-4 UploadFiles">
+					<a href="<%=url%>" target="_blank">
+						<div class="icon">
+							<i class="fa-regular fa-folder-open"></i>
+						</div>
+					</a>
+					<p>My Files</p>
+				</div>
+		</div>
+<%
+	}
+	if(Task.count() == 0)
+	{
+		%>
+<h1>Sorry! We Cant Find any Tasks For you</h1>
+<%
+	}
+	else if(Task.count() > 0)
+	{
+		%>
+<table class="table">
+  <thead>
+    <tr>
+	<th scope="col">Task Name</th>
+      <th scope="col">Work Hours</th>
+      <th scope="col">Status</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Start Date</th>
+      <th scope="col">Due Date</th>
+      <th scope="col">Duration</th>
+      <th scope="col">Priority</th>
+      <th scope="col">Completion Percentage	</th>
+      <th scope="col">Billing Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+	  <td><%=Task.Task_Name%></td>
+      <th scope="row"><%=Task.Work_Hours%></th>
+      <td><%=Task.Status%></td>
+      <td><%=Task.Amount%></td>
+      <td><%=Task.Start_Date%></td>
+      <td><%=Task.Due_Date%></td>
+      <td><%=Task.Duration%></td>
+      <td><%=Task.Priority%></td>
+      <td><%=Task.Completion_Percentage%></td>
+      <td><%=Task.Billing_Type%></td>
+    </tr>
+  </tbody>
+</table>
+<%
+	}
+	%>
+</body>
+</html>
+<%
+
+}%>

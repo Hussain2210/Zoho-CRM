@@ -1,0 +1,258 @@
+<div><style>
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .main {
+            height: 100vh;
+            width: 100%
+        }
+
+        .main img {
+            height: 100%;
+            width: 100%
+        }
+
+        .ozone_detail {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center
+        }
+
+        .ozone_detail ul {
+            padding: 0px 50px;
+            line-height: 40px;
+            word-spacing: 2px;
+            margin-top: 80px;
+        }
+
+        .ozone_detail ul li {
+            font-size: 22px;
+            font-weight: 500;
+        }
+
+        .ozone_team {
+            height: 100vh;
+            width: 100%
+        }
+
+        .ozone_team img {
+            height: 100%;
+            width: 100%
+        }
+
+        .table_container {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly
+        }
+
+        .styled-table {
+            border-collapse: collapse;
+            font-size: 1.2rem;
+            font-family: sans-serif;
+            width: 90%;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+            margin: auto
+        }
+
+        .styled-table thead tr {
+            background-color: rgb(0, 152, 121);
+            color: rgb(255, 255, 255);
+            text-align: left
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 6px 15px;
+            border: 2px solid rgb(255, 255, 255)
+        }
+
+        .styled-table tbody tr {
+            border-bottom: 1px solid rgb(221, 221, 221)
+        }
+
+        .styled-table tbody tr:nth-of-type(even) {
+            background-color: rgb(243, 243, 243)
+        }
+
+        .styled-table tbody tr:last-of-type {
+            border-bottom: 2px solid rgb(0, 152, 121)
+        }
+
+        .styled-table tbody tr.active-row {
+            font-weight: 400;
+            color: rgb(0, 0, 0)
+        }
+
+        .cust {
+            background-color: rgb(202, 226, 225)
+        }
+
+        .note {
+            background: rgb(0, 152, 121);
+            width: 200px;
+            padding: 10px;
+            color: white;
+            margin-left: 60px !important
+        }
+
+        .thank_ozone {
+            height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        .thank_div {
+            position: absolute;
+            left: 20%;
+            top: 70%;
+        }
+
+        .thank_div hr {
+            height: 1px;
+            width: 150px;
+            border: 1px solid rgb(0, 0, 0);
+            background-color: rgb(0, 0, 0);
+            margin: 15px 0px
+        }
+    </style>
+
+ <div>
+        <div class="main">
+            <font face="Arial, Helvetica, sans-serif"><img src="https://www.linkpicture.com/q/aa_21.png" alt="">
+        </font></div>
+        <div class="ozone_container">
+            <div class="ozone_detail" style="background:  #4adfa2;">
+                <h1></h1>
+                <h1 style="padding-top:10%;letter-spacing: 5px;font-size:50px;"><font face="Arial, Helvetica, sans-serif">OZONE SOLUTION</font></h1>
+                <ul>
+                    <li><font face="Arial, Helvetica, sans-serif">
+                        OZONE is an infection prevention &amp; Air Quality management company offering wide range of
+                        hazardous substance testing &amp; inspection services.
+                    </font></li>
+                    <li><font face="Arial, Helvetica, sans-serif">We bring the best of the market in the Middle East serving Commercial , Residential,
+                        Hospitality &amp; Industry clients .
+                    </font></li>
+                    <li><font face="Arial, Helvetica, sans-serif">
+                        Our technicians are certified to overcome international standards and protocols.
+
+                    </font></li>
+                    <li><font face="Arial, Helvetica, sans-serif">
+                        Let us do some testing on your ventilation system. We are specialized in indoor air quality
+                        service including robotic inspection and disinfection solutions, sealing ducts from inside,
+                        building isolation rooms and servicing Restaurants for hood and duct cleaning services with
+                        our specialized team and machinery.
+                    </font></li>
+                </ul>
+            </div>
+        </div>
+        <div class="ozone_team">
+            <font face="Arial, Helvetica, sans-serif"><img src="https://www.linkpicture.com/q/bb_8.jpg" alt="">
+
+        </font></div>
+        <div class="ozone_team hood_div">
+            <font face="Arial, Helvetica, sans-serif"><img src="https://www.linkpicture.com/q/cc_5.png" alt="">
+
+        </font></div>
+        <div class="table_container">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th><font face="Arial, Helvetica, sans-serif">Customer</font></th>
+                        <th><font face="Arial, Helvetica, sans-serif">Resturent</font></th>
+                        <th><font face="Arial, Helvetica, sans-serif">Reference no.</font></th>
+                        <th><font face="Arial, Helvetica, sans-serif">100074</font></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="cust">
+                        <td><font face="Arial, Helvetica, sans-serif">No. of locations</font></td>
+                        <td><font face="Arial, Helvetica, sans-serif">3</font></td>
+                        <td><font face="Arial, Helvetica, sans-serif">Date</font></td>
+                        <td><font face="Arial, Helvetica, sans-serif">07/02/2023</font></td>
+                    </tr>
+                    <tr class="active-row">
+                        <td><font face="Arial, Helvetica, sans-serif">Client name</font></td>
+                        <td><font face="Arial, Helvetica, sans-serif">${Quotes.Quote Owner}</font></td>
+                        <td><font face="Arial, Helvetica, sans-serif">Validity Period</font></td>
+                        <td><font face="Arial, Helvetica, sans-serif">${Quotes.Valid Until}</font></td>
+                    </tr>
+                    <tr class="cust">
+                        <td><font face="Arial, Helvetica, sans-serif">Phone</font></td>
+                        <td><font face="Arial, Helvetica, sans-serif">${Accounts.Phone}</font></td>
+                        <td></td>
+                        <td></td>
+
+                    </tr>
+
+                    <!-- and so on... -->
+                </tbody>
+            </table>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th colspan="2" style="text-align:center;"><font face="Arial, Helvetica, sans-serif">Service Type </font></th>
+                        <th colspan="3" style="text-align:center;"><font face="Arial, Helvetica, sans-serif">Number of visits </font></th>
+                        <th colspan="3" style="text-align:center;"><font face="Arial, Helvetica, sans-serif">Price per visit </font></th>
+
+
+                    </tr>
+                </thead>
+                <tbody id="subform_1" class="QuotedItems">
+                    <tr class="cust" style="text-align:center;">
+                        <td colspan="2" style="color:#fff;font-size: 20px;font-weight: bold;background-color: #009879;"><font face="Arial, Helvetica, sans-serif">
+                            HOOD<br>
+                            CLEANING
+                        </font></td>
+                        <td colspan="3"><font face="Arial, Helvetica, sans-serif">${Quoted Items.Product Name}</font></td>
+                        <td colspan="3"><font face="Arial, Helvetica, sans-serif">${Quoted Items.List Price}</font></td>
+
+                    </tr>
+                </tbody>
+            </table>
+            <h3 class="note" style="margin: 5px 0px;"><font face="Arial, Helvetica, sans-serif">Terms and Condiation</font></h3>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th colspan="5"><font face="Arial, Helvetica, sans-serif"> Discount on 12 visits 4% (price before 1600 sar) (Price after 1520 SAR)
+                        </font></th>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="cust">
+                        <td colspan="5"><font face="Arial, Helvetica, sans-serif">Price excluded the VAT. </font></td>
+
+                    </tr>
+                    <tr class="active-row">
+                        <td colspan="5"><font face="Arial, Helvetica, sans-serif">Payment terms:100% after service
+                        </font></td>
+
+
+
+                    </tr>
+                    <tr class="cust">
+                        <td colspan="5"><font face="Arial, Helvetica, sans-serif">Offer is valid for above mentioned days only
+                        </font></td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="thank_ozone" style="background: #4adfa2;">
+            <div class="thank_div">
+                <h1 style="letter-spacing: 5px;font-size:40px;"><font face="Arial, Helvetica, sans-serif">OZONE SOLUTION</font></h1>
+                <hr>
+                <p style="letter-spacing: 1px;font-size:20px;"><font face="Arial, Helvetica, sans-serif">Thank You</font></p>
+            </div>
+        </div>
+
+    </div></div>

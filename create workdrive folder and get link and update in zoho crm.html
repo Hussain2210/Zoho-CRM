@@ -1,0 +1,91 @@
+id = Sign_Up[ID == input.ID];
+contact_id = id.CrmContactID;
+customer = id.Customer_Name;
+input.External_collection_link = id.External_collection_link;
+// 	info customer;
+response1 = zoho.workdrive.createFolder(customer.toString(),"6009v20dd9a78543142f685963aa68b46a28e","workdrive_connection");
+info response1;
+getName = response1.get("data").get("attributes").get("name");
+info getName;
+header = Map();
+header.put("Accept","application/vnd.api+json");
+response = invokeurl
+[
+	url :"https://www.zohoapis.com/workdrive/api/v1/files/6009v20dd9a78543142f685963aa68b46a28e/files?page%5Blimit%5D=50&page%5Boffset%5D=0"
+	type :GET
+	headers:header
+	connection:"getfile"
+];
+info response;
+res_data = response.get("data");
+if(res_data.size() >= 1)
+{
+	getdrivename = List();
+	for each  pro in res_data
+	{
+		getdrivename.add(pro.get("attributes").get("name"));
+	}
+}
+info getdrivename;
+for each  val in getdrivename
+{
+	info val;
+	if(val == getName)
+	{
+		info "Matched";
+		matchvalue = val.indexOf(getName);
+	}
+}
+matchvalue = getdrivename.indexOf(getName);
+getlink = response.get("data").get(matchvalue).get("attributes").get("permalink");
+info getlink;
+id.Workdrive_Folder_Url=getlink;
+options = Map();
+optionlist = list();
+optionlist.add("workflow");
+options.put("trigger",optionlist);
+url_map = Map();
+url_map.put("Workdrive_Link",getlink);
+	write_link = zoho.crm.updateRecord("Contacts",contact_id.toNumber(),url_map,options,"zoho_crm");
+// 	info write_link;
+if(!id.Workdrive_Folder_Url.isEmpty())
+{
+	name = customer;
+	workdrive = id.Workdrive_Folder_Url;
+	workdrive_folder_url = workdrive.getsuffix("folder/");
+	header = Map();
+	header.put("Accept","application/vnd.api+json");
+	data = Map();
+	data_param1 = Map();
+	att_param1 = Map();
+	att_param1.put("parent_id",workdrive_folder_url);
+	att_param1.put("collection_name",name);
+	att_param1.put("is_external","true");
+	att_param1.put("request_user_data","true");
+	data_param1.put("attributes",att_param1);
+	data_param1.put("type","collections");
+	data.put("data",data_param1);
+	response3 = invokeurl
+	[
+		url :"https://www.zohoapis.com/workdrive/api/v1/collections"
+		type :POST
+		parameters:data.toString()
+		headers:header
+		connection:"workdriveconn"
+	];
+	info "response3" + response3;
+	// 		idresp =  response.get("data").get(0);
+	// 		new_id = idresp.get("id");
+	new_id = response3.getJSON("data").getJSON("id");
+	info "New:" + new_id;
+	get_link = "https://workdrive.zohoexternal.com/collection/" + new_id + "/external";
+	id.External_collection_link="https://workdrive.zohoexternal.com/collection/" + new_id + "/external";
+	options = Map();
+optionlist = list();
+optionlist.add("workflow");
+options.put("trigger",optionlist);
+url_map = Map();
+url_map.put("External_collection_link",get_link);
+	write_links = zoho.crm.updateRecord("Contacts",contact_id.toNumber(),url_map,options,"zoho_crm");
+	info write_links;
+}

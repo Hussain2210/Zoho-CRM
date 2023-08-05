@@ -1,0 +1,59 @@
+BranchRec = Branch[Branch_Name == input.Branch1];
+AA = Inspection_Report[ID == input.ID];
+id = AA.ID;
+BranchInspectionName = "Branch Inspection For " + input.Branch1;
+dataMap = Map();
+dataMap.put("Name",BranchInspectionName);
+dataMap.put("Branch_Name",BranchRec.CRM_ID.toNumber());
+dataMap.put("Restaurant_Name",input.Client);
+dataMap.put("Working_hours_of_the_client",input.Closing_Hours_of_Client);
+dataMap.put("Date_of_Submission",input.Date_of_Submission);
+dataMap.put("Details_Client_working_hours",input.Details_of_Closing_Hours);
+dataMap.put("Details_Do_we_have_easy_access_for_our_equipments",input.Detials_of_Equipments_Access);
+dataMap.put("Details_Electicty_soure",input.Details_of_Electricity_Resources);
+dataMap.put("Details_Fans_are_working",input.Details_of_Working_of_Fans);
+dataMap.put("Details_filters_replacement",input.Details_of_Filters_Replacement);
+dataMap.put("Details_Floor_draniage_system",input.Details_of_Floor_Draniage);
+dataMap.put("Details_Hood_lights_are_working",input.Details_of_Hood_Lights);
+dataMap.put("Details_Is_fan_wiring_defected",input.Details_of_Fan_Wiring1);
+dataMap.put("Details_Is_there_connected_Hoods_to_a_one_fan",input.Details_for_Connected_Hoods);
+dataMap.put("Details_Location_is_indoor_or_outdoor",input.Details_of_Location);
+dataMap.put("Details_No_of_Fans",input.Details_of_No_of_Fans);
+dataMap.put("Details_NO_of_filters",input.Details_of_Number_of_Filters);
+dataMap.put("Details_NO_of_Hoods",input.Details_of_Number_of_Hoods);
+dataMap.put("Details_Type_of_fans",input.Details_of_Type_of_Fan);
+dataMap.put("Details_Water_supply_is_available",input.Details_of_Water_Supply);
+dataMap.put("Details_Does_the_fan_on_roof_has_grease_or_any_le",input.Details_of_Roof_Fans);
+dataMap.put("Do_we_have_easy_access_for_our_equipments",input.Do_we_have_easy_access_for_our_equipments);
+dataMap.put("Does_the_fan_on_roof_has_grease_or_any_leakage",input.Does_the_Fan_on_Roof);
+dataMap.put("Does_the_filters_need_replacement",input.Does_the_filters_r);
+dataMap.put("Electicty_soures_available",input.Electricity_Sources_Available);
+dataMap.put("Fans_are_working_properly",input.Fans_Are_Working_Properly);
+dataMap.put("Floor_draniage_systems_is_working_properly",input.Floor_Draniage_Systems);
+dataMap.put("Hood_lights_are_working",input.Hood_Lights_are_Working);
+dataMap.put("Is_fan_wiring_defected",input.Is_Fan_Wiring_Defected);
+dataMap.put("Is_there_connected_Hoods_to_a_one_fan",input.Is_there_connected_hoods_to_a_one_fan);
+dataMap.put("Location_is_indoor_or_outdoor",input.Location_is_Indoor_or_Outdoor);
+dataMap.put("No_of_Fans",input.No_of_Fans);
+dataMap.put("NO_of_filters",input.No_of_Filters);
+dataMap.put("NO_of_Hoods",input.No_of_Hoods);
+dataMap.put("Report_Submitted_By",input.Report_Submitted_By);
+dataMap.put("Account_Name",input.Client);
+dataMap.put("Type_of_fans",input.Type_of_Fan);
+dataMap.put("CreatorID",input.ID.toText());
+dataMap.put("Water_supply_is_available",input.Water_Supply_is_Available);
+additionalDataMap = Map();
+if(!input.CRMID.isEmpty())
+{
+	updateResponseData = zoho.crm.updateRecord("Branch_Inspection",input.CRMID.toLong(),dataMap,additionalDataMap,"zoho_crm");
+	info updateResponseData;
+	info "Updated Record";
+}
+else
+{
+	createResponseData = zoho.crm.createRecord("Branch_Inspection",dataMap,{"trigger":{"workflow","blueprint","approval"}},"zoho_crm");
+	input.CRMID = createResponseData.get("id");
+	info createResponseData;
+	info "Created Record";
+	info createResponseData.get("id");
+}

@@ -1,0 +1,22 @@
+variable = zoho.crm.searchRecords("Inspection_Report","(CreatorID:equals:" + input.ID
+ + ")",1,200);
+iin = variable.get(0).get("CreatorID");
+iddd=variable.get(0).get("id");
+
+fetch_creator_rec = zoho.creator.getRecords("ozonesmartsolution","ozone-solution","All_Inspection_Reports","ID==\"" + iin + "\"",1,200,"zoho_creator_connection");
+if(fetch_creator_rec == null)
+{
+	info "empty";
+}
+else
+{
+	info iin ;
+	
+	response = invokeurl
+	[
+		url :"https://www.zohoapis.com/crm/v3/Inspection_Report/" + iddd
+		type :DELETE
+		connection:"zoho_crm"
+	];
+	info response;
+}

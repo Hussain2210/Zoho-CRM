@@ -1,0 +1,145 @@
+// Fetch Customer Price Group from Customer in CRM......
+customer = zoho.crm.getRecordById("Accounts",input.Customer_Name.toNumber());
+customer_price = customer.get("Customer_Price_Group");
+// Fetch Quoted Items subform field from Products in CRM and populate.......
+opt = Map();
+pherm = row.Product_Name1;
+getProd = zoho.crm.searchRecords("Products","(Product_Name:equals:" + pherm + ")",1,100,opt);
+// info getProd;
+ListPrice = 0;
+if(customer_price == "AU_Domenstic_AUD")
+{
+	ListPrice = getProd.get(0).get("AU_Domenstic_AUD1").toNumber();
+}
+else if(customer_price == "AU_Export_USD")
+{
+	ListPrice = getProd.get(0).get("AU_Export_USD1").toNumber();
+}
+else if(customer_price == "AU_List_AUD")
+{
+	ListPrice = getProd.get(0).get("List_Price_AUD_AU1").toNumber();
+}
+else if(customer_price == "DE_Blue_EUR")
+{
+	ListPrice = getProd.get(0).get("DE_Blue_EUR1").toNumber();
+}
+else if(customer_price == "DE_Red_EUR")
+{
+	ListPrice = getProd.get(0).get("DE_Red_EUR1").toNumber();
+}
+else if(customer_price == "EU_Brown_EUR")
+{
+	ListPrice = getProd.get(0).get("EU_Brown_EUR1").toNumber();
+}
+else if(customer_price == "EU_Green_EUR")
+{
+	ListPrice = getProd.get(0).get("EU_Green_EUR1").toNumber();
+}
+else if(customer_price == "EU_Orange_EUR")
+{
+	ListPrice = getProd.get(0).get("EU_Orange_EUR1").toNumber();
+}
+else if(customer_price == "List Price EURO")
+{
+	ListPrice = getProd.get(0).get("List_Price_EURO_UK1").toNumber();
+}
+else if(customer_price == "SA_Blue_RAND")
+{
+	ListPrice = getProd.get(0).get("SA_Blue_RAND1").toNumber();
+}
+else if(customer_price == "SA_Green_RAND")
+{
+	ListPrice = getProd.get(0).get("SA_Green_RAND1").toNumber();
+}
+else if(customer_price == "SA_Grey_RAND")
+{
+	ListPrice = getProd.get(0).get("SA_Grey_RAND1").toNumber();
+}
+else if(customer_price == "SA_List_RAND")
+{
+	ListPrice = getProd.get(0).get("List_Price_RAND_SA1").toNumber();
+}
+else if(customer_price == "SA_List_USD")
+{
+	ListPrice = getProd.get(0).get("List_Price_USD_SA1").toNumber();
+}
+else if(customer_price == "SA_Purple_RAND")
+{
+	ListPrice = getProd.get(0).get("SA_Purple_RAND1").toNumber();
+}
+else if(customer_price == "SA_Red_RAND")
+{
+	ListPrice = getProd.get(0).get("SA_Red_RAND1").toNumber();
+}
+else if(customer_price == "UKD_Black_USD")
+{
+	ListPrice = getProd.get(0).get("UKD_Black_USD1").toNumber();
+}
+else if(customer_price == "UKD_List_USD")
+{
+	ListPrice = getProd.get(0).get("UKD_Black_USD1").toNumber();
+}
+else if(customer_price == "UK_Blue_GBP")
+{
+	ListPrice = getProd.get(0).get("UK_Blue_GBP1").toNumber();
+}
+else if(customer_price == "UK_Grey_GBP")
+{
+	ListPrice = getProd.get(0).get("UK_Grey_GBP1").toNumber();
+}
+else if(customer_price == "UK_Red_GBP")
+{
+	ListPrice = getProd.get(0).get("UK_Red_GBP1").toNumber();
+}
+else if(customer_price == "UK_Yellow_GBP")
+{
+	ListPrice = getProd.get(0).get("UK_Yellow_GBP1").toNumber();
+}
+else if(customer_price == "US_Blue_USD")
+{
+	ListPrice = getProd.get(0).get("US_Blue_USD1").toNumber();
+}
+else if(customer_price == "US_Green_USD")
+{
+	ListPrice = getProd.get(0).get("US_Green_USD1").toNumber();
+}
+else if(customer_price == "US_Grey_USD")
+{
+	ListPrice = getProd.get(0).get("US_Grey_USD1").toNumber();
+}
+else if(customer_price == "US_Orange_USD")
+{
+	ListPrice = getProd.get(0).get("US_Orange_USD1").toNumber();
+}
+else if(customer_price == "US_Violet_USD")
+{
+	ListPrice = getProd.get(0).get("US_Violet_USD1").toNumber();
+}
+else
+{
+	ListPrice = 0;
+}
+row.Model_SKU=ifNull(getProd.get(0).get("SKU"),"");
+row.Quantity=1;
+row.List_Price=ListPrice.toNumber();
+row.Total=ListPrice.toNumber() * row.Quantity.toNumber();
+row.Capacity=ifNull(getProd.get(0).get("Maximum_Capacity"),"");
+row.Readability=ifNull(getProd.get(0).get("Readability"),"");
+row.Pan_Size=ifNull(getProd.get(0).get("Pan_Size"),"");
+// Populate Features field according to given criteria.......
+if(input.Language == "English")
+{
+	row.Features_field="Backlit Display, Battery Power, Date, Multiple Weighing units, NTEP, RS-232, Tare, Time, USB";
+}
+else if(input.Language == "French")
+{
+	row.Features_field="Affichage rétroéclairé, Batterie, Date, Heure, Multiple Weighing units, NTEP, RS-232, Tare, USB";
+}
+else if(input.Language == "German")
+{
+	row.Features_field="Accu, Datum, Multiple Weighing units, NTEP, RS-232, Tarra, Tijd, USB, Verlicht";
+}
+else if(input.Language = "Spanish")
+{
+	row.Features_field="Batería, Fecha, Multiple Weighing units, NTEP, Pantalla retroiluminada, RS-232, Tara, Tiempo, USB";
+}
