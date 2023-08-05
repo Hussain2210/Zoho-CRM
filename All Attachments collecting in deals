@@ -1,0 +1,225 @@
+id = 20409000002679160;
+deal = zoho.crm.getRecordById("Deals",id);
+Attachement_IDs = deal.get("Attachement_IDs");
+Attachement_IDs_list = LIST();
+new_ids = "";
+if(Attachement_IDs != null)
+{
+	Attachement_IDs_list = Attachement_IDs.toList(",");
+	new_ids = Attachement_IDs + ",";
+}
+// info "available ids: " + Attachement_IDs_list;
+visas_recs = zoho.crm.getRelatedRecords("Visas","Deals",id);
+for each  visas_rec in visas_recs
+{
+	visas_id = visas_rec.get("id");
+	visasRecords = zoho.crm.getRecordById("Visas",visas_id);
+	fileId1 = visasRecords.get("Attachment").get(0).get("file_Id");
+	//                fileId101 = visasRecords.get("Lodgement_confirmation").get(0).get("file_Id");
+	// 		 fileId102 = visasRecords.get("IMMI_Draft").get(0).get("file_Id");
+	// 		 fileId103 = visasRecords.get("Final_GTE").get(0).get("file_Id");
+	// 		 fileId104 = visasRecords.get("Final_SOP").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId1))
+	{
+		crmGetAttachment1 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId1
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded1 = zoho.crm.attachFile("Deals",id,crmGetAttachment1);
+		if(new_ids == "")
+		{
+			new_ids = fileId1;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId1;
+		}
+	}
+	//101
+	fileId101 = visasRecords.get("Lodgement_confirmation").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId101))
+	{
+		crmGetAttachment101 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId101
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded101 = zoho.crm.attachFile("Deals",id,crmGetAttachment101);
+		info attachmentAdded101;
+		if(new_ids == "")
+		{
+			new_ids = fileId101;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId101;
+		}
+	}
+	//102
+	fileId102 = visasRecords.get("IMMI_Draft").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId102))
+	{
+		crmGetAttachment102 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId102
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded102 = zoho.crm.attachFile("Deals",id,crmGetAttachment102);
+		info attachmentAdded102;
+		if(new_ids == "")
+		{
+			new_ids = fileId102;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId102;
+		}
+	}
+	//103
+	fileId103 = visasRecords.get("Final_GTE").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId103))
+	{
+		crmGetAttachment103 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId103
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded103 = zoho.crm.attachFile("Deals",id,crmGetAttachment103);
+		info attachmentAdded103;
+		if(new_ids == "")
+		{
+			new_ids = fileId103;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId103;
+		}
+	}
+	//104
+	fileId104 = visasRecords.get("Final_SOP").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId104))
+	{
+		crmGetAttachment104 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId104
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded104 = zoho.crm.attachFile("Deals",id,crmGetAttachment104);
+		info attachmentAdded104;
+		if(new_ids == "")
+		{
+			new_ids = fileId104;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId104;
+		}
+	}
+}
+Travel_recs = zoho.crm.getRelatedRecords("Travel","Deals",id);
+for each  Travel_rec in Travel_recs
+{
+	Travel_id = Travel_rec.get("id");
+	crmtravelRecord = zoho.crm.getRecordById("Travels",Travel_id);
+	fileId2 = crmtravelRecord.get("Attachment").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId2))
+	{
+		crmGetAttachment2 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId2
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded2 = zoho.crm.attachFile("Deals",id,crmGetAttachment2);
+		if(new_ids == "")
+		{
+			new_ids = fileId2;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId2;
+		}
+	}
+}
+course_recs = zoho.crm.getRelatedRecords("Courses1","Deals",id);
+for each  course_rec in course_recs
+{
+	course_id = course_rec.get("id");
+	crmCourseRecord = zoho.crm.getRecordById("Courses",course_id);
+	fileId3 = crmCourseRecord.get("COE").get(0).get("file_Id");
+	fileId301 = crmCourseRecord.get("Offer_Letter").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId3))
+	{
+		crmGetAttachment3 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId3
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded3 = zoho.crm.attachFile("Deals",id,crmGetAttachment3);
+		if(new_ids == "")
+		{
+			new_ids = fileId3;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId3;
+		}
+	}
+	fileId301 = crmCourseRecord.get("Offer_Letter").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId301))
+	{
+		crmGetAttachment301 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId301
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded301 = zoho.crm.attachFile("Deals",id,crmGetAttachment301);
+		info attachmentAdded301;
+		if(new_ids == "")
+		{
+			new_ids = fileId301;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId301;
+		}
+	}
+}
+Insurance_recs = zoho.crm.getRelatedRecords("Insurance","Deals",id);
+for each  Insurance_rec in Insurance_recs
+{
+	ins_id = Insurance_rec.get("id");
+	crminsRecord = zoho.crm.getRecordById("Insurances",ins_id);
+	fileId4 = crminsRecord.get("Attachment").get(0).get("file_Id");
+	if(!Attachement_IDs_list.contains(fileId4))
+	{
+		crmGetAttachment4 = invokeurl
+		[
+			url :"https://www.zohoapis.com.au/crm/v3/files?id=" + fileId4
+			type :GET
+			connection:"crm_connection"
+		];
+		attachmentAdded4 = zoho.crm.attachFile("Deals",id,crmGetAttachment4);
+		if(new_ids == "")
+		{
+			new_ids = fileId4;
+		}
+		else
+		{
+			new_ids = new_ids + "," + fileId4;
+		}
+	}
+}
+info "New found ids: " + new_ids;
+map_update = Map();
+map_update.put("Attachement_IDs",new_ids);
+info zoho.crm.updateRecord("Deals",id,map_update);
+return " Attachments Added";
