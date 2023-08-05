@@ -1,0 +1,211 @@
+<%{
+	if(thisapp.portal.isUserInProfile("Customer"))
+	{
+		Customer = Customer[Billing_Email == zoho.loginuserid];
+		if(Customer != null)
+		{
+			id = Customer.ID;
+			CustomerEmail = Customer.Billing_Email;
+			CustomerName = Customer.Customer_Name;
+			invoice = thisapp.GetInvoicesOfCustomer(id,CustomerEmail,CustomerName);
+			invoices = invoice.get("Invoices");
+			for each  item in invoices
+			{
+				invoice_id = item.get("invoice_id");
+				invoice_number = item.get("invoice_number");
+				Date = item.get("date");
+				customer_name = item.get("customer_name");
+				status = item.get("status");
+				inv = zoho.books.getRecordsByID("invoices","714155157",invoice_id,"books");
+				invoice_url = inv.get("invoice").get("invoice_url");
+			}
+			%>
+<head>
+<! -- // BOOTSTRAP CDN LINK -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<style>
+	#main_div{
+		padding:5%;
+	}
+	h2{
+		text-align:center;
+		padding-bottom:2%;
+	}
+	h3{
+		margin-left:5%;
+		padding-top:2%;
+		padding-bottom:1%;
+	}
+	#staff_utilization{
+		margin-right:5%;
+		margin-left:5%;
+	}
+	#task_logs_history{
+		margin-right:5%;
+		margin-left:5%;
+	}
+	#per_employee_cost{
+		margin-right:5%;
+		margin-left:5%;
+	}
+</style>
+</head>
+<h3>Invoices History</h3>
+	<div id="task_logs_history">
+		<table class="table table-bordered table-responsive">
+			<thead class="table-secondary">
+				<tr>
+					<th>Serial No</th>
+					<th>Invoice ID</th>
+					<th>Invoice Number</th>
+					<th>Invoice Date</th>
+					<th>Customer Name</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+<%
+			no = 0;
+			for each  rec in invoices
+			{
+				no = no + 1;
+				invoice_id = rec.get("invoice_id");
+				invoice_number = rec.get("invoice_number");
+				date = rec.get("date");
+				customer_name = rec.get("customer_name");
+				Status = rec.get("status");
+				%>
+<tbody>
+				<tr>
+					<th scope="row"> <%=no%> </th>
+					<td> <%=invoice_id%> </td>
+					<td> <%=invoice_number%> </td>
+					<td> <%=date%> </td>
+					<td> <%=customer_name%> </td>
+					<td> <%=Status%> </td>
+					<td><a href=<%=invoice_url%>><button type="button">Open Invoice!</button></a></td>
+				</tr>
+			</tbody>
+			<! -- // SCRIPT LINKS ARE FOR BOOTSTRAP -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<%
+			}
+			%>
+</table>
+</div>
+<%
+		}
+	}
+	else
+	{
+		%>
+<h1>Only portal user can access this Invoice page.</h1>
+<%
+	}
+	if(thisapp.portal.isUserInProfile("Customer"))
+	{
+		Customer = Customer[Billing_Email == zoho.loginuserid];
+		if(Customer != null)
+		{
+			id = Customer.ID;
+			CustomerEmail = Customer.Billing_Email;
+			CustomerName = Customer.Customer_Name;
+			salesorder = thisapp.GetSaleOrderOfCustomer2(id,CustomerEmail,CustomerName);
+			salesorders = salesorder.get("salesorders");
+			for each  item in salesorders
+			{
+				salesorder_id = item.get("salesorder_id");
+				salesorder_number = item.get("salesorder_number");
+				date = item.get("date");
+				customer_name = item.get("customer_name");
+				status = item.get("status");
+				sale = zoho.books.getRecordsByID("salesorders","714155157",salesorder_id,"books");
+// 								sale_url = sale.get("salesorders").get("salesorders_url");
+			}
+			%>
+<head>
+<! -- // BOOTSTRAP CDN LINK -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<style>
+	#main_div{
+		padding:5%;
+	}
+	h2{
+		text-align:center;
+		padding-bottom:2%;
+	}
+	h3{
+		margin-left:5%;
+		padding-top:2%;
+		padding-bottom:1%;
+	}
+	#staff_utilization{
+		margin-right:5%;
+		margin-left:5%;
+	}
+	#task_logs_history{
+		margin-right:5%;
+		margin-left:5%;
+	}
+	#per_employee_cost{
+		margin-right:5%;
+		margin-left:5%;
+	}
+</style>
+</head>
+<h3>Sales order History</h3>
+	<div id="task_logs_history">
+		<table class="table table-bordered table-responsive">
+			<thead class="table-secondary">
+				<tr>
+					<th>Serial No</th>
+					<th>SalesOrder ID</th>
+					<th>Sales Number</th>
+					<th>Sales Date</th>
+					<th>Customer Name</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+<%
+			no = 0;
+			for each  rec in salesorders
+			{
+				no = no + 1;
+				salesorder_id = rec.get("salesorder_id");
+				salesorder_number = rec.get("salesorder_number");
+				date = rec.get("date");
+				customer_name = rec.get("customer_name");
+				status = rec.get("status");
+				%>
+<tbody>
+				<tr>
+					<th scope="row"> <%=no%> </th>
+					<td> <%=salesorder_id%> </td>
+					<td> <%=salesorder_number%> </td>
+					<td> <%=date%> </td>
+					<td> <%=customer_name%> </td>
+					<td> <%=status%> </td>
+			<!-- <td><a href=""><button type="button">Open SalesOrder!</button></a></td> -->
+				</tr>
+			</tbody>
+			<! -- // SCRIPT LINKS ARE FOR BOOTSTRAP -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<%
+			}
+			%>
+</table>
+</div>
+<%
+		}
+	}
+	else
+	{
+		%>
+<h1>Only portal user can access this SalesOrder page.</h1>
+<%
+	}
+
+}%>

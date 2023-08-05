@@ -1,0 +1,90 @@
+dealID = 5642053000000845073;
+crmDealRecord = zoho.crm.getRecordById("Deals",dealID);
+crmDealStage = crmDealRecord.get("Stage");
+contactID = crmDealRecord.get("Contact_Name").get("id");
+crmContactRecord = zoho.crm.getRecordById("Contacts",contactID);
+contactEmail = crmContactRecord.get("Email");
+Quote_related = zoho.crm.getRelatedRecords("Quotes","Deals",dealID);
+Quote_id = Quote_related.get(0).get("id");
+// crmGetInventoryTemplate = invokeurl
+// [
+// 	url :"https://www.zohoapis.com/crm/v2/settings/inventory_templates/5642053000000512043/actions/print_preview?record_id=" + Quote_id + "&print_type=pdf"
+// 	type :GET
+// 	connection:"crm_connection"
+// ];
+// // info crmGetInventoryTemplate;
+// crmGetInventoryTemplate.setParamName("file");
+// sendmail
+// [
+// 	from :zoho.adminuserid
+// 	to :contactEmail
+// 	subject :"Quote_template"
+// 	message :"Quote_template"
+// 	Attachments :file:crmGetInventoryTemplate
+// ]
+// info "quotation email sent";
+Product_Details = Quote_related.get(0).get("Product_Details");
+insert1 = Map();
+insert1.put("Quote_Owner",Quote_related.get(0).get("Owner").get("name"));
+insert1.put("Quote_Number",Quote_related.get(0).get("Quote_Number"));
+insert1.put("Deal_Name",Quote_related.get(0).get("Deal_Name").get("id"));
+insert1.put("No_of_branches",Quote_related.get(0).get("Reference_No"));
+insert1.put("Valid_Until",Quote_related.get(0).get("Valid_Till").toDate("yyyy-MM-dd"));
+insert1.put("Service_Type",Quote_related.get(0).get("Service_Type"));
+insert1.put("Reference_No",Quote_related.get(0).get("Reference_No"));
+insert1.put("Subject_field",Quote_related.get(0).get("Subject"));
+insert1.put("Contact_Name",Quote_related.get(0).get("Contact_Name").get("id"));
+insert1.put("Quote_Stage",Quote_related.get(0).get("Quote_Stage"));
+insert1.put("Team",Quote_related.get(0).get("Team"));
+insert1.put("Account_Name",Quote_related.get(0).get("Account_Name").get("id"));
+insert1.put("Billing_Street",Quote_related.get(0).get("Billing_Street"));
+insert1.put("Billing_City",Quote_related.get(0).get("Billing_City"));
+insert1.put("Billing_State",Quote_related.get(0).get("Billing_State"));
+insert1.put("Billing_Code",Quote_related.get(0).get("Billing_Code"));
+insert1.put("Billing_Country",Quote_related.get(0).get("Billing_Country"));
+insert1.put("Shipping_Street",Quote_related.get(0).get("Shipping_Street"));
+insert1.put("Shipping_City",Quote_related.get(0).get("Shipping_City"));
+insert1.put("Shipping_State",Quote_related.get(0).get("Shipping_State"));
+insert1.put("Shipping_Code",Quote_related.get(0).get("Shipping_Code"));
+insert1.put("Shipping_Country",Quote_related.get(0).get("Shipping_Country"));
+insert1.put("Terms_and_Conditions1",Quote_related.get(0).get("Terms_and_Conditions"));
+insert1.put("Description",Quote_related.get(0).get("Description"));
+
+// insert1 = Map();
+insert1.put("Sub_total",ifnull(Quote_related.get(0).get("Sub_Total"),0));
+insert1.put("Disc",ifnull(Quote_related.get(0).get("Discount"),0));
+insert1.put("Tax1",ifnull(Quote_related.get(0).get("Tax"),0));
+insert1.put("Adjustment",ifnull(Quote_related.get(0).get("Adjustment"),0));
+insert1.put("Grand_Total",ifnull(Quote_related.get(0).get("Grand_Total"),0));
+items_list = List();
+for each  item in Product_Details
+{
+	item_map = Map();
+	product_name = item.get("product").get("id");
+	Quantity = ifnull(item.get("quantity"),0);
+	List_Price = ifnull(item.get("unit_price"),0);
+	total = ifnull(item.get("total"),0);
+	Discount = ifnull(item.get("Discount"),0);
+	Tax = ifnull(item.get("Tax"),0);
+	net_total = ifnull(item.get("net_total"),0);
+	item_map.put("Product_Name",product_name);
+	item_map.put("Quantity",Quantity);
+	item_map.put("List_Price_SAR",List_Price);
+	item_map.put("Amount",total);
+	item_map.put("Discount_SAR",Discount);
+	item_map.put("Tax",Tax);
+	item_map.put("Total",net_total);
+	items_list.add(item_map);
+
+}
+insert1.put("Quoted_Items",items_list);
+
+// listmap = List();
+// listmap.add(new);
+// listmap.add(insert1);
+
+optional_Map = Map();
+
+create =zoho.creator.createRecord("ozonesmartsolution", "ozone-solution", "Quote", insert1, optional_Map,"creator_connect");
+info create; 
+return "";

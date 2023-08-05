@@ -1,0 +1,123 @@
+void Quote_Messeges_updates(int QuoteNumber, string button)
+{
+	Quote_rec = Quote[Quote_Number == input.QuoteNumber.toString()];
+	Quote_id = Quote_rec.Quote_CRM_Id;
+	Quote_number = Quote_rec.Quote_Number;
+	Customer_Email = Quote_rec.Customer_Email;
+	Quotes = zoho.crm.getRecordById("Quotes",Quote_rec.Quote_CRM_Id.toLong());
+	Quote_Status = Quotes.get("Quote_Status");
+	new = Map();
+	if(button == "Accept")
+	{
+		if(Quote_rec.Status == "Accepted")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quotes_Message/k1dhPPgep3F9B4KOO3VDHZW5dVWVVe2ya11XDsmMTshA9UZdJmTmrMzNRqseahfq9vEvwwJ5CAV0YQxH7md4RKTMPTNkOwUfBqVq?messege=Your quote has been already accepted","popup window","height=700px, width=800px");
+			sendmail
+			[
+				from :zoho.adminuserid
+				to :Customer_Email
+				subject :"Quote Messege"
+				message :"<div class=\"mainContainer\" style=\"width: 100%; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\"><div class=\"header\" style=\"width: 100%; display: flex; justify-content: space-between; align-items: center;\"><img src=\"https://www.linkpicture.com/q/ozone_3_1.png\" style=\"width: 100%;\" width=\"100%\"><br></div><div class=\"centerDiv\" style=\"width: 100%; display: grid; align-items: center;\"><div class=\"messageBox\" style=\"width: 60%; height: 20vh; margin: auto; background-color: #518f3c; display: grid; place-items: center; color: white; border-radius: 20px; transform: rotate(-2deg); box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,\n                rgba(0, 0, 0, 0.22) 0px 15px 12px;\"><div class=\"msg\"><p style=\"transform: rotate(2deg); font-size: 2vmax; text-align: center;\">Your quote has been already accepted<br></p></div></div></div></div><div><br></div>"
+			]
+		}
+		else if(Quote_rec.Status == "Rejected")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quotes_Message/k1dhPPgep3F9B4KOO3VDHZW5dVWVVe2ya11XDsmMTshA9UZdJmTmrMzNRqseahfq9vEvwwJ5CAV0YQxH7md4RKTMPTNkOwUfBqVq?messege=Your quote has been already rejected","popup window","height=700px, width=800px");
+			sendmail
+			[
+				from :zoho.adminuserid
+				to :Customer_Email
+				subject :"Quote Messege"
+				message :"<div class=\"mainContainer\" style=\"width: 100%; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\"><div class=\"header\" style=\"width: 100%; display: flex; justify-content: space-between; align-items: center;\"><img src=\"https://www.linkpicture.com/q/ozone_3_1.png\" style=\"width: 100%;\" width=\"100%\"><br></div><div class=\"centerDiv\" style=\"width: 100%; display: grid; align-items: center;\"><div class=\"messageBox\" style=\"width: 60%; height: 20vh; margin: auto; background-color: #518f3c; display: grid; place-items: center; color: white; border-radius: 20px; transform: rotate(-2deg); box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,\n                rgba(0, 0, 0, 0.22) 0px 15px 12px;\"><div class=\"msg\"><p style=\"transform: rotate(2deg); font-size: 2vmax; text-align: center;\">Your quote has been already rejected<br></p></div></div></div></div><div><br></div>"
+			]
+		}
+		else
+		{
+			mp = Map();
+			mp.put("Status","Accepted");
+			optionlMap = Map();
+			response = zoho.creator.updateRecord("ozonesmartsolution","ozone-solution","All_Quotes",Quote_rec.ID,mp,optionlMap,"zoho_creator_connection");
+			info response;
+			new.put("Quote_Status","Accepted");
+			update = zoho.crm.updateRecord("Quotes",Quote_rec.Quote_CRM_Id.toLong(),new,{"trigger":{"workflow","blueprint","approval"}});
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quotes_Message/k1dhPPgep3F9B4KOO3VDHZW5dVWVVe2ya11XDsmMTshA9UZdJmTmrMzNRqseahfq9vEvwwJ5CAV0YQxH7md4RKTMPTNkOwUfBqVq?messege=Your quote has been accepted","popup window","height=700px, width=800px");
+		}
+	}
+	else if(button == "Reject")
+	{
+		if(Quote_rec.Status == "Accepted")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quotes_Message/k1dhPPgep3F9B4KOO3VDHZW5dVWVVe2ya11XDsmMTshA9UZdJmTmrMzNRqseahfq9vEvwwJ5CAV0YQxH7md4RKTMPTNkOwUfBqVq?messege=Your quote has been already accepted","popup window","height=700px, width=800px");
+			sendmail
+			[
+				from :zoho.adminuserid
+				to :Customer_Email
+				subject :"Quote Messege"
+				message :"<div style=\"width: 100%; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\" class=\"mainContainer\"><div style=\"width: 100%; display: flex; justify-content: space-between; align-items: center;\" class=\"header\"><img width=\"100%\" style=\"width: 100%;\" src=\"https://www.linkpicture.com/q/ozone_3_1.png\"> <br></div><div style=\"width: 100%; display: grid; align-items: center;\" class=\"centerDiv\"><div style=\"width: 60%; height: 20vh; margin: auto; background-color: #518f3c; display: grid; place-items: center; color: white; border-radius: 20px; transform: rotate(-2deg); box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,\n                rgba(0, 0, 0, 0.22) 0px 15px 12px;\"class=\"messageBox\"><div class=\"msg\"><p style=\"transform: rotate(2deg); text-align: center;\"><span class=\"size\"style=\"font-size: 2vmax; transform: rotate(2deg); text-align: center;\">Your quote has been already accepted</span><br></p></div></div></div></div><div><br></div>"
+			]
+		}
+		else if(Quote_rec.Status == "Rejected")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quotes_Message/k1dhPPgep3F9B4KOO3VDHZW5dVWVVe2ya11XDsmMTshA9UZdJmTmrMzNRqseahfq9vEvwwJ5CAV0YQxH7md4RKTMPTNkOwUfBqVq?messege=Your quote has been already rejected&","popup window","height=700px, width=800px");
+			sendmail
+			[
+				from :zoho.adminuserid
+				to :Customer_Email
+				subject :"Quote Messege"
+				message :"<div class=\"mainContainer\" style=\"width: 100%; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\"><div class=\"header\" style=\"width: 100%; display: flex; justify-content: space-between; align-items: center;\"><img src=\"https://www.linkpicture.com/q/ozone_3_1.png\" style=\"width: 100%;\" width=\"100%\"><br></div><div class=\"centerDiv\" style=\"width: 100%; display: grid; align-items: center;\"><div class=\"messageBox\" style=\"width: 60%; height: 20vh; margin: auto; background-color: #518f3c; display: grid; place-items: center; color: white; border-radius: 20px; transform: rotate(-2deg); box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,\n                rgba(0, 0, 0, 0.22) 0px 15px 12px;\"><div class=\"msg\"><p style=\"transform: rotate(2deg); font-size: 2vmax; text-align: center;\">Your quote has been already rejected<br></p></div></div></div></div><div><br></div>"
+			]
+		}
+		else
+		{
+			info "Rejected";
+			Quote_rec.Status="Rejected";
+			new.put("Quote_Status","Rejected");
+			update = zoho.crm.updateRecord("Quotes",Quote_rec.Quote_CRM_Id.toLong(),new);
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/form-perma/Reason_For_Rejection/OCGm3GbGs4m5g1ZDZJbv6JU2mFqSDASBnbtxQpxwx6Pg3RBemv4gKHgegEru96wpyAtKZVt9S11WbFHVqtDwKHESPBvDMKYvEFvR?Quote_Number=" + Quote_number,"popup window","height=700px, width=800px");
+		}
+	}
+	else if(button == "Review later")
+	{
+		if(Quote_rec.Status == "Accepted")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quotes_Message/k1dhPPgep3F9B4KOO3VDHZW5dVWVVe2ya11XDsmMTshA9UZdJmTmrMzNRqseahfq9vEvwwJ5CAV0YQxH7md4RKTMPTNkOwUfBqVq?messege=Your quote has been already accepted","popup window","height=700px, width=800px");
+			sendmail
+			[
+				from :zoho.adminuserid
+				to :Customer_Email
+				subject :"Quote Messege"
+				message :"<div class=\"mainContainer\" style=\"width: 100%; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\"><div class=\"header\" style=\"width: 100%; display: flex; justify-content: space-between; align-items: center;\"><img src=\"https://www.linkpicture.com/q/ozone_3_1.png\" style=\"width: 100%;\" width=\"100%\"><br></div><div class=\"centerDiv\" style=\"width: 100%; display: grid; align-items: center;\"><div class=\"messageBox\" style=\"width: 60%; height: 20vh; margin: auto; background-color: #518f3c; display: grid; place-items: center; color: white; border-radius: 20px; transform: rotate(-2deg); box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,\n                rgba(0, 0, 0, 0.22) 0px 15px 12px;\"><div class=\"msg\"><p style=\"transform: rotate(2deg); font-size: 2vmax; text-align: center;\">Your quote has been already accepted<br></p></div></div></div></div><div><br></div>"
+			]
+		}
+		else if(Quote_rec.Status == "Rejected")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quotes_Message/k1dhPPgep3F9B4KOO3VDHZW5dVWVVe2ya11XDsmMTshA9UZdJmTmrMzNRqseahfq9vEvwwJ5CAV0YQxH7md4RKTMPTNkOwUfBqVq?messege=Your quote has been already rejected","popup window","height=700px, width=800px");
+			sendmail
+			[
+				from :zoho.adminuserid
+				to :Customer_Email
+				subject :"Quote Messege"
+				message :"<div class=\"mainContainer\" style=\"width: 100%; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\"><div class=\"header\" style=\"width: 100%; display: flex; justify-content: space-between; align-items: center;\"><img src=\"https://www.linkpicture.com/q/ozone_3_1.png\" style=\"width: 100%;\" width=\"100%\"><br></div><div class=\"centerDiv\" style=\"width: 100%; display: grid; align-items: center;\"><div class=\"messageBox\" style=\"width: 60%; height: 20vh; margin: auto; background-color: #518f3c; display: grid; place-items: center; color: white; border-radius: 20px; transform: rotate(-2deg); box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,\n                rgba(0, 0, 0, 0.22) 0px 15px 12px;\"><div class=\"msg\"><p style=\"transform: rotate(2deg); font-size: 2vmax; text-align: center;\">Your quote has been already rejected<br></p></div></div></div></div><div><br></div>"
+			]
+		}
+		else if(Quote_rec.Status == "Review later")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quotes_Message/k1dhPPgep3F9B4KOO3VDHZW5dVWVVe2ya11XDsmMTshA9UZdJmTmrMzNRqseahfq9vEvwwJ5CAV0YQxH7md4RKTMPTNkOwUfBqVq?messege=Your have already chose to reivew your quote later","popup window","height=700px, width=800px");
+			sendmail
+			[
+				from :zoho.adminuserid
+				to :Customer_Email
+				subject :"Quote Messege"
+				message :"<div class=\"mainContainer\" style=\"width: 100%; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;\"><div class=\"header\" style=\"width: 100%; display: flex; justify-content: space-between; align-items: center;\"><img src=\"https://www.linkpicture.com/q/ozone_3_1.png\" style=\"width: 100%;\" width=\"100%\"><br></div><div class=\"centerDiv\" style=\"width: 100%; display: grid; align-items: center;\"><div class=\"messageBox\" style=\"width: 60%; height: 20vh; margin: auto; background-color: #518f3c; display: grid; place-items: center; color: white; border-radius: 20px; transform: rotate(-2deg); box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,\n                rgba(0, 0, 0, 0.22) 0px 15px 12px;\"><div class=\"msg\"><p style=\"transform: rotate(2deg); font-size: 2vmax; text-align: center;\">Your have already chose to reivew your quote later<br></p></div></div></div></div><div><br></div>"
+			]
+		}
+		else
+		{
+			info "Review later";
+			Quote_rec.Status="Review later";
+			new.put("Quote_Status","Review later");
+			update = zoho.crm.updateRecord("Quotes",Quote_rec.Quote_CRM_Id.toLong(),new,{"trigger":{"workflow","blueprint","approval"}});
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quotes_Message/k1dhPPgep3F9B4KOO3VDHZW5dVWVVe2ya11XDsmMTshA9UZdJmTmrMzNRqseahfq9vEvwwJ5CAV0YQxH7md4RKTMPTNkOwUfBqVq?messege= We have sent you quote via email please open your mailbox to access the same for consideration","popup window","height=700px, width=800px");
+		}
+	}
+}

@@ -1,0 +1,25 @@
+products = zoho.crm.getRecordById("Products", id);
+Creator_id = products.get("Creator_id");
+Record_Image = products.get("Record_Image");
+
+response = invokeurl
+[
+url: " https://www.zohoapis.com/crm/v2/Products/" + id +"/photo"
+type: GET
+connection:"crm_connection"
+];
+info response;
+
+response.setparamname("file");
+// {"paramName": <key>, "content": <File>};
+// parameters=Map();
+// parameters.put("paramName","file");
+// parameters.put("content",response);
+upload_image = invokeurl
+[
+url: "https://creator.zoho.com/api/v2/zoho_jc125/pog/report/All_Products/"+ Creator_id +"/Image/upload"
+type: POST
+files:response
+connection:"creator_connection"
+];
+info "upload_image: " + upload_image;

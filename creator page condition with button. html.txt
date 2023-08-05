@@ -1,0 +1,59 @@
+void Duct_cleaning_quote(int ID, string button)
+{
+	Quote_rec = Quote[ID == ID];
+	Quote_id = Quote_rec.Quote_CRM_Id;
+	Quote_number = Quote_rec.Quote_Number;
+	Quotes = zoho.crm.getRecordById("Quotes",Quote_rec.Quote_CRM_Id.toLong());
+	Quote_Status = Quotes.get("Quote_Status");
+	new = Map();
+	if(button == "Accept")
+	{
+		if(Quote_rec.Status == "Accepted")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quote_Status/MCeNbA4RtMjDjZpVj2BE3uHjgUkTdg904FV43VMhuAxqC56Vv96emmybxB4uphzeg2ypeD0TRBOjW64JEfPeE8E2VjaxW5fgWqp7?messege=Your quote has been already accepted","popup window","height=700px, width=800px");
+		}
+		else if(Quote_rec.Status == "Reject")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quote_Status/MCeNbA4RtMjDjZpVj2BE3uHjgUkTdg904FV43VMhuAxqC56Vv96emmybxB4uphzeg2ypeD0TRBOjW64JEfPeE8E2VjaxW5fgWqp7?messege=Your quote has been already rejected&zc_LoadIn=dialog","popup window","height=700px, width=800px");
+		}
+		else
+		{
+			Quote_rec.Status="Accepted";
+			new.put("Quote_Status","Accepted");
+			update = zoho.crm.updateRecord("Quotes",Quote_rec.Quote_CRM_Id.toLong(),new);
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quote_Status/MCeNbA4RtMjDjZpVj2BE3uHjgUkTdg904FV43VMhuAxqC56Vv96emmybxB4uphzeg2ypeD0TRBOjW64JEfPeE8E2VjaxW5fgWqp7?messege=Your quote has been accepted&zc_LoadIn=dialog","popup window","height=700px, width=800px");
+		}
+	}
+	else if(button == "Rejected")
+	{
+		if(Quote_rec.Status == "Reject")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quote_Status/MCeNbA4RtMjDjZpVj2BE3uHjgUkTdg904FV43VMhuAxqC56Vv96emmybxB4uphzeg2ypeD0TRBOjW64JEfPeE8E2VjaxW5fgWqp7?messege=Your quote has been already rejected&zc_LoadIn=dialog","popup window","height=700px, width=800px");
+		}
+		else if(Quote_rec.Status == "Accepted")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quote_Status/MCeNbA4RtMjDjZpVj2BE3uHjgUkTdg904FV43VMhuAxqC56Vv96emmybxB4uphzeg2ypeD0TRBOjW64JEfPeE8E2VjaxW5fgWqp7?messege=Your quote has been already accepted","popup window","height=700px, width=800px");
+		}
+		else
+		{
+			Quote_rec.Status="Rejected";
+			new.put("Quote_Status","Rejected");
+			update = zoho.crm.updateRecord("Quotes",Quote_rec.Quote_CRM_Id.toLong(),new);
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/form-perma/Reason_of_Rejection/S48h8dSY9FpZsZPXfnrs2QUROmNfa8zty6YOm1kYkZUnjR9s8ZjbWvhW6K63aCqTJjSA1zhJpv3XZa0AZDzGh18Y4nR1j5F5Wm4D?Quote_Number=" + Quote_number,"popup window","height=600,width=1000");
+		}
+	}
+	else if(button == "Review later")
+	{
+		if(Quote_rec.Status == "Review later")
+		{
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quote_Status/MCeNbA4RtMjDjZpVj2BE3uHjgUkTdg904FV43VMhuAxqC56Vv96emmybxB4uphzeg2ypeD0TRBOjW64JEfPeE8E2VjaxW5fgWqp7?messege=Your have already chose to reivew your quote later &zc_LoadIn=dialog","popup window","height=700px, width=800px");
+		}
+		else
+		{
+			Quote_rec.Status="Review later";
+			new.put("Quote_Status","Review later");
+			update = zoho.crm.updateRecord("Quotes",Quote_rec.Quote_CRM_Id.toLong(),new);
+			openUrl("https://creatorapp.zohopublic.com/ozonesmartsolution/ozone-solution/page-perma/Quote_Status/MCeNbA4RtMjDjZpVj2BE3uHjgUkTdg904FV43VMhuAxqC56Vv96emmybxB4uphzeg2ypeD0TRBOjW64JEfPeE8E2VjaxW5fgWqp7?messege=We will send you a quote to your mail box&zc_LoadIn=dialog","popup window","height=700px, width=800px");
+		}
+	}
+}

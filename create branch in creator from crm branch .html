@@ -1,0 +1,62 @@
+id = 5642053000000724007;
+get_rec = zoho.crm.getRecordById("Branch",id);
+Restaurant_Name = get_rec.get("Restaurant_Name").get("id");
+Owner_name = get_rec.get("Owner").get("name");
+Branch_Manager = get_rec.get("Branch_Manager");
+unique_ID = get_rec.get("Auto_Number_1");
+Branch_Name = get_rec.get("Name");
+Email = get_rec.get("Email");
+Phone = get_rec.get("Phone");
+Address = get_rec.get("Address");
+City = get_rec.get("City");
+Postal_Code = get_rec.get("Postal_Code");
+Country = get_rec.get("Country");
+insert_map = Map();
+insert_map.put("Restruent_Name",Restaurant_Name);
+insert_map.put("Branch_Manager",Branch_Manager);
+insert_map.put("Branch_Owner",Owner_name);
+insert_map.put("Branch_Code",unique_ID);
+insert_map.put("Branch_Name",Branch_Name);
+insert_map.put("Email",Email);
+insert_map.put("Phone_Number",Phone);
+insert_map.put("Address",Address);
+insert_map.put("City",City);
+insert_map.put("Postal_Code",Postal_Code);
+insert_map.put("Country",Country);
+optional_map = Map();
+
+get_creator_records = zoho.creator.getRecords("ozonesmartsolution","ozone-solution","All_Branches","",1,200,"zoho_creator");
+// info "CREATOR RECORD" + get_creator_records ;
+
+if(get_creator_records.get("message") == "No Data Available")
+{
+	info "No Data Avaiable so creating new contact:";
+	create_record_in_creator = zoho.creator.createRecord("ozonesmartsolution","ozone-solution","Branch",insert_map,optional_map,"zoho_creator");
+	info "record created in creator: " + create_record_in_creator;
+}
+
+else
+
+{
+	get_creator_records_by_condition = zoho.creator.getRecords("ozonesmartsolution","ozone-solution","All_Branches","Branch_Code==\"" + unique_ID + "\"",1,200,"zoho_creator");
+	info "get record by condition matching:" + get_creator_records_by_condition;
+
+	if(get_creator_records_by_condition.get("message") == "No records found for the given criteria.")
+	{
+		info "creating record as criteria no matched:";
+		create_record = zoho.creator.createRecord("ozonesmartsolution","ozone-solution","Branch",insert_map,optional_map,"zoho_creator");
+		info "Record created criteria not matched: " + create_record;
+	}
+
+	else
+
+	{
+		info "record already exists so updating it...";
+		record_id = get_creator_records_by_condition.get("data").getJSON("ID");
+		update_record = zoho.creator.updateRecord("ozonesmartsolution","ozone-solution","All_Branches",record_id,insert_map,optional_map,"zoho_creator");
+		info "updating record:" + update_record;
+	}
+
+}
+
+return "";
