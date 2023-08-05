@@ -1,0 +1,337 @@
+
+//////////////--------------------------- TIMELOGS  Z-PEOPLE ------------------------////////// 31475000001185661
+fromDate = zoho.currentdate.addDay(-2).toString("yyyy-MM-dd");
+// FETCHING TIMELOGS
+currentDate = zoho.currentdate.toString("yyyy-MM-dd");
+timelog_url = "http://people.zoho.eu/people/api/timetracker/gettimelogs?user=" + employee_email + "&jobId=all&fromDate=" + currentDate + "&toDate=" + currentDate + "&billingStatus=" + BillStatus + "";
+timelogs_data = invokeurl
+[
+	url :timelog_url
+	type :GET
+	connection:"zoho_people"
+];
+//info "All TimeLogs: " + timelogs_data;
+Total_TimeLogs = timelogs_data.get("response").get("result").size();
+info "TOTAL TIMELOGS : " + Total_TimeLogs;
+log_results = timelogs_data.get("response").get("result");
+for each  result in log_results
+{
+	Id_timelog = result.get("timelogId");
+	//info Id_timelog ;
+	if(Id_timelog == timelogID)
+	{
+		info "Log Found";
+		timeLog_billingStatus = result.get("billingStatus");
+		timeArr = result.get("timearr");
+		timeArr_status = timeArr.isNull();
+		if(timeArr_status == true)
+		{
+			info "timeArray not found";
+			latest_log_time = result.get("totaltime");
+			info timeLog_billingStatus + " " + latest_log_time;
+		}
+		else
+		{
+			info "timeArray Found";
+			total_arr_items = timeArr.size();
+			//info total_arr_items;
+			array_result = timeArr.get(0);
+			latest_log_time = array_result.get("toTime") - array_result.get("fromTime");
+			info latest_log_time;
+		}
+		//
+		///////----------------------------------- EMPLOYEE DATA  Z-PEOPLE ------------///////////
+		//
+		// FETCHING EMPLOYEE DATA USING SEARCHMAP CRITERIA
+		search_mp = Map();
+		search_mp.put("searchField","EmailID");
+		search_mp.put("searchOperator","Is");
+		search_mp.put("searchText",employee_email);
+		employee_data = zoho.people.getRecords("employee",0,30,search_mp);
+		E_firstName = employee_data.get(0).get("FirstName");
+		E_lastName = employee_data.get(0).get("LastName");
+		E_Age = employee_data.get(0).get("Age");
+		E_Mobile = employee_data.get(0).get("Mobile");
+		E_NI = employee_data.get(0).get("NI");
+		E_yearlySalary = employee_data.get(0).get("Yearly_Salary");
+		E_hourlyRate = employee_data.get(0).get("Hourly_Rate");
+		E_yearlyHour = employee_data.get(0).get("Yearly_Hour");
+		//
+		///////------------------------------------- ZOHO SHEET ------------///////////
+		//
+		//info zoho.sheet.getSheets("7w4ev7e50ee74823849e58eda76ad9f02487d","sheet");
+		id = "7w4ev7e50ee74823849e58eda76ad9f02487d";
+		all_sheet_data = zoho.sheet.getRecords(id,"Sheet1");
+		//info all_sheet_data ;
+		Number_of_records = all_sheet_data.get("records_count");
+		new_serial = Number_of_records + 1;
+		// FETCHING EMPLOYEE DATA FROM SHEETS USING SEARCH CRITERIA
+		opt_mp = Map();
+		opt_mp.put("criteria","\"Employee Email\"=" + employee_email + "");
+		opt_mp.put("start_index","1");
+		opt_mp.put("count","25");
+		sheet_emplyoee_data = zoho.sheet.getRecords(id,"Sheet1",opt_mp,"sheet");
+		//info "NEW3 : " + sheet_emplyoee_data;
+		sheet_employee_record_count = sheet_emplyoee_data.get("records_count");
+		info "Sheet Record Count: " + sheet_employee_record_count;
+		if(sheet_employee_record_count == 0)
+		{
+			info "No Record Found";
+			row_data_mp = Map();
+			row_data_mp.put("Employee Serial","Employee " + new_serial);
+			row_data_mp.put("Employee First Name",E_firstName);
+			row_data_mp.put("Employee Last Name",E_lastName);
+			row_data_mp.put("Employee Email",employee_email);
+			row_data_mp.put("Employee Age",E_Age);
+			row_data_mp.put("Employee Phone number",E_Mobile);
+			row_data_mp.put("Employee National Inusrance Number",E_NI);
+			row_data_mp.put("Employee Hourly rate",E_hourlyRate);
+			row_data_mp.put("Employee Yearly Salary",E_yearlySalary);
+			// Create Record
+			info "Record Created : " + zoho.sheet.createRecords(id,"Sheet1",row_data_mp,opt_mp,"sheet");
+			// AGAIN FETCHING EMPLOYEE FRESH DATA AFTER ABOVE CREATION OF RECORD
+			opt_mp = Map();
+			opt_mp.put("criteria","\"Employee Email\"=" + employee_email + "");
+			opt_mp.put("start_index","1");
+			opt_mp.put("count","25");
+			sheet_emplyoee_data = zoho.sheet.getRecords(id,"Sheet1",opt_mp,"sheet");
+			convert_to_minutes = latest_log_time / 60;
+			convert_to_hours = convert_to_minutes / 60;
+			//info convert_to_hours;
+			if(timeLog_billingStatus == "billable")
+			{
+				info "FIRST TIME IN BILLABLE";
+				sheet_records = sheet_emplyoee_data.get("records");
+				//info "LINE 81: " + sheet_records;
+				previous_average_hours = sheet_records.get(0).get("Average hours spent on project");
+				previous_average_hours_new = if(previous_average_hours.isNull() == true,0,previous_average_hours);
+				// Above condition will work if criteria meets true then it will show 0 in output otherwise last variable 'previous_average_hours'
+				Updated_average_hours = previous_average_hours_new + convert_to_hours;
+				previous_billable_hours = sheet_records.get(0).get("Employee BILLABLE hours");
+				previous_billable_hours_new = if(previous_billable_hours.isNull() == true,0,previous_billable_hours);
+				Updated_billable_hours = previous_billable_hours_new + convert_to_hours;
+				// 				Updated_available_hours = E_yearlyHour.toNumber();
+				Updated_available_hours = E_yearlyHour.toNumber() - convert_to_hours;
+				//Updated_available_hours = E_yearlyHour.toNumber() - Updated_average_hours.toNumber();
+				// 				Updated_employee_cost = E_hourlyRate.toNumber() * Updated_billable_hours.toNumber();
+				//Updated_employee_cost = E_hourlyRate.toNumber() * Updated_average_hours.toNumber();
+				Updated_employee_cost = E_hourlyRate.toNumber() * Updated_billable_hours.toNumber();
+				Updated_utilization_rate = Updated_billable_hours / Updated_available_hours;
+				//Updated_utilization_rate = Updated_utilization_rate + " %";
+				Updated_anomile = 1 - Updated_utilization_rate;
+				// Updating Record in Sheet's specific row
+				row_data_mp = Map();
+				row_data_mp.put("Employee BILLABLE hours",Updated_billable_hours);
+				row_data_mp.put("Average hours spent on project",Updated_average_hours);
+				row_data_mp.put("Employee AVAILABLE hours",Updated_available_hours);
+				row_data_mp.put("Employee's Cost",Updated_employee_cost);
+				//row_data_mp.put("UTILISATION RATE",Updated_utilization_rate);
+				row_data_mp.put("UTILISATION RATE %",Updated_utilization_rate);
+				// 				row_data_mp.put("ANOMALIE/LOSS",Updated_anomile);
+				row_data_mp.put("ANOMALIE/LOSS %",Updated_anomile);
+				//Update Record 
+				info "Record Updated Billable: " + zoho.sheet.updateRecords(id,"Sheet1","\"Employee Email\"=" + employee_email + "",row_data_mp,opt_mp,"sheet");
+			}
+			else if(timeLog_billingStatus == "non-billable")
+			{
+				info "FIRST TIME IN NON-BILLABLE";
+				sheet_records = sheet_emplyoee_data.get("records");
+				info "LINE 106: " + sheet_records;
+				previous_average_hours = sheet_records.get(0).get("Average hours spent on project");
+				previous_average_hours_new = if(previous_average_hours.isNull() == true,0,previous_average_hours);
+				Updated_average_hours = previous_average_hours_new + convert_to_hours;
+				//Updated_available_hours = E_yearlyHour.toNumber() - Updated_average_hours.toNumber();
+				// 				Updated_available_hours = E_yearlyHour.toNumber();
+				Updated_available_hours = E_yearlyHour.toNumber() - convert_to_hours;
+				previous_billable_hours = sheet_records.get(0).get("Employee BILLABLE hours");
+				Updated_billable_hours = if(previous_billable_hours.isNull() == true,0,previous_billable_hours);
+				// 				Updated_employee_cost = E_hourlyRate.toNumber() * Updated_billable_hours.toNumber();
+				//Updated_employee_cost = E_hourlyRate.toNumber() * Updated_average_hours.toNumber();
+				Updated_employee_cost = E_hourlyRate.toNumber() * Updated_billable_hours.toNumber();
+				Updated_utilization_rate = Updated_billable_hours / Updated_available_hours;
+				//Updated_utilization_rate = Updated_utilization_rate + " %";
+				//Updated_anomile = 100 - Updated_utilization_rate;
+				Updated_anomile = 1 - Updated_utilization_rate;
+				//Updating Record in Sheet's specific row
+				row_data_mp = Map();
+				row_data_mp.put("Employee BILLABLE hours",Updated_billable_hours);
+				row_data_mp.put("Average hours spent on project",Updated_average_hours);
+				row_data_mp.put("Employee AVAILABLE hours",Updated_available_hours);
+				row_data_mp.put("Employee's Cost",Updated_employee_cost);
+				row_data_mp.put("Employee Yearly Salary",Updated_employee_cost);
+				//row_data_mp.put("UTILISATION RATE",Updated_utilization_rate);
+				row_data_mp.put("UTILISATION RATE %",Updated_utilization_rate);
+				//row_data_mp.put("ANOMALIE/LOSS",Updated_anomile);
+				row_data_mp.put("ANOMALIE/LOSS %",Updated_anomile);
+				//Update Record 
+				info "Record Updated Non-Billable: " + zoho.sheet.updateRecords(id,"Sheet1","\"Employee Email\"=" + employee_email + "",row_data_mp,opt_mp,"sheet");
+			}
+			// Updating Employee Form Record for left available hours
+			//employee_email = "anthony@cigmaaccounting.co.uk";
+			emp_records = zoho.people.getRecords("employee");
+			for each  rec in emp_records
+			{
+				email = rec.get("EmailID");
+				if(email == employee_email)
+				{
+					info "matched";
+					emp_rec_id = rec.get("Zoho_ID");
+					testmap = Map();
+					testmap.put("recordid",emp_rec_id);
+					testmap.put("Yearly_Hour",Updated_available_hours);
+					info zoho.people.update("employee",testmap);
+				}
+			}
+		}
+		else
+		{
+			info "Record Found";
+			convert_to_minutes = latest_log_time / 60;
+			convert_to_hours = convert_to_minutes / 60;
+			info convert_to_hours;
+			if(timeLog_billingStatus == "billable")
+			{
+				info "IN BILLABLE";
+				sheet_records = sheet_emplyoee_data.get("records");
+				//info "LINE 81: " + sheet_records;
+				previous_average_hours = sheet_records.get(0).get("Average hours spent on project");
+				previous_average_hours_new = if(previous_average_hours.isNull() == true,0,previous_average_hours);
+				// Above condition will work if criteria meets true then it will show 0 in output otherwise last variable 'previous_average_hours'
+				Updated_average_hours = previous_average_hours_new + convert_to_hours;
+				previous_billable_hours = sheet_records.get(0).get("Employee BILLABLE hours");
+				previous_billable_hours_new = if(previous_billable_hours.isNull() == true,0,previous_billable_hours);
+				Updated_billable_hours = previous_billable_hours_new + convert_to_hours;
+				//Updated_available_hours = E_yearlyHour.toNumber();
+				Updated_available_hours = E_yearlyHour.toNumber() - convert_to_hours;
+				//Updated_available_hours = E_yearlyHour.toNumber() - Updated_average_hours.toNumber();
+				// 				Updated_employee_cost = E_hourlyRate.toNumber() * Updated_billable_hours.toNumber();
+				//Updated_employee_cost = E_hourlyRate.toNumber() * Updated_average_hours.toNumber();
+				Updated_employee_cost = E_hourlyRate.toNumber() * Updated_billable_hours.toNumber();
+				Updated_utilization_rate = Updated_billable_hours / Updated_available_hours;
+				//Updated_utilization_rate = Updated_utilization_rate + " %";
+				Updated_anomile = 1 - Updated_utilization_rate;
+				//Updating Record in Sheet's specific row
+				row_data_mp = Map();
+				row_data_mp.put("Employee BILLABLE hours",Updated_billable_hours);
+				row_data_mp.put("Average hours spent on project",Updated_average_hours);
+				row_data_mp.put("Employee AVAILABLE hours",Updated_available_hours);
+				row_data_mp.put("Employee's Cost",Updated_employee_cost);
+				//row_data_mp.put("Employee Yearly Salary",E_yearlySalary);
+				row_data_mp.put("Employee Yearly Salary",Updated_employee_cost);
+				//row_data_mp.put("UTILISATION RATE",Updated_utilization_rate);
+				row_data_mp.put("UTILISATION RATE %",Updated_utilization_rate);
+				//row_data_mp.put("ANOMALIE/LOSS",Updated_anomile);
+				row_data_mp.put("ANOMALIE/LOSS %",Updated_anomile);
+				//Update Record 
+				info "Record Updated Billable197: " + zoho.sheet.updateRecords(id,"Sheet1","\"Employee Email\"=" + employee_email + "",row_data_mp,opt_mp,"sheet");
+			}
+			else if(timeLog_billingStatus == "non-billable")
+			{
+				info "IN NON-BILLABLE";
+				sheet_records = sheet_emplyoee_data.get("records");
+				info "LINE 106: " + sheet_records;
+				previous_average_hours = sheet_records.get(0).get("Average hours spent on project");
+				previous_average_hours_new = if(previous_average_hours.isNull() == true,0,previous_average_hours);
+				Updated_average_hours = previous_average_hours_new + convert_to_hours;
+				// 				Updated_available_hours = E_yearlyHour.toNumber();
+				Updated_available_hours = E_yearlyHour.toNumber() - convert_to_hours;
+				//Updated_available_hours = E_yearlyHour.toNumber() - Updated_average_hours.toNumber();
+				previous_billable_hours = sheet_records.get(0).get("Employee BILLABLE hours");
+				Updated_billable_hours = if(previous_billable_hours.isNull() == true,0,previous_billable_hours);
+				// 				Updated_employee_cost = E_hourlyRate.toNumber() * Updated_billable_hours.toNumber();
+				//Updated_employee_cost = E_hourlyRate.toNumber() * Updated_average_hours.toNumber();
+				Updated_employee_cost = E_hourlyRate.toNumber() * Updated_billable_hours.toNumber();
+				Updated_utilization_rate = Updated_billable_hours / Updated_available_hours;
+				//Updated_utilization_rate = Updated_utilization_rate + " %";
+				Updated_anomile = 1 - Updated_utilization_rate;
+				//Updating Record in Sheet's specific row
+				row_data_mp = Map();
+				row_data_mp.put("Employee BILLABLE hours",Updated_billable_hours);
+				row_data_mp.put("Average hours spent on project",Updated_average_hours);
+				row_data_mp.put("Employee AVAILABLE hours",Updated_available_hours);
+				row_data_mp.put("Employee's Cost",Updated_employee_cost);
+				//row_data_mp.put("Employee Yearly Salary",E_yearlySalary);
+				row_data_mp.put("Employee Yearly Salary",Updated_employee_cost);
+				//row_data_mp.put("UTILISATION RATE",Updated_utilization_rate);
+				row_data_mp.put("UTILISATION RATE %",Updated_utilization_rate);
+				//row_data_mp.put("ANOMALIE/LOSS",Updated_anomile);
+				row_data_mp.put("ANOMALIE/LOSS %",Updated_anomile);
+				//Update Record 
+				info "Record Updated Non-Billable: " + zoho.sheet.updateRecords(id,"Sheet1","\"Employee Email\"=" + employee_email + "",row_data_mp,opt_mp,"sheet");
+			}
+			// Updating Employee Form Record for left available hours
+			//employee_email = "anthony@cigmaaccounting.co.uk";
+			emp_records = zoho.people.getRecords("employee");
+			for each  rec in emp_records
+			{
+				email = rec.get("EmailID");
+				if(email == employee_email)
+				{
+					info "matched";
+					emp_rec_id = rec.get("Zoho_ID");
+					testmap = Map();
+					testmap.put("recordid",emp_rec_id);
+					testmap.put("Yearly_Hour",Updated_available_hours);
+					info zoho.people.update("employee",testmap);
+				}
+			}
+		}
+	}
+	else
+	{
+		info "TimeLog ID not matched";
+	}
+}
+// ///////----------------------- ALL EMPLOYEES DATA ZOHO SHEET2 ------------///////////
+// //
+// //info zoho.sheet.getSheets("7w4ev7e50ee74823849e58eda76ad9f02487d","sheet");
+// id = "7w4ev7e50ee74823849e58eda76ad9f02487d";
+// all_sheet_data = zoho.sheet.getRecords(id,"Sheet1");
+// Number_of_employees = all_sheet_data.get("records_count");
+// uti_rate = 0;
+// b_hour = 0;
+// A_hour = 0;
+// all_records = all_sheet_data.get("records");
+// for each  record in all_records
+// {
+// //	uti_rate = uti_rate + record.get("UTILISATION RATE");
+// 	uti_rate = uti_rate + record.get("UTILISATION RATE %");
+// 	b_hour = b_hour + record.get("Employee BILLABLE hours");
+// 	A_hour = A_hour + record.get("Employee AVAILABLE hours");
+// }
+// capacity_rate = b_hour / A_hour;
+// increase_margin = 100 - capacity_rate;
+// // FETCHING DATA FROM SHEET2, IF RECORD FOUND THEN UPDATE OTHERWISE CREATE A RECORD.
+// all_sheet2_data = zoho.sheet.getRecords(id,"Sheet2");
+// all_sheet2_data_size = all_sheet2_data.get("records").size();
+// if(all_sheet2_data_size == 0)
+// {
+// 	info "No Record Found Creating";
+// 	create_mp = Map();
+// 	create_mp.put("TOTAL EMPLOYEE",Number_of_employees);
+// 	create_mp.put("AVERAGE UTILISATION RATE",uti_rate);
+// 	create_mp.put("AVERAGE UTILISATION RATE %",uti_rate);
+// 	create_mp.put("EMPLOYEE TOTAL BILLABLE HOURS",b_hour);
+// 	create_mp.put("EMPLOYEE TOTAL AVAILABLE HOURS",A_hour);
+// 	create_mp.put("CAPACITY UTILISATION RATE",capacity_rate);
+// 	create_mp.put("CAPACITY UTILISATION RATE %",capacity_rate);
+// 	create_mp.put("INCREASE FREE MARGINE",increase_margin);
+// 	create_mp.put("INCREASE FREE MARGINE %",increase_margin);
+// 	info zoho.sheet.createRecords(id,"sheet2",create_mp);
+// }
+// else
+// {
+// 	info "Record Found Updating";
+// 	extra_mp = Map();
+// 	upd_mp = Map();
+// 	upd_mp.put("TOTAL EMPLOYEE",Number_of_employees);
+// 	upd_mp.put("AVERAGE UTILISATION RATE",uti_rate);
+// 	upd_mp.put("AVERAGE UTILISATION RATE %",uti_rate);
+// 	upd_mp.put("EMPLOYEE TOTAL BILLABLE HOURS",b_hour);
+// 	upd_mp.put("EMPLOYEE TOTAL AVAILABLE HOURS",A_hour);
+// 	upd_mp.put("CAPACITY UTILISATION RATE",capacity_rate);
+// 	upd_mp.put("CAPACITY UTILISATION RATE %",capacity_rate);
+// 	upd_mp.put("INCREASE FREE MARGINE",increase_margin);
+// 	upd_mp.put("INCREASE FREE MARGINE %",increase_margin);
+// 	info zoho.sheet.updateRecords(id,"Sheet2","\"ID\"=" + 1 + "",upd_mp,extra_mp,"sheet");
+// }
