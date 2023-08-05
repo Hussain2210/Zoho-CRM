@@ -1,0 +1,27 @@
+//Create workflow in 'Ticket' Module and trigger 'on Create'
+ticketDetails = zoho.desk.getRecordById(orgId.toLong(),"tickets",ticketId);
+ticketcreatedTime = ticketDetails.getJSON("createdTime");
+departmentId = ticketDetails.getJSON("departmentId");
+mergeidlist = List();
+searchmap = Map();
+searchmap.put("departmentId",departmentId);
+searchmap.put("contactId",contactId);
+searchmap.put("subject",ticketSubject);
+searchDuplicateTickets = zoho.desk.searchRecords(orgId.toLong(),"tickets",0,2,searchmap);
+existingId = "0";
+for each  duplicateRecords in searchDuplicateTickets.getJSON("data")
+{
+	if(!duplicateRecords.getJSON("id").equals(ticketId))
+	{
+		existingId = duplicateRecords.getJSON("id");
+		break;
+	}
+}
+if(existingId != "0")
+{
+	//Merge, if there are existing records with same name. New ticket's data will be persisting after merging
+	mergeidlist.add(existingId);
+	idsmap = Map();
+	idsmap.put("ids",mergeidlist);
+	mergeTwoTickets = zoho.desk.ticket.merge(orgId.toLong(),ticketId,idsmap);
+}
