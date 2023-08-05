@@ -1,0 +1,157 @@
+
+customerID = customer.get("contact_id");
+organizationID = organization.get("organization_id");
+// info customer;
+contact_name = customer.getJSON("contact_name");
+// info contact_name;
+contact_detail = invokeurl
+[
+	url :"https://books.zoho.com/api/v3/contacts/" + customerID
+	type :GET
+	connection:"book_connection"
+];
+// info contact_detail;
+// contact_detail;
+first_name = contact_detail.getJSON("contact").getJSON("first_name");
+last_name = contact_detail.getJSON("contact").getJSON("last_name");
+contact_name = contact_detail.getJSON("contact").getJSON("contact_name");
+customer_email = contact_detail.getJSON("contact").getJSON("email");
+phone = contact_detail.getJSON("contact").getJSON("phone");
+mobile = contact_detail.getJSON("contact").getJSON("mobile");
+department = contact_detail.getJSON("contact").getJSON("department");
+created_date = contact_detail.getJSON("contact").getJSON("created_date");
+fax = contact_detail.getJSON("contact").getJSON("fax");
+skype = contact_detail.getJSON("contact").getJSON("contact_persons").getJSON("skype");
+//shipping_address
+shipping_address = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("address");
+shipping_street2 = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("street2");
+city = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("city");
+state = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("state");
+state_code = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("state_code");
+zip = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("zip");
+fax = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("fax");
+country_code = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("country_code");
+country = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("country");
+// billing_address
+billing_address = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("address");
+billing_street2 = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("street2");
+billing_city = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("city");
+billing_state = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("state");
+billing_state_code = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("state_code");
+phone = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("phone");
+billing_zip = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("zip");
+billing_country_code = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("country_code");
+billing_country = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("country");
+billing_country = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("fax");
+// Map creating
+conatct_map1 = Map();
+conatct_map1.put("First_Name",first_name);
+conatct_map1.put("Last_Name",last_name);
+conatct_map1.put("Name",contact_name);
+conatct_map1.put("Email","Test11444@gmail.com");
+//customer_email
+conatct_map1.put("Phone",phone);
+conatct_map1.put("Mobile",mobile);
+conatct_map1.put("Department",department);
+justDate = created_date.toString("dd-MMM-yyyy");
+conatct_map1.put("Date_field1",justDate);
+conatct_map1.put("Fax",fax);
+conatct_map1.put("Skype_ID",skype);
+//Map Shipping address
+conatct_map1.put("Mailing_Street",shipping_address);
+conatct_map1.put("Other_Street",shipping_street2);
+conatct_map1.put("Mailing_City",city);
+conatct_map1.put("Mailing_State",state);
+conatct_map1.put("Mailing_Zip",zip);
+conatct_map1.put("Mailing_Country",country);
+// Map Billing address
+conatct_map1.put("Billing_Street",billing_address);
+conatct_map1.put("Other_Street1",billing_street2);
+conatct_map1.put("Billing_City",billing_city);
+conatct_map1.put("Biling_State",billing_state);
+conatct_map1.put("Biling_Zip",billing_zip);
+conatct_map1.put("Biling_Country",billing_country);
+query = "Email==\"" + customer_email + "\"";
+searching_customer = zoho.creator.getRecords("syntegra","syntegra-unified-portal","All_Contacts",query,1,5,"creator_conection");
+info searching_customer;
+get_emails = searching_customer.getJSON("data").get("ID");
+info get_emails;
+optional_map = Map();
+conatct_map = Map();
+if(searching_customer.get("message") == "records found for the given criteria.")
+{
+	info "customer found";
+	// zoho.creator.upate
+	// Map creating
+// 	conatct_map.put("First_Name",first_name);
+// 	conatct_map.put("Last_Name",last_name);
+// 	conatct_map.put("Name",contact_name);
+// 	conatct_map.put("Email","Test11444@gmail.com");
+// 	// customer_email
+// 	conatct_map.put("Phone",phone);
+// 	conatct_map.put("Mobile",mobile);
+// 	conatct_map.put("Department",department);
+// 	justDate = created_date.toString("dd-MMM-yyyy");
+// 	conatct_map.put("Date_field",justDate);
+// 	// // Map Shipping
+// 	conatct_map.put("Mailing_Street",shipping_address);
+// 	conatct_map.put("Other_Street",shipping_street2);
+// 	conatct_map.put("Mailing_City",city);
+// 	conatct_map.put("Mailing_State",state);
+// 	conatct_map.put("Mailing_Zip",zip);
+// 	conatct_map.put("Mailing_Country",country);
+// 	//Map Billing adress
+// 	conatct_map.put("Billing_Street",billing_address);
+// 	conatct_map.put("Other_Street1",billing_street2);
+// 	conatct_map.put("Billing_City",billing_city);
+// 	conatct_map.put("Biling_State",billing_state);
+// 	conatct_map.put("Biling_Zip",billing_zip);
+// 	conatct_map.put("Biling_Country",billing_country);
+	creator_update = zoho.creator.updateRecords("syntegra","syntegra-unified-portal","All_Contacts",get_emails,conatct_map,optional_map,"creator_conection");
+	info creator_update;
+}
+else
+{
+	// Map creating
+	conatct_map.put("First_Name",first_name);
+	conatct_map.put("Last_Name",last_name);
+	conatct_map.put("Name",contact_name);
+	conatct_map.put("Email","Test11444@gmail.com");
+	// customer_email
+	conatct_map.put("Phone",phone);
+	conatct_map.put("Mobile",mobile);
+	conatct_map.put("Department",department);
+	justDate = created_date.toString("dd-MMM-yyyy");
+	conatct_map.put("Date_field",justDate);
+	//Shipping
+	conatct_map.put("Mailing_Street",shipping_address);
+	conatct_map.put("Other_Street",shipping_street2);
+	conatct_map.put("Mailing_City",city);
+	conatct_map.put("Mailing_State",state);
+	conatct_map.put("Mailing_Zip",zip);
+	conatct_map.put("Mailing_Country",country);
+	//Billing
+	conatct_map.put("Billing_Street",billing_address);
+	conatct_map.put("Other_Street1",billing_street2);
+	conatct_map.put("Billing_City",billing_city);
+	conatct_map.put("Biling_State",billing_state);
+	conatct_map.put("Biling_Zip",billing_zip);
+	conatct_map.put("Biling_Country",billing_country);
+	conatct_map.put("Creator_ID",customerID);
+	// Customer not found . Creating new custoemr 
+	create_record = zoho.creator.createRecord("syntegra","syntegra-unified-portal","Contacts",conatct_map,optional_map,"creator_conection");
+	info create_record;
+}
+if(create_record.get("message") == "Data Added Successfully")
+{
+	created_custom_id = create_record.get("data").get("ID");
+	custom_update_map = Map();
+	custom_fields_list = LIST();
+	custom_fields_map = Map();
+	custom_fields_map.put("label","Creator ID");
+	custom_fields_map.put("value",created_custom_id);
+	custom_fields_list.add(custom_fields_map);
+	custom_update_map.put("custom_fields",custom_fields_list);
+	books_update = zoho.books.updateRecord("contacts",organizationID,customerID,custom_update_map,"book_connection");
+	info books_update;
+}

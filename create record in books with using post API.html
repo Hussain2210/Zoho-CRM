@@ -1,0 +1,37 @@
+rec = zoho.crm.getRecordById("Accounts", id);  //5505808000000642097
+// info rec;
+contact_id= rec.get("id");
+// info contact_id;
+email = rec.get("Email");
+type = rec.get("Account_Type");
+Billing_Street = rec.get("Billing_Street");
+Shipping_Country = rec.get("Shipping_Country");
+datamap = Map();
+datamap.put("address", Billing_Street);
+datamap.put("contact_name", "testcustomer2");
+datamap.put("email", email);
+data = MAP();
+data.put("JSONString", datamap);
+// info newmap;
+// info zoho.books.createRecord("contacts","793443842",newmap,"books_connection");
+resp = invokeurl
+[
+	url: "https://books.zoho.com/api/v3/contacts?793443842"
+	type: POST
+	parameters: data
+	connection:"books_connection"
+];
+info resp;
+// res = invokeurl// "https://books.zoho.com/api/v3/contacts?organization_id=58XXXX07"
+// [
+// 	url: "https://books.zoho.com/api/v3/contacts"
+// 	type: POST
+// 	connection:"books_connection"
+// ];
+// info res;
+
+
+
+
+
+

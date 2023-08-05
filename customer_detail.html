@@ -1,0 +1,43 @@
+
+invoiceID = invoice.get("invoice_id");
+organizationID = organization.get("organization_id");
+invoice_data = zoho.books.getRecordsByID("invoices",organizationID,invoiceID,"book_connection");
+custome_id = invoice_data.get("invoice").get("customer_id");
+contact_person_id = invoice_data.getJSON("invoice").getJSON("contact_persons_details").getJSON("contact_person_id");
+customer_first_name = invoice_data.getJSON("invoice").getJSON("contact_persons_details").getJSON("first_name");
+customer_last_name = invoice_data.getJSON("invoice").getJSON("contact_persons_details").getJSON("last_name");
+customer_email = invoice_data.getJSON("invoice").getJSON("contact_persons_details").getJSON("email");
+customer_phone = invoice_data.getJSON("invoice").getJSON("contact_persons_details").getJSON("phone");
+customer_mobile = invoice_data.getJSON("invoice").getJSON("contact_persons_details").getJSON("mobile");
+customer_email = invoice_data.getJSON("invoice").getJSON("email");
+info customer_email;
+query = "Email==\"" + customer_email + "\"";
+searching_customer = zoho.creator.getRecords("syntegra","syntegra-unified-portal","All_Contacts",query,1,5,"creator_conection");
+info searching_customer;
+if(searching_customer.get("message") == "data excute sucessfully.")
+{
+	info "customer found";
+}
+else
+{
+	info "created";
+	datamap = Map();
+	datamap.put("First_Name",customer_first_name);
+	datamap.put("Last_Name",customer_last_name);
+	datamap.put("Email",customer_email);
+	datamap.put("Phone",customer_phone);
+	datamap.put("Mobile",customer_mobile);
+	// 	info datamap;
+}
+optional_map = Map();
+create_record = zoho.creator.createRecord("syntegra","syntegra-unified-portal","Contacts",datamap,optional_map,"creator_conection");
+info create_record;
+// created_custom_id = create_record.get("data").get("ID");
+// custom_update_map = Map();
+// custom_fields_list = LIST();
+// custom_fields_map = Map();
+// custom_fields_map.put("label","Creator ID");
+// custom_fields_map.put("value",created_custom_id);
+// custom_fields_list.add(custom_fields_map);
+// custom_update_map.put("custom_fields",custom_fields_list);
+// info zoho.books.updateRecord("contacts", organizationID, 787913913, custom_update_map,"book_connection");

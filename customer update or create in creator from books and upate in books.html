@@ -1,0 +1,113 @@
+
+customerID = customer.get("contact_id");
+organizationID = organization.get("organization_id");
+contact_name = customer.getJSON("contact_name");
+contact_detail = invokeurl
+[
+	url :"https://books.zoho.com/api/v3/contacts/" + customerID
+	type :GET
+	connection:"book_connection"
+];
+// info contact_detail;
+//contact_detail
+first_name = contact_detail.getJSON("contact").getJSON("first_name");
+last_name = contact_detail.getJSON("contact").getJSON("last_name");
+contact_name = contact_detail.getJSON("contact").getJSON("contact_name");
+customer_email = contact_detail.getJSON("contact").getJSON("email");
+phone = contact_detail.getJSON("contact").getJSON("phone");
+mobile = contact_detail.getJSON("contact").getJSON("mobile");
+department = contact_detail.getJSON("contact").getJSON("department");
+created_date = contact_detail.getJSON("contact").getJSON("created_date");
+website = contact_detail.getJSON("contact").getJSON("website");
+skype = contact_detail.getJSON("contact").getJSON("contact_persons").getJSON("skype");
+//Shipping_address
+shipping_address = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("address");
+street2 = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("street2");
+city = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("city");
+state = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("state");
+state_code = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("state_code");
+zip = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("zip");
+country_code = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("country_code");
+country = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("country");
+fax2 = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("fax");
+phone = contact_detail.getJSON("contact").getJSON("shipping_address").getJSON("phone");
+//Billing_address
+billing_address = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("address");
+billing_street2 = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("street2");
+billing_city = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("city");
+billing_state = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("state");
+billing_state_code = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("state_code");
+billing_zip = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("zip");
+billing_country_code = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("country_code");
+billing_country = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("country");
+billing_fax = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("fax");
+billing_phone = contact_detail.getJSON("contact").getJSON("billing_address").getJSON("phone");
+// Map_creating
+conatct_map = Map();
+conatct_map.put("First_Name",first_name);
+conatct_map.put("Last_Name",last_name);
+conatct_map.put("Name",contact_name);
+conatct_map.put("Email",customer_email);
+conatct_map.put("Phone",phone);
+conatct_map.put("Mobile",mobile);
+conatct_map.put("Department",department);
+justDate = created_date.toString("dd-MMM-yyyy");
+conatct_map.put("Date_field",justDate);
+conatct_map.put("Creator_ID",customerID);
+optional_map = Map();
+// conatct_map1 = Map();
+// conatct_map1.put("First_Name",first_name);
+// conatct_map1.put("Last_Name",last_name);
+// conatct_map1.put("Name",contact_name);
+// conatct_map1.put("Email","Test11444@gmail.com");
+// // customer_email
+// conatct_map.put("Phone",phone);
+// conatct_map.put("Mobile",mobile);
+// conatct_map.put("Department",department);
+// Shpping_Mao
+conatct_map.put("Mailing_Street",shipping_address);
+conatct_map.put("Other_Street",street2);
+conatct_map.put("Mailing_City",city);
+conatct_map.put("Mailing_State",state);
+conatct_map.put("Mailing_Zip",zip);
+conatct_map.put("Mailing_Country",country);
+conatct_map.put("Country_code",country_code);
+conatct_map.put("Phone_Number",phone);
+conatct_map.put("State_code",state_code);
+conatct_map.put("Fax2",fax2);
+// Billing_map
+conatct_map.put("Billing_Street",billing_address);
+conatct_map.put("Other_Street1",billing_street2);
+conatct_map.put("Billing_City",billing_city);
+conatct_map.put("Biling_State",billing_state);
+conatct_map.put("Biling_Zip",billing_zip);
+conatct_map.put("Biling_Country",billing_country);
+conatct_map.put("Country_code1",billing_country_code);
+conatct_map.put("State_code1",billing_state_code);
+conatct_map.put("Fax1",billing_fax);
+conatct_map.put("Phone_Number1",billing_phone);
+customer_sub_type = contact_detail.getJSON("contact").getJSON("customer_sub_type");
+info customer_sub_type;
+if(customer_sub_type == "business")
+{
+	create_record1 = zoho.creator.createRecord("syntegra","syntegra-unified-portal","Accounts1",conatct_map,optional_map,"creator_conection");
+	info create_record1;
+}
+else
+{
+	create_record = zoho.creator.createRecord("syntegra","syntegra-unified-portal","Contacts",conatct_map,optional_map,"creator_conection");
+}
+info create_record;
+if(create_record.get("message") == "Data Added Successfully")
+{
+	created_custom_id = create_record.get("data").get("ID");
+	custom_update_map = Map();
+	custom_fields_list = LIST();
+	custom_fields_map = Map();
+	custom_fields_map.put("label","Creator ID");
+	custom_fields_map.put("value",created_custom_id);
+	custom_fields_list.add(custom_fields_map);
+	custom_update_map.put("custom_fields",custom_fields_list);
+	books_update = zoho.books.updateRecord("contacts",organizationID,customerID,custom_update_map,"book_connection");
+		info books_update;
+}

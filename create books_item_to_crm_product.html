@@ -1,0 +1,28 @@
+
+/*
+This is a sample function. Uncomment to execute or make changes to this function.  
+itemID = item.get("item_id");
+organizationID = organization.get("organization_id");
+*/
+// ============== This function is no longer needed // sync is already done =====================
+booksOrganizationId = 787913913;
+recordIdBooksItem = 3464681000000631001;
+// =======BEGIN=========== GETTING FIELDS DATA FROM ZOHO BOOKS ITEMS ===============================
+recordBooksItem = zoho.books.getRecordsByID("items",booksOrganizationId,recordIdBooksItem,"zoho_books_connection");
+// info recordBooksItem;
+itemName = recordBooksItem.get("item").get("name");
+// info itemName;
+sellingPrice = recordBooksItem.get("item").get("sales_rate");
+// info sellingPrice;
+costPrice = recordBooksItem.get("item").get("purchase_rate");
+// info costPrice;
+salesInformationAccount = recordBooksItem.get("item").get("account_name");
+// info salesInformationAccount;
+purchaseInformationAccount = recordBooksItem.get("item").get("purchase_account_name");
+// info purchaseInformationAccount;
+// =======END=========== GETTING FIELDS DATA FROM ZOHO BOOKS ITEMS ===============================
+crmProductMap = Map();
+crmProductMap.put("Product_Name",itemName);
+additionalMap = Map();
+recordAddedInCrmProducts = zoho.crm.createRecord("Products",crmProductMap,additionalMap,"from_books_to_crm");
+info recordAddedInCrmProducts;

@@ -1,0 +1,102 @@
+
+/*
+This is a sample function. Uncomment to execute or make changes to this function.
+salesorderID = salesorder.get("salesorder_id");
+salesorderdate = salesorder.get("date").toDate();
+organizationID = organization.get("organization_id");
+*/
+// ========================================================================================================
+booksOrganizationId = 787913913;
+recordIdBooksSalesOrder = 3464681000000521001;
+recordSalesOrder = zoho.books.getRecordsByID("salesorders",booksOrganizationId,recordIdBooksSalesOrder,"zoho_books_connection");
+// info recordSalesOrder;
+customerName = recordSalesOrder.get("salesorder").get("customer_name");
+// info customerName;
+salesOrderNumber = recordSalesOrder.get("salesorder").get("salesorder_number");
+//info salesOrderNumber;
+salesOrderDate = recordSalesOrder.get("salesorder").get("date");
+formattedSalesOrderDate = salesOrderDate.toString("dd-MMM-YYYY");
+// info formattedSalesOrderDate;
+referenceNumber = recordSalesOrder.get("salesorder").get("reference_number");
+// info referenceNumber;
+shipmentDate = recordSalesOrder.get("salesorder").get("shipment_date");
+formattedShipmentDate = shipmentDate.toString("dd-MMM-YYYY");
+// info formattedShipmentDate;
+deliveryMethod = recordSalesOrder.get("salesorder").get("delivery_method");
+// info deliveryMethod;
+salesPersonName = recordSalesOrder.get("salesorder").get("salesperson_name");
+// info salesPersonName;
+customerNotes = recordSalesOrder.get("salesorder").get("notes");
+// info customerNotes;
+terms = recordSalesOrder.get("salesorder").get("terms");
+// info terms;
+subTotal = recordSalesOrder.get("salesorder").get("sub_total");
+// info subTotal;
+shippingCharges = recordSalesOrder.get("salesorder").get("shipping_charge");
+// info shippingCharges;
+adjustment = recordSalesOrder.get("salesorder").get("adjustment");
+// info adjustment;
+total = recordSalesOrder.get("salesorder").get("total");
+// info total;
+booksSalesOrderLineItemList = recordSalesOrder.get("salesorder").get("line_items");
+// info booksSalesOrderLineItemList;
+newList = List();
+for each  lineItem in booksSalesOrderLineItemList
+{
+	// 	info lineItem;
+	// 	info lineItem.get("name");
+	// 	info lineItem.get("quantity");
+	// 	info lineItem.get("rate");
+	// 	info lineItem.get("discount");
+	// 	info lineItem.get("item_total");
+	creatorItemDetailMap = Map();
+	creatorItemDetailMap.put("Item",lineItem.get("name"));
+	creatorItemDetailMap.put("Quantity",lineItem.get("quantity"));
+	creatorItemDetailMap.put("Rate",lineItem.get("rate"));
+	creatorItemDetailMap.put("Discount",lineItem.get("discount_amount"));
+	creatorItemDetailMap.put("Total",lineItem.get("item_total"));
+	newList.add(creatorItemDetailMap);
+}
+// First test on mandatory fields only
+// main map
+creatorSalesOrderMap = Map();
+creatorSalesOrderMap.put("Customer_Name",customerName);
+creatorSalesOrderMap.put("Sales_Order",salesOrderNumber);
+creatorSalesOrderMap.put("Sales_Order_Date",formattedSalesOrderDate);
+creatorSalesOrderMap.put("Reference",referenceNumber);
+creatorSalesOrderMap.put("Expected_Shipment_Date",formattedShipmentDate);
+creatorSalesOrderMap.put("Delivery_Method",deliveryMethod);
+creatorSalesOrderMap.put("Salesperson",salesPersonName);
+creatorSalesOrderMap.put("Multi_Line",customerNotes);
+creatorSalesOrderMap.put("Terms_Conditions",terms);
+creatorSalesOrderMap.put("Sub_Total",subTotal);
+creatorSalesOrderMap.put("Shipping_Charges",shippingCharges);
+creatorSalesOrderMap.put("Adjustment",adjustment);
+creatorSalesOrderMap.put("Grand_Total",total);
+creatorSalesOrderMap.put("ITEM_DETAILS",newList);
+// info salesOrderMap;
+additionalMap = Map();
+recordAdded = zoho.creator.createRecord("syntegra","syntegra-unified-portal","Sales_Orders",creatorSalesOrderMap,additionalMap,"from_books_to_creator");
+info recordAdded;
+newlyCreatedRecordIdInZohoCreator = recordAdded.get("data").get("ID");
+// ========================================================================================================
+// https://books.zoho.com/api/v3/salesorders/{salesorder_id}/attachment
+// GET request for "png" file
+salesOrderAttachment = invokeurl
+[
+	url :"https://books.zoho.com/api/v3/salesorders/" + recordIdBooksSalesOrder + "/attachment"
+	type :GET
+	connection:"zoho_books_connection"
+];
+// info salesOrderAttachment;
+// https://<base_url>/api/v2/syntegra/syntegra-unified-portal/report/<report_link_name>/<record_ID>/<field_link_name>/upload
+// POST request for "png" file
+salesOrderAttachment.setParamName("file");
+attachmentPostedInCreator = invokeurl
+[
+	url :"https://creator.zoho.com//api/v2/syntegra/syntegra-unified-portal/report/Sales_Orders_Report/" + newlyCreatedRecordIdInZohoCreator + "/Attach_File_s_to_Sales_Order/upload"
+	type :POST
+	files:salesOrderAttachment
+	connection:"from_books_to_creator"
+];
+info attachmentPostedInCreator;

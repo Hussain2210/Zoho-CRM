@@ -1,0 +1,77 @@
+
+// This is a sample function. Uncomment to execute or make changes to this function.
+// invoiceID = invoice.get("invoice_id");
+// invoicedate = invoice.get("date").toDate();
+organizationID = organization.get("organization_id");
+record = zoho.books.getRecordsByID("invoices",organizationID,3464681000000514090,"book_connection");
+// info record;
+invoice_data = record.get("invoice");
+// info invoice_data;
+invoice_id = invoice_data.get("invoice_id");
+customer_id = invoice_data.get("customer_id");
+// info customer_id;
+customer_email = invoice_data.get("email");
+// customer_detail = invoice_data.get("contact_persons_details");
+customer_first_name = invoice_data.get("first_name");
+customer_date = invoice_data.get("date");
+customer_last_name = invoice_data.get("last_name");
+// cstomer_Mobile = invoice_data.get("")
+customer_email = "test111@gmail.com";
+query = "Email==\"" + customer_email + "\"";
+searching_customer = zoho.creator.getRecords("syntegra","syntegra-unified-portal","All_Contacts",query,1,5,"creator_conection");
+// info searching_customer;
+if(searching_customer.get("message") == "No records found for the given criteria.")
+{
+	info "Create";
+	datamap = Map();
+	datamap.put("Email",customer_email);
+	datamap.put("First_Name",customer_first_name);
+	datamap.put("Last_Name",customer_last_name);
+	datamap.put("Date_field",customer_date);
+	// 	info datamap;
+	optional_map = Map();
+	create_record = zoho.creator.createRecord("syntegra","syntegra-unified-portal","Contacts",datamap,optional_map,"creator_conection");
+	// 	info create_record;
+	creator_customer_id = create_record.get("data").get("ID");
+}
+else
+{
+	info "customer found";
+	creator_customer_id = searching_customer.get("data").get(0).get("ID");
+	// 	info creator_customer_id; 
+}
+items_list = invoice_data.get("line_items");
+// info items_list;
+for each  record in items_list
+{
+	line_item_id = record.get("line_item_id");
+	item_id = record.get("item_id");
+	// 		info item_id;
+	item_record = zoho.books.getRecordsByID("Items",organizationID,3464681000000509068,"book_connection");
+	//  	info item_record;
+	item = item_record.get("item");
+	// 	info item;
+	Selling_Price = item.get("rate");
+	Sales_Account = item.get("account_name");
+	cost_price = item.get("purchase_rate");
+	purchase_account_name = item.get("purchase_account_name");
+	purchase_description = item.get("purchase_description");
+	name = record.get("name");
+	sku = record.get("sku");
+	unit = record.get("unit");
+	description = record.get("description");
+	newmap = Map();
+	newmap.put("Type_field","Goods");
+	newmap.put("Name",name);
+	newmap.put("SKU",sku);
+	newmap.put("Unit",unit);
+	newmap.put("Selling_Price",Selling_Price);
+	newmap.put("account1",Sales_Account);
+	newmap.put("Cost_Price",cost_price);
+	newmap.put("account",purchase_account_name);
+	newmap.put("Description_for_purchase_information",purchase_description);
+	info newmap;
+	optional_map1 = Map();
+	create_items = zoho.creator.createRecord("syntegra","syntegra-unified-portal","Items",newmap,optional_map1,"creator_conection");
+	info create_items;
+}

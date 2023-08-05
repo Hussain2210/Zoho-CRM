@@ -1,0 +1,136 @@
+
+/*
+This is a sample function. Uncomment to execute or make changes to this function.
+*/
+salesorderID = salesorder.get("salesorder_id");
+salesorderdate = salesorder.get("date").toDate();
+organizationID = organization.get("organization_id");
+salesorderss = zoho.books.getRecordsByID("salesorders",organizationID,salesorderID,"zbooks");
+// info salesorderss;
+salesorders = salesorderss.get("salesorder");
+customer_id = salesorderss.get("salesorder").get("customer_id");
+customer = zoho.books.getRecordsByID("contacts",organizationID,customer_id,"zbooks");
+contact_name = customer.get("contact").get("contact_name");
+query1 = "Customer_Name==\"" + contact_name + "\"";
+//info query1 ;
+search_ticket = zoho.creator.getRecords("zoho_jc125","pog","All_Customers",query1,1,1,"zohocreator");
+// info search_ticket;
+if(search_ticket.get("message") == "No records found for the given criteria.")
+{
+	//info create_ticket;
+}
+else
+{
+	//info "Updating == ";
+	cre_id = search_ticket.get("data").get(0).get("ID");
+}
+if(salesorders.get("salesorder_number") != null)
+{
+	salesorder_number = salesorders.get("salesorder_number");
+	// info salesorder_number;
+}
+if(salesorders.get("reference_number") != null)
+{
+	reference_number = salesorders.get("reference_number");
+	// info reference_number;
+}
+if(salesorders.get("date") != null)
+{
+	date = salesorders.get("date").toString("dd-MMM-yyyy");
+	// info date;
+}
+if(salesorders.get("shipment_date") != null)
+{
+	shipment_date = salesorders.get("shipment_date").toString("dd-MMM-yyyy");
+	// info shipment_date;
+}
+if(salesorders.get("payment_terms_label") != null)
+{
+	payment_terms_label = salesorders.get("payment_terms_label");
+	// info payment_terms_label;
+}
+if(salesorders.get("delivery_method") != null)
+{
+	delivery_method = salesorders.get("delivery_method");
+	info delivery_method;
+}
+if(salesorders.get("salesperson_name") != null)
+{
+	salesperson_name = salesorders.get("salesperson_name");
+	info salesperson_name;
+}
+if(salesorders.get("custom_fields") != null)
+{
+	note = salesorders.get("custom_field_hash").get("cf_notes");
+	info note;
+}
+if(salesorders.get("line_items") != null)
+{
+	line_items = salesorders.get("line_items");
+	// info line_items;
+}
+new = Map();
+new.put("Customer",cre_id);
+new.put("Sales_Order",salesorder_number);
+new.put("Reference",reference_number);
+new.put("Sales_Order_Date",date);
+new.put("Expected_Shipment_Date",shipment_date);
+new.put("Payment_Terms",payment_terms_label);
+new.put("Delivery_Method",delivery_method);
+new.put("Salesperson",salesperson_name);
+new.put("Notes",note);
+info new;
+new2 = Map();
+new3 = List();
+for each  item in line_items
+{
+	name = item.get("name");
+	quantity = item.get("quantity");
+	rate = item.get("rate");
+	line_item_taxes = item.get("line_item_taxes").get(0).get("tax_amount");
+	item_total = item.get("item_total");
+	new2.put("Item_details",ifNull(item.get("name"),""));
+	new2.put("QUANTITY1",ifNull(item.get("quantity"),0));
+	new2.put("Rate",ifNull(item.get("rate"),0));
+	new2.put("Tax",ifNull(item.get("line_item_taxes").get(0).get("tax_amount"),0));
+	new2.put("Amount",ifNull(item.get("item_total"),0));
+	new3.add(new2);
+}
+new.put("Bulk_update_Line_item",new3);
+if(salesorders.get("sub_total") != null)
+{
+	sub_total = salesorders.get("sub_total");
+	// info sub_total;
+}
+if(salesorders.get("shipping_charge") != null)
+{
+	shipping_charge = salesorders.get("shipping_charge");
+	// info shipping_charge;
+}
+if(salesorders.get("total") != null)
+{
+	total = salesorders.get("total");
+	info total;
+}
+new.put("Sub_Total",sub_total);
+new.put("Snipping_charges1",shipping_charge);
+new.put("Total",total);
+new.put("Books_id",salesorderID);
+optional_map = Map();
+query1 = "Books_id==\"" + salesorderID + "\"";
+//info query1 ;
+search_ticket = zoho.creator.getRecords("zoho_jc125","pog","Sales_order_Report",query1,1,1,"zohocreator");
+info search_ticket;
+if(search_ticket.get("message") == "No records found for the given criteria.")
+{
+	create_ticket = zoho.creator.createRecord("zoho_jc125","pog","Sales_order",new,optional_map,"zohocreator");
+	info create_ticket;
+}
+else
+{
+	//info "Updating == ";
+	cre_id = search_ticket.get("data").get(0).get("ID");
+	//info cre_id ;
+	update_ticket = zoho.creator.updateRecord("zoho_jc125","pog","Sales_order_Report",cre_id,new,optional_map,"zohocreator");
+	info update_ticket;
+}

@@ -1,0 +1,49 @@
+
+/*
+This is a sample function. Uncomment to execute or make changes to this function.
+paymentID = customer_payment.get("payment_id");
+organizationID = organization.get("organization_id");
+*/
+booksOrganizationId = 787913913;
+booksRecordIdPaymentReceived = 3464681000000425001;
+booksRecordPaymentReceived = zoho.books.getRecordsByID("customerpayments",booksOrganizationId,booksRecordIdPaymentReceived,"book_connection");
+info "Complete Record --- Zoho Books Payment Received";
+info booksRecordPaymentReceived;
+customerName = booksRecordPaymentReceived.get("payment").get("customer_name");
+// info customerName;
+amountReceived = booksRecordPaymentReceived.get("payment").get("amount");
+// info amountReceived;
+bankCharges = booksRecordPaymentReceived.get("payment").get("bank_charges");
+// info bankCharges;
+paymentDate = booksRecordPaymentReceived.get("payment").get("date");
+formattedPaymentDate = paymentDate.toString("dd-MMM-YYYY");
+// info formattedPaymentDate;
+paymentNumber = booksRecordPaymentReceived.get("payment").get("payment_number");
+// info paymentNumber;
+paymentMode = booksRecordPaymentReceived.get("payment").get("payment_mode");
+// info paymentMode;
+depositTo = booksRecordPaymentReceived.get("payment").get("account_name");
+// info depositTo;
+referenceNumber = booksRecordPaymentReceived.get("payment").get("reference_number");
+// info referenceNumber;
+booksPaymentReceivedNotes = booksRecordPaymentReceived.get("payment").get("description");
+// info booksPaymentReceivedNotes;
+unPaidInvoicesList = booksRecordPaymentReceived.get("payment").get("invoices");
+info "Unpaid Invoice List --- Zoho Books Payment Received";
+info unPaidInvoicesList;
+// newList = List();
+// creatorPaymentMadeMap means we pass keys of the creator form
+// creatorPaymentMadeMap = Map();
+// creatorPaymentMadeMap.put("Customer_Name", customerName);
+// creatorPaymentMadeMap.put("Amount_Received", amountReceived);
+// creatorPaymentMadeMap.put("Bank", bankCharges);
+// creatorPaymentMadeMap.put("Payment_Date", formattedPaymentDate);
+// creatorPaymentMadeMap.put("Payment", paymentNumber);
+// creatorPaymentMadeMap.put("Payment_Mode", paymentMode);
+// creatorPaymentMadeMap.put("Deposit_To", depositTo);
+// creatorPaymentMadeMap.put("Reference", referenceNumber);
+// creatorPaymentMadeMap.put("Notes", booksPaymentReceivedNotes);
+// additionalMap = Map();
+// recordAddedInCreator = zoho.creator.createRecord("syntegra", "syntegra-unified-portal", "Payment_Made", creatorPaymentMadeMap, additionalMap, "from_books_to_creator");
+// info recordAddedInCreator;
+// newlyCreatedRecordInCreator = recordAddedInCreator.get("data").get("ID");
