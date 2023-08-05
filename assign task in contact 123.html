@@ -1,0 +1,28 @@
+id = 5580594000000592556;
+Contacts = zoho.crm.getRecordById("Contacts",id);
+Contacts_id = Contacts.get("id");
+// info Contacts_id;
+Due_date = Contacts.get("Due_date");
+mp = Map();
+startDate = Due_date.addMonth(9);
+
+	mp.put("Due_Date",startDate);
+	mp.put("Status","Taskeded");
+	mp.put("Priority","High");
+	mp.put("Subject","testin78g");
+	mp.put("Who_Id",Contacts_id);
+	mp.put("$se_module","Contacts");
+	taskcreate0 = zoho.crm.createRecord("Tasks",mp);
+	task_id =	taskcreate0.get("id");
+	Priority_rec =zoho.crm.getRecordById("Tasks", task_id);
+    Priority =  Priority_rec.get("Priority");
+	new = Map();
+	new.put("Priority", Priority);
+	new.put("Task_ID_1", task_id);
+	info zoho.crm.updateRecord("Contacts", id, new);
+	
+	
+	
+	
+	
+return "";
