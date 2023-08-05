@@ -1,0 +1,8 @@
+void get_deal(int crmContactId)
+{
+returnedListDeal = zoho.crm.getRelatedRecords("Deals","Contacts",crmContactId);
+info returnedListDeal;
+dataMapForCrmDeal = Map();
+dataMapForCrmDeal.put("Stage","Agreement Signed (Close Won)");
+info zoho.crm.updateRecord("Deals",returnedListDeal.get(0).get("id"),dataMapForCrmDeal);
+}
