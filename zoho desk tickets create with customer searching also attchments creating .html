@@ -1,0 +1,94 @@
+id = 5580594000001093007;
+Leads = zoho.crm.getRecordById("Leads",id);
+Email = Leads.get("Email");
+
+ticket_description = Leads.get("Description");
+ticket_lastName = Leads.get("Last_Name");
+ticket_first_Name = Leads.get("First_Name");
+ticket_email = Leads.get("Email");
+ticket_subject = "Tickets" + " for " + ticket_email;
+CRMresponse = zoho.crm.getRelatedRecords("Attachments","Leads",id);
+// info CRMresponse;
+
+searchValue = Map();
+searchValue.put("email",ticket_email);
+// In next line adding orgID: To get orgID go to Desk setting and goto API, here we get orgID.
+search_record_in_desk = zoho.desk.searchRecords(800170504,"contacts",searchValue);
+if(isEmpty(search_record_in_desk))
+{
+	// Create new contact
+	contact_data = Map();
+	contact_data.put("lastName",ticket_lastName);
+	//
+	contact_data.put("email",ticket_email);
+	create_contact_in_dest = zoho.desk.create(800170504,"contacts",contact_data);
+	contactid = create_contact_in_dest.getJSON("id");
+// 	info "Contact is created successfully";
+	// Creating ticket for this new created contact
+	ticket_map = Map();
+	ticket_map.put("statusType","Open");
+	ticket_map.put("status","Open");
+	ticket_map.put("subject",ticket_subject);
+	ticket_map.put("description",ticket_description);
+// In next line adding departmentId: To get departmentId go to Desk setting and goto Department, here open active department then from URL copy departmendID.	
+	ticket_map.put("departmentId",817626000000006907);
+	ticket_map.put("contactId",contactid);
+	create_ticket = zoho.desk.create(800170504,"tickets",ticket_map);
+	info "New ticket is created Successfully" + create_ticket;
+	ticketid = create_ticket.get("ticketNumber");
+	info "ticket ID is: " + ticketid + " line 40";
+}
+else if(!isEmpty(search_record_in_desk))
+{
+// 	Creating ticket for already found contact
+	contactid = search_record_in_desk.get("data").getJSON("id");
+	ticket_map = Map();
+	ticket_map.put("statusType","Open");
+	ticket_map.put("status","Open");
+	ticket_map.put("subject",ticket_subject);
+	ticket_map.put("description",ticket_description);
+	ticket_map.put("departmentId",817626000000006907);
+	ticket_map.put("contactId",contactid);
+	create_ticket = zoho.desk.create(800170504	,"tickets",ticket_map);
+// 	info "New Ticket is created successfully : " + create_ticket;
+	ticketno = create_ticket.get("ticketNumber").toLong();
+	ticketid = create_ticket.get("id").toLong();
+	info "ticket ID is: " + ticketid + " line 54" ;
+	info "ticket No is: " + ticketno + " line 55" ;
+}
+// Get the attachment record from Zoho CRM
+// Get the attachment record from Zoho CRM
+// Get attachment details from CRM
+
+CRMresponse = zoho.crm.getRelatedRecords("Attachments","Leads",id);
+
+// Loop through attachments and attach them to Desk ticket
+for each record in CRMresponse
+{
+    attachment_id = record.get("id");
+    attachment_name = record.get("File_Name");
+
+    // Download attachment from CRM
+    attachment_content = invokeurl
+    [
+        url :"https://www.zohoapis.com/crm/v2/Leads/" + id + "/Attachments/" + attachment_id
+        type :GET
+		connection:"attchments"
+    ];
+info "1: " + attachment_content;
+attachment_content.setParamName("file");
+testmp = map();
+testmp.put("OrgId", 800170504);
+// create the Attchments in zoho desk Tickets when tickets created
+upload = invokeurl
+[
+	url: "https://desk.zoho.com/api/v1/tickets/" + ticketid + "/attachments"
+	type: POST
+	files: attachment_content
+	connection:"create"
+];
+info "2 : " + upload;
+  
+}
+
+return "";

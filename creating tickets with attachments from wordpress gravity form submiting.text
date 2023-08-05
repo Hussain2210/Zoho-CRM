@@ -1,0 +1,135 @@
+void createTicketinDesk(int form, int entryid)
+{
+formid = input.form;
+entryid = input.entryid;
+response = invokeurl
+[
+	url :"https://olish-fish-mizu.gravitydemo.com/wp-json/gf/v2/forms/" + formid + "/entries?include[0]=" + entryid
+	type :GET
+	connection:"gravity_form1"
+];
+// userEmail = response.get(entryid.toString());
+userEmail = response.get(entryid.toString()).get("1");
+subject = response.get(entryid.toString()).get("13");
+attatchment1 = ifNull(response.get(entryid.toString()).get("3"),"");
+attatchment2 = ifNull(response.get(entryid.toString()).get("6"),"");
+attatchment3 = ifNull(response.get(entryid.toString()).get("7"),"");
+attatchment4 = ifNull(response.get(entryid.toString()).get("8"),"");
+filereaponse1 = invokeurl
+[
+	url :attatchment1
+	type :GET
+];
+info filereaponse1;
+filereaponse2 = invokeurl
+[
+	url :attatchment2
+	type :GET
+];
+info filereaponse2;
+filereaponse3 = invokeurl
+[
+	url :attatchment3
+	type :GET
+];
+info filereaponse3;
+filereaponse4 = invokeurl
+[
+	url :attatchment4
+	type :GET
+];
+info filereaponse4;
+//////////////////////////////////////////////////////////////////////////////////////////////////
+searchValue = Map();
+searchValue.put("email",userEmail);
+// In next line adding orgID: To get orgID go to Desk setting and goto API, here we get orgID.
+search_record_in_desk = zoho.desk.searchRecords(800170504,"contacts",searchValue);
+if(isEmpty(search_record_in_desk))
+{
+	info "no data in desk";
+	// 	// Create new contact
+	contact_data = Map();
+	// 	contact_data.put("lastName",ticket_lastName);
+	//
+	contact_data.put("email",userEmail);
+	create_contact_in_dest = zoho.desk.create(800170504,"contacts",contact_data);
+	contactid = create_contact_in_dest.getJSON("id");
+	// info "Contact is created successfully";
+	// Creating ticket for this new created contact
+	ticket_map = Map();
+	ticket_map.put("statusType","Open");
+	ticket_map.put("status","Open");
+	ticket_map.put("subject",subject);
+	// 	ticket_map.put("description",ticket_description);
+	// In next line adding departmentId: To get departmentId go to Desk setting and goto Department, here open active department then from URL copy departmendID.	
+	ticket_map.put("departmentId",817626000000006907);
+	ticket_map.put("contactId",contactid);
+	create_ticket = zoho.desk.create(800170504,"tickets",ticket_map);
+	info "New ticket is created Successfully" + create_ticket;
+	ticketid = create_ticket.get("ticketNumber");
+	info "ticket ID is: " + ticketid + " line 40";
+}
+else if(!isEmpty(search_record_in_desk))
+{
+	info "recordnotempty";
+	// Creating ticket for already found contact
+	contactid = search_record_in_desk.get("data").getJSON("id");
+	ticket_map = Map();
+	ticket_map.put("statusType","Open");
+	ticket_map.put("status","Open");
+	ticket_map.put("subject",subject);
+	// 	ticket_map.put("description",ticket_description);
+	ticket_map.put("departmentId",817626000000006907);
+	ticket_map.put("contactId",contactid);
+	create_ticket = zoho.desk.create(800170504,"tickets",ticket_map);
+	// info "New Ticket is created successfully : " + create_ticket;
+	ticketno = create_ticket.get("ticketNumber").toLong();
+	ticketid = create_ticket.get("id").toLong();
+	info "ticket ID is: " + ticketid + " line 54";
+	info "ticket No is: " + ticketno + " line 55";
+	filereaponse1.setParamName("file");
+	testmp = Map();
+	testmp.put("OrgId",800170504);
+	upload = invokeurl
+	[
+		url :"https://desk.zoho.com/api/v1/tickets/" + ticketid + "/attachments"
+		type :POST
+		files:filereaponse1
+		connection:"desk_connection"
+	];
+	info "1 : " + upload;
+	filereaponse2.setParamName("file");
+	testmp = Map();
+	testmp.put("OrgId",800170504);
+	upload = invokeurl
+	[
+		url :"https://desk.zoho.com/api/v1/tickets/" + ticketid + "/attachments"
+		type :POST
+		files:filereaponse2
+		connection:"desk_connection"
+	];
+	info "2 : " + upload;
+	filereaponse3.setParamName("file");
+	testmp = Map();
+	testmp.put("OrgId",800170504);
+	upload = invokeurl
+	[
+		url :"https://desk.zoho.com/api/v1/tickets/" + ticketid + "/attachments"
+		type :POST
+		files:filereaponse3
+		connection:"desk_connection"
+	];
+	info "3 : " + upload;
+	filereaponse4.setParamName("file");
+	testmp = Map();
+	testmp.put("OrgId",800170504);
+	upload = invokeurl
+	[
+		url :"https://desk.zoho.com/api/v1/tickets/" + ticketid + "/attachments"
+		type :POST
+		files:filereaponse4
+		connection:"desk_connection"
+	];
+	info "4 : " + upload;
+}
+}
