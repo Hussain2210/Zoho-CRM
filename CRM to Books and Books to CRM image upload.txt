@@ -1,0 +1,67 @@
+id = 5758433000003069001;
+product = zoho.crm.getRecordById("Products",id);
+Record_Image = product.get("Record_Image");
+response1 = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v5/Products/" + id + "/photo"
+	type :GET
+	connection:"crm_connection"
+];
+searchParam = "zcrm_product_id=" + id;
+itemss = zoho.books.getRecords("items","811558232",searchParam,"books_connection");
+info "items : " + itemss;
+response = invokeUrl
+[
+url: "https://www.zohoapis.com/books/v3/crm/item/"+id+"/import?organization_id=811558232"
+type: POST
+connection: "books_connection"
+];
+
+info "response : " + response;
+
+bookstid = response.getJSON("item").getJSON("item_id");
+info "bookstid > " + bookstid;	
+response1.setParamName("image");
+itemuploadimage= invokeurl
+[
+url :"https://books.zoho.com/api/v3/items/"+bookstid+"/image?organization_id=811558232"
+type : POST
+connection:"books_connection"
+files: response1
+];
+info "itemuploadimage " +itemuploadimage ;
+
+return "";
+
+
+
+
+
+/*
+This is a sample function. Uncomment to execute or make changes to this function.  
+*/
+itemID = item.get("item_id");
+organizationID = organization.get("organization_id");
+response = zoho.books.getRecordsByID("items",organizationID,itemID,"books_connection");
+info response;
+name = response.get("item").get("name");
+zcrm_product_id = response.get("item").get("zcrm_product_id");
+// sname = name.replaceall("-","").replaceAll("\(", "\\\(").replaceall("\)","\\\)");
+// search = zoho.crm.searchRecords("Products","(Product_Name:equals:" + sname + ")");
+// info "search" + search;
+itemImage = invokeurl
+[
+	url :"https://books.zoho.com/api/v3/items/" + itemID + "/image?organization_id=" + organizationID
+	type :GET
+	connection:"books_connection"
+];
+info "itemImage" + itemImage;
+itemImage.setParamName("file");
+image_upload = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v2/Products/" + zcrm_product_id + "/photo"
+	type :POST
+	files:itemImage
+	connection:"zohocrm"
+];
+info "image_upload:" = image_upload;
