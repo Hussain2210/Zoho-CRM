@@ -1,0 +1,47 @@
+id = 585447000087265371;
+SalesOrder = zoho.crm.getRecordById("Sales_Orders",id);
+// info SalesOrder;
+// Vendor_Name = SalesOrder.get("Vendor_Name").get("id");
+PONumber = SalesOrder.get("PO_Number");
+// Purchase_Orders = zoho.crm.searchRecords("Purchase_Orders","(PO_Number:not_equal:"+ PONumber +")");
+// info Purchase_Orders;
+temp_id = 585447000000052011;
+template1 = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v5/settings/inventory_templates/585447000000052011"
+	type :GET
+	connection:"templates"
+];
+email_templates_id = template1.get("inventory_templates").get(0).get("id");
+info email_templates_id;
+sendfrom = Map();
+sendfrom.put("email",zoho.adminuserid);
+sendto = Map();
+//  sendto.put("email",Email); 
+sendto.put("email","samaaayyy00@gmail.com");
+tolist = List();
+tolist.add(sendto);
+tempmp = Map();
+tempmp.put("id",email_templates_id);
+mp = Map();
+mp.put("from",sendfrom);
+mp.put("to",tolist);
+inventory_temp_map = Map();
+inventory_temp_map.put("inventory_template",tempmp);
+mp.put("inventory_details",inventory_temp_map);
+mp.put("org_email",true);
+// info mp; 
+dlist = List();
+dlist.add(mp);
+data = Map();
+data.put("data",dlist);
+info data;
+sendmail = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v4/Sales_Orders/" + id + "/actions/send_mail"
+	type :POST
+	parameters:data.toString()
+	connection:"senamail"
+];
+info sendmail;
+return "";
