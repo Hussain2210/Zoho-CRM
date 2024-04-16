@@ -1,0 +1,219 @@
+// Initialize variables
+
+crmAPIRequest = {"auth_type":"apikey","body":{"eventNotifications":{{"dataChangeEvent":{"entities":{{"id":"24","lastUpdated":"2023-09-21T22:03:39.000Z","name":"Payment","operation":"Create"}}},"realmId":"9130357245838016"}}},"headers":{"intuit-created-time":{"2023-09-21T22:03:39.501Z"},"intuit-notification-schema-version":{"1.0"},"intuit-signature":{"TEcEtdw9LB4f4Ly8kvL0gio0h1V6MZzijdDxhPleRs0="},"intuit-t-id":{"cb79fd81-dc89-4c49-95b7-c988e4c96c06"},"lb_http_version":{"HTTP/1.1"},"lb_request_id":{"2f6592198cd7937d49690501a012d7f9"},"lb_ssl_remote_ip":{"35.163.95.39"}},"method":"POST","params":{},"record":{},"user_info":{"country":"USA","email":"kevin@nvspromo.com","id":585447000000052000,"name":"Kevin Rager","org_info":{"id":19347895,"name":"NVS Promotional Designs Inc."},"time_format":"hh:mm a","time_zone":"America/Los_Angeles","zgid":19347895,"zuid":"19349197"}};
+logs = Map();
+head = Map();
+head.put("Content-Type","application/json");
+head.put("Authorization","Bearer 1LoVHCC5dPC1kXSAY1KHB2w7");
+params = Map();
+params.put("req",crmAPIRequest);
+
+// Make a POST request to an external logging service
+
+url = "https://in.logs.betterstack.com/";
+res = invokeurl
+[
+	url :url
+	type :POST
+	parameters:params.toString()
+	headers:head
+];
+info res;
+
+// Refresh access token for further use
+
+tokens = standalone.refreshAccessToken();
+logs = Map();
+createInv = Map();
+baseUri = "https://quickbooks.api.intuit.com/v3/company/9130357245838016";
+head = Map();
+head.put("Authorization","Bearer " + zoho.crm.getOrgVariable("access_token"));
+head.put("Accept","application/json");
+head.put("Content-Type","application/json");
+
+// Extract relevant information from CRM API request
+
+crmAPIRequest = crmAPIRequest.toMap();
+info crmAPIRequest;
+body = crmAPIRequest.get("body").toMap();
+info body;
+
+// Check if the body contains event notifications
+
+if(body.contains("eventNotifications") == true)
+{
+    info "body1";
+
+    // Check if there are any event notifications
+
+    if(body.get("eventNotifications").size() > 0)
+    {
+        info "body2";
+
+        // Iterate through each event notification
+
+        for each  event in body.get("eventNotifications")
+        {
+            info "body3";
+
+            // Check if there are entities in the data change event
+
+            if(event.get("dataChangeEvent").get("entities").size() > 0)
+            {
+                info "body4";
+
+                // Retrieve entities
+
+                entities = event.get("dataChangeEvent").get("entities");
+
+                // Iterate through each entity
+
+                for each  entity in entities
+                {
+                    info "Bosy5";
+
+                    // Check if the entity is a "Payment" and the operation is "Create"
+
+                    if(entity.get("name") == "Payment" && entity.get("operation") == "Create")
+                    {
+                        info "body6";
+                        info entity.get("id");
+
+                        // Build a select statement for payment records
+
+                        selectStatement = "select * from Payment Where Metadata.LastUpdatedTime>'2015-01-16'";
+
+                        // Make a GET request to retrieve payment information
+
+                        getPayment = invokeurl
+                        [
+                            url :baseUri + "/payment/" + entity.get("id") + "?minorversion=65"
+                            type :GET
+                            headers:head
+                        ];
+                        info getPayment;
+                        getPayment = getPayment.get("Payment");
+                        
+                        // Check if payment information contains lines
+
+                        if(getPayment.get("Line").size() > 0)
+                        {
+                            // Iterate through payment lines
+
+                            for each  payment in getPayment.get("Line")
+                            {
+                                // Check if there are linked transactions
+
+                                if(payment.get("LinkedTxn").size() > 0)
+                                {
+                                    // Iterate through linked transactions
+
+                                    for each  Txn in payment.get("LinkedTxn")
+                                    {
+                                        info Txn;
+
+                                        // Check if the linked transaction type is "Invoice"
+
+                                        if(Txn.get("TxnType") == "Invoice")
+                                        {
+                                            InvId = Txn.get("TxnId");
+                                            info InvId;
+                                            
+                                            // Retrieve invoice information
+
+                                            getInvoices = invokeurl
+                                            [
+                                                url :baseUri + "/query?query=select * from Invoice where Id = '" + InvId + "'&minorversion=65"
+                                                type :GET
+                                                headers:head
+                                            ];
+                                            info getInvoices;
+                                            QueryResponse = getInvoices.get("QueryResponse");
+                                            
+                                            // Check if invoice information is available
+
+                                            if(QueryResponse.isEmpty() == false)
+                                            {
+                                                InvoiceNumber = QueryResponse.get("Invoice").get(0).get("DocNumber");
+                                                info InvoiceNumber;
+                                                
+                                                // Check if the invoice number is not null
+
+                                                if(InvoiceNumber != null)
+                                                {
+                                                    SalesOrder = InvoiceNumber.getPrefix("-");
+                                                    SalesOrderNumber = SalesOrder.substring(1);
+                                                    info SalesOrderNumber;
+                                                    criteria = "(Order_Number:equals:2230794)";
+                                                    info criteria;
+                                                    
+                                                    // Search for sales orders based on criteria
+
+                                                    search = invokeurl
+                                                    [
+                                                        url :"https://www.zohoapis.com/crm/v5/Sales_Orders/search?criteria=" + criteria
+                                                        type :GET
+                                                        connection:"crm"
+                                                    ];
+                                                    info search;
+                                                    
+                                                    // Check if sales orders are found
+
+                                                    if(search.get("data").size() > 0)
+                                                    {
+                                                        Updatemap = Map();
+                                                        optionalMap = Map();
+                                                        Updatemap.put("Payment_Received","YES");
+                                                        info getPayment.get("TxnDate");
+                                                        Updatemap.put("Date_Paid",getPayment.get("TxnDate"));
+                                                        Updatemap.put("Status","Delivered");
+                                                        Updatemap.put("Paid_in_Full",true);
+                                                        SO = search.get("data").get(0);
+                                                        
+                                                        // Check if payment is not received or is null in sales order
+
+                                                        if(SO.get("Payment_Received") == "NO" || SO.get("Payment_Received") == null)
+                                                        {
+                                                            // Update sales order
+
+                                                            updateRec = zoho.crm.updateRecord("Sales_Orders",SO.get("id"),Updatemap,optionalMap,"crm");
+                                                            info updateRec;
+                                                        }
+                                                        
+                                                        // Retrieve related invoices
+
+                                                        invoices = zoho.crm.getRelatedRecords("Invoices","Sales_Orders",SO.get("id"));
+                                                        // Iterate through related invoices
+                                                        for each  invoice in invoices
+                                                        {
+                                                            info "Inovice" + invoice;
+
+                                                            // Check if payment is not received or is null in the invoice
+
+                                                            if(invoice.get("Payment_Received") == "NO" || invoice.get("Payment_Received") == null)
+                                                            {
+                                                                // Update invoice
+
+                                                                updateRec = zoho.crm.updateRecord("Invoices",invoice.get("id"),Updatemap,optionalMap,"crm");
+                                                                info updateRec;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                info "Invoice Not found";
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+return "";
