@@ -1,0 +1,128 @@
+client_profile_data = zoho.crm.getRecordById("Client_Profile",id);
+client_id = client_profile_data.get("id");
+client_name = client_profile_data.get("Name");
+workdrive_name = client_name + "-" + client_id;
+
+//////////////////        create folder in work drive  ////////
+
+workdrive_folder_name = zoho.workdrive.createFolder(workdrive_name,"8gqs136b0aac4311a474f9bcc9205621bb313","workdrive");
+
+
+header = Map();
+header.put("Accept","application/vnd.api+json");
+data1 = Map();
+data_param1 = Map();
+att_param1 = Map();
+att_param1.put("name","Collection");
+att_param1.put("parent_id","0nk78318a1771da934f22939e4a00d8aab225");
+data_param1.put("attributes",att_param1);
+data_param1.put("type","files");
+data1.put("data",data_param1);
+response = invokeurl
+[
+url :"https://www.zohoapis.com/workdrive/api/v1/files"
+type :POST
+parameters:data1.toString()
+headers:header
+connection:"workdrive"
+];
+info response;
+
+///////////
+
+workdrive_folder_id = workdrive_folder_name.get("data").get("id");
+info workdrive_folder_id;
+
+//////////   get external link for work drive folder //////////
+
+// header = Map();
+// header.put("Accept","application/vnd.api+json");
+data2 = Map();
+data_param12 = Map();
+att_param12 = Map();
+att_param12.put("resource_id",workdrive_folder_id);
+att_param12.put("shared_type","publish");
+att_param12.put("role_id","34");
+data_param12.put("attributes",att_param12);
+data_param12.put("type","permissions");
+data2.put("data",data_param12);
+
+external_link = invokeurl
+[
+url :" https://www.zohoapis.com/workdrive/api/v1/permissions"
+type :POST
+parameters:data2.toString()
+headers:header
+connection:"workdrive"
+];
+// info "link external "+external_link ;
+link_external = external_link.get("data").get("attributes").get("permalink");
+info link_external;
+
+/////////////////            update external link in crm ///////////
+
+update_externalk_link_crm_map = Map();
+update_externalk_link_crm_map.put("External_Link",link_external);
+update_crm_data = zoho.crm.updateRecord("Client_Profile",id,update_externalk_link_crm_map,{"trigger":{"workflow"}});
+
+/////////////                  get mail merge tempalte //////////////
+
+// potinfo = zoho.crm.getRecordById("Client_Profile",id);
+fields = zoho.writer.getMergeFields("8gqs1fba165f7ca5c4e7da131956e8164b1c3","writer").get("fields").distinct();
+// info "fields "+fields ;
+val = Collection();
+for each  rec in fields
+{
+field = ifnull(client_profile_data.get(rec),"");
+if(field.contains("{") && field.contains("id"))
+{
+val.insert(rec + ": " + field.get("name"));
+}
+else
+{
+if(field == "" || field == null || field.isEmpty() == true)
+{
+}
+else
+{
+mainString = field;
+newText = replaceAll(mainString,","," or ");
+info "vfhjfsfhjfhj   " + newText + ",";
+val.insert(rec + ":" + newText);
+}
+}
+}
+info "fdjhdeafkjdshkjhskjfheskjrhjfhds " + val;
+cmp = "{" + val.toString() + "}";
+// info cmp ;
+ddata = List();
+ddata.add(cmp.toMap());
+dmp = Map();
+dmp.put("data",ddata);
+mp = Map();
+mp.put("merge_data",dmp);
+file = zoho.writer.mergeAndDownload("8gqs1fba165f7ca5c4e7da131956e8164b1c3","pdf",mp,"writer");
+
+///////////////////////              upload mail merge tempaltre in workdrive .//////////////////////////
+
+list_of_text = List();
+list_of_text.add({"paramName":"filename","content":workdrive_name + ".pdf","stringPart":"true"});
+list_of_text.add({"paramName":"parent_id","content":workdrive_folder_id,"stringPart":"true"});
+list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+list_of_text.add({"paramName":"content","content":file,"stringPart":"false"});
+upload_pdf = invokeurl
+[
+url :"https://www.zohoapis.com/workdrive/api/v1/upload"
+type :POST
+headers:header
+files:list_of_text
+connection:"workdrive"
+];
+// info upload_pdf;
+
+////////////////  attements add in related list in zoho crm ////////
+
+update = zoho.crm.attachFile("Client_Profile",id,file);
+aa = Map();
+aa.put("Single_Line_37","2");
+zoho.crm.updateRecord("Client_Profile",id,aa);
