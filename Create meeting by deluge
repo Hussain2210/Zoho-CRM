@@ -1,0 +1,95 @@
+Test_ACL = zoho.crm.getRecordById("Workshop_Checklists",id);
+info Test_ACL;
+Acc_name = Test_ACL.get("Account").get("name");
+info Acc_name;
+Workshop_Reference = Test_ACL.get("Name");
+info Workshop_Reference;
+Start_Date_Time_of_Workshop = Test_ACL.get("Start_Date_Time_of_Workshop");
+info Start_Date_Time_of_Workshop;
+End_Date_Time_of_Workshop = Test_ACL.get("End_Date_Time_of_Workshop");
+info End_Date_Time_of_Workshop;
+Facilitator_Email = Test_ACL.get("Facilitator_Email");
+if(Test_ACL.get("Business_Line") == "90-Minutes")
+{
+	if(Test_ACL.get("Program_90_Minutes") != null || Test_ACL.get("Program_90_Minutes").isEmpty() == false && Test_ACL.get("Facilitator_90_Minutes") != null || Test_ACL.get("Facilitator_90_Minutes").isEmpty() == false)
+	{
+		Program = Test_ACL.get("Program_90_Minutes");
+		Facilitator = Test_ACL.get("Facilitator_90_Minutes");
+	}
+}
+if(Test_ACL.get("Business_Line") == "McLuhan & Davies")
+{
+	if(Test_ACL.get("Program_MDC") != null || Test_ACL.get("Program_MDC").isEmpty() == false && Test_ACL.get("Facilitator_MDC") != null || Test_ACL.get("Facilitator_MDC").isEmpty() == false)
+	{
+		Program = Test_ACL.get("Program_MDC");
+		Facilitator = Test_ACL.get("Facilitator_MDC");
+	}
+}
+if(Test_ACL.get("Business_Line") == "Korn Ferry")
+{
+	if(Test_ACL.get("Program1") != null || Test_ACL.get("Program1").isEmpty() == false && Test_ACL.get("Facilitator") != null || Test_ACL.get("Facilitator").isEmpty() == false)
+	{
+		Program = Test_ACL.get("Program1");
+		Facilitator = Test_ACL.get("Facilitator");
+	}
+}
+if(Test_ACL.get("Business_Line") == "Culture Partners")
+{
+	if(Test_ACL.get("Program_CP") != null || Test_ACL.get("Program_CP").isEmpty() == false && Test_ACL.get("Facilitator_CP") != null || Test_ACL.get("Facilitator_CP").isEmpty() == false)
+	{
+		Program = Test_ACL.get("Program_CP");
+		Facilitator = Test_ACL.get("Facilitator_CP");
+	}
+}
+if(Test_ACL.get("Business_Line") == "Insights Discovery")
+{
+	if(Test_ACL.get("Program_Insights_Discovery") != null || Test_ACL.get("Program_Insights_Discovery").isEmpty() == false && Test_ACL.get("Facilitator_Insights_Discovery") != null || Test_ACL.get("Facilitator_Insights_Discovery").isEmpty() == false)
+	{
+		Program = Test_ACL.get("Program_Insights_Discovery");
+		Facilitator = Test_ACL.get("Facilitator_Insights_Discovery");
+	}
+}
+if(Test_ACL.get("Business_Line") == "Bespoke")
+{
+	if(Test_ACL.get("Program_Bespoke") != null || Test_ACL.get("Program_Bespoke").isEmpty() == false && Test_ACL.get("Facilitator_Bespoke") != null || Test_ACL.get("Facilitator_Bespoke").isEmpty() == false)
+	{
+		Program = Test_ACL.get("Program_Bespoke");
+		Facilitator = Test_ACL.get("Facilitator_Bespoke");
+	}
+}
+if(Test_ACL.get("Business_Line") == "Project-Specific")
+{
+	if(Test_ACL.get("Program_Project_Specific") != null || Test_ACL.get("Program_Project_Specific").isEmpty() == false && Test_ACL.get("Facilitator_Project_STC_Channels") != null || Test_ACL.get("Facilitator_Project_STC_Channels").isEmpty() == false)
+	{
+		Program = Test_ACL.get("Program_Project_Specific");
+		Facilitator = Test_ACL.get("Facilitator_Project_STC_Channels");
+	}
+}
+if(Test_ACL.get("Business_Line") == "Innovation")
+{
+	if(Test_ACL.get("Program_Innovation") != null || Test_ACL.get("Program_Innovation").isEmpty() == false && Test_ACL.get("Facilitator_Innovation") != null || Test_ACL.get("Facilitator_Innovation").isEmpty() == false)
+	{
+		Program = Test_ACL.get("Program_Innovation");
+		Facilitator = Test_ACL.get("Facilitator_Innovation");
+	}
+}
+meeting_Subject = Workshop_Reference + " - " + Facilitator + " - " + Acc_name + " - " + Program;
+// info meeting_Subject;
+crmEventFieldMap = Map();
+partList = List();
+partMap = Map();
+partMap.put("type","email");
+partMap.put("participant",Facilitator_Email);
+partMap.put("invited",false);
+partList.add(partMap);
+crmEventFieldMap.put("Participants",partList);
+crmEventFieldMap.put("Subject",meeting_Subject);
+crmEventFieldMap.put("Event_Title",meeting_Subject);
+crmEventFieldMap.put("What_Id",id);
+crmEventFieldMap.put("Owner",5505808000001412001);
+crmEventFieldMap.put("$se_module","Workshop_Checklists");
+// crmEventFieldMap.put("$send_notification",true);
+crmEventFieldMap.put("Start_DateTime",Start_Date_Time_of_Workshop.toTime("yyyy-MM-dd'T'HH:mm:ss").toString("yyyy-MM-dd'T'HH:mm:ss'+03:00'"));
+crmEventFieldMap.put("End_DateTime",End_Date_Time_of_Workshop.toTime("yyyy-MM-dd'T'HH:mm:ss").toString("yyyy-MM-dd'T'HH:mm:ss'+03:00'"));
+info crmEventFieldMap;
+info zoho.crm.createRecord("Events",crmEventFieldMap);
