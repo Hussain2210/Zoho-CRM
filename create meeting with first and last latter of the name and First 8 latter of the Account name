@@ -1,0 +1,180 @@
+Test_ACL = zoho.crm.getRecordById("Workshop_Checklists",id);
+//info Test_ACL;
+info Test_ACL.get("Meeting_ID");
+///////////////////////Name & Status &   Facilitator ////////////////
+if(Test_ACL.get("Status") != "Cancelled")
+{
+	Status = Test_ACL.get("Status");
+	Facilitator_Email = Test_ACL.get("Facilitator_Email");
+	Name = Test_ACL.get("Name");
+	Workshop_Reference = Name.substring(4);
+	///// Start ENd date and Account Name////////////
+	Start_Date_Time_of_Workshop = Test_ACL.get("Start_Date_Time_of_Workshop");
+	End_Date_Time_of_Workshop = Test_ACL.get("End_Date_Time_of_Workshop");
+	Acc = Test_ACL.get("Account").get("name");
+	info Acc.len();
+	if(Acc.len() > 8)
+	{
+		Acc_name = Acc.substring(0,8);
+	}
+	else
+	{
+		Acc_name = Test_ACL.get("Account").get("name");
+	}
+	info Acc_name;
+	///////////////////////////////////////Program and facilitator Name///////////////////
+	if(Test_ACL.get("Business_Line") == "90-Minutes")
+	{
+		if(Test_ACL.get("Program_90_Minutes") != null || Test_ACL.get("Program_90_Minutes").isEmpty() == false && Test_ACL.get("Facilitator_90_Minutes") != null || Test_ACL.get("Facilitator_90_Minutes").isEmpty() == false)
+		{
+			Program = Test_ACL.get("Program_90_Minutes");
+			Facilitator_90_Minutes = Test_ACL.get("Facilitator_90_Minutes");
+			first1 = Facilitator_90_Minutes.getPrefix(" ");
+			second1 = Facilitator_90_Minutes.getSuffix(" ");
+			first = first1.substring(0,1);
+			second = second1.substring(0,1);
+			Facilitator = first + second;
+		}
+	}
+	if(Test_ACL.get("Business_Line") == "McLuhan & Davies")
+	{
+		if(Test_ACL.get("Program_MDC") != null || Test_ACL.get("Program_MDC").isEmpty() == false && Test_ACL.get("Facilitator_MDC") != null || Test_ACL.get("Facilitator_MDC").isEmpty() == false)
+		{
+			Program = Test_ACL.get("Program_MDC");
+			Facilitator_MDC = Test_ACL.get("Facilitator_MDC");
+			first1 = Facilitator_MDC.getPrefix(" ");
+			second1 = Facilitator_MDC.getSuffix(" ");
+			first = first1.substring(0,1);
+			second = second1.substring(0,1);
+			Facilitator = first + second;
+		}
+	}
+	if(Test_ACL.get("Business_Line") == "Korn Ferry")
+	{
+		if(Test_ACL.get("Program1") != null || Test_ACL.get("Program1").isEmpty() == false && Test_ACL.get("Facilitator") != null || Test_ACL.get("Facilitator").isEmpty() == false)
+		{
+			Program = Test_ACL.get("Program1");
+			Facilitators = Test_ACL.get("Facilitator");
+			first1 = Facilitators.getPrefix(" ");
+			second1 = Facilitators.getSuffix(" ");
+			first = first1.substring(0,1);
+			second = second1.substring(0,1);
+			Facilitator = first + second;
+		}
+	}
+	if(Test_ACL.get("Business_Line") == "Culture Partners")
+	{
+		if(Test_ACL.get("Program_CP") != null || Test_ACL.get("Program_CP").isEmpty() == false && Test_ACL.get("Facilitator_CP") != null || Test_ACL.get("Facilitator_CP").isEmpty() == false)
+		{
+			Program = Test_ACL.get("Program_CP");
+			Facilitator_CP = Test_ACL.get("Facilitator_CP");
+			first1 = Facilitator_CP.getPrefix(" ");
+			second1 = Facilitator_CP.getSuffix(" ");
+			first = first1.substring(0,1);
+			second = second1.substring(0,1);
+			Facilitator = first + second;
+		}
+	}
+	if(Test_ACL.get("Business_Line") == "Insights Discovery")
+	{
+		if(Test_ACL.get("Program_Insights_Discovery") != null || Test_ACL.get("Program_Insights_Discovery").isEmpty() == false && Test_ACL.get("Facilitator_Insights_Discovery") != null || Test_ACL.get("Facilitator_Insights_Discovery").isEmpty() == false)
+		{
+			Program = Test_ACL.get("Program_Insights_Discovery");
+			Facilitator_Insights_Discovery = Test_ACL.get("Facilitator_Insights_Discovery");
+			first1 = Facilitator_Insights_Discovery.getPrefix(" ");
+			second1 = Facilitator_Insights_Discovery.getSuffix(" ");
+			first = first1.substring(0,1);
+			second = second1.substring(0,1);
+			Facilitator = first + second;
+		}
+	}
+	if(Test_ACL.get("Business_Line") == "Bespoke")
+	{
+		if(Test_ACL.get("Program_Bespoke") != null || Test_ACL.get("Program_Bespoke").isEmpty() == false && Test_ACL.get("Facilitator_Bespoke") != null || Test_ACL.get("Facilitator_Bespoke").isEmpty() == false)
+		{
+			Program = Test_ACL.get("Program_Bespoke");
+			Facilitator_Bespoke = Test_ACL.get("Facilitator_Bespoke");
+			first1 = Facilitator_Bespoke.getPrefix(" ");
+			second1 = Facilitator_Bespoke.getSuffix(" ");
+			first = first1.substring(0,1);
+			second = second1.substring(0,1);
+			Facilitator = first + second;
+		}
+	}
+	if(Test_ACL.get("Business_Line") == "Project-Specific")
+	{
+		if(Test_ACL.get("Program_Project_Specific") != null || Test_ACL.get("Program_Project_Specific").isEmpty() == false && Test_ACL.get("Facilitator_Project_STC_Channels") != null || Test_ACL.get("Facilitator_Project_STC_Channels").isEmpty() == false)
+		{
+			Program = Test_ACL.get("Program_Project_Specific");
+			Facilitator_Project_STC_Channels = Test_ACL.get("Facilitator_Project_STC_Channels");
+			first1 = Facilitator_Project_STC_Channels.getPrefix(" ");
+			second1 = Facilitator_Project_STC_Channels.getSuffix(" ");
+			first = first1.substring(0,1);
+			second = second1.substring(0,1);
+			Facilitator = first + second;
+		}
+	}
+	if(Test_ACL.get("Business_Line") == "Innovation")
+	{
+		if(Test_ACL.get("Program_Innovation") != null || Test_ACL.get("Program_Innovation").isEmpty() == false && Test_ACL.get("Facilitator_Innovation") != null || Test_ACL.get("Facilitator_Innovation").isEmpty() == false)
+		{
+			Program = Test_ACL.get("Program_Innovation");
+			Facilitator_Innovation = Test_ACL.get("Facilitator_Innovation");
+			first1 = Facilitator_Innovation.getPrefix(" ");
+			second1 = Facilitator_Innovation.getSuffix(" ");
+			first = first1.substring(0,1);
+			second = second1.substring(0,1);
+			Facilitator = first + second;
+		}
+	}
+	//////////////Meeting subject///////////
+	meeting_Subject = Workshop_Reference + "-" + Facilitator + "-" + Acc_name + "-" + Program + "-" + Status;
+	info meeting_Subject;
+	///////////////Maping /////////////////////
+	crmEventFieldMap = Map();
+	partList = List();
+	partMap = Map();
+	partMap.put("type","email");
+	partMap.put("participant",Facilitator_Email);
+	partMap.put("invited",false);
+	partList.add(partMap);
+	crmEventFieldMap.put("Participants",partList);
+	crmEventFieldMap.put("Subject",meeting_Subject);
+	crmEventFieldMap.put("Event_Title",meeting_Subject);
+	crmEventFieldMap.put("What_Id",id);
+	crmEventFieldMap.put("Owner",5505808000001412001);
+	crmEventFieldMap.put("$se_module","Workshop_Checklists");
+	crmEventFieldMap.put("Start_DateTime",Start_Date_Time_of_Workshop.toTime("yyyy-MM-dd'T'HH:mm:ss").toString("yyyy-MM-dd'T'HH:mm:ss'+03:00'"));
+	crmEventFieldMap.put("End_DateTime",End_Date_Time_of_Workshop.toTime("yyyy-MM-dd'T'HH:mm:ss").toString("yyyy-MM-dd'T'HH:mm:ss'+03:00'"));
+	///////////////////Create /////////////////
+	if(Test_ACL.get("Meeting_ID") == null || Test_ACL.get("Meeting_ID").isEmpty() == true)
+	{
+		info "Create";
+		Events = zoho.crm.createRecord("Events",crmEventFieldMap);
+		info "create : " + Events;
+		New = Map();
+		New.put("Meeting_ID",Events.get("id").toText());
+		info zoho.crm.updateRecord("Workshop_Checklists",id,New);
+	}
+	//////////////////Update//////////////////////
+	else if(Test_ACL.get("Meeting_ID") != null || Test_ACL.get("Meeting_ID").isEmpty() == false)
+	{
+		Evant_id = Test_ACL.get("Meeting_ID");
+		Evants = zoho.crm.updateRecord("Events",Evant_id,crmEventFieldMap);
+		info "update : " + Evants;
+	}
+}
+else if(Test_ACL.get("Status") == "Cancelled" && Test_ACL.get("Meeting_ID") != null)
+{
+	info "Delete";
+	response = invokeurl
+	[
+		url :"https://www.zohoapis.com/crm/v6/Events/" + Test_ACL.get("Meeting_ID")
+		type :DELETE
+		connection:"crm_oauth_connection"
+	];
+	info response;
+	New = Map();
+	New.put("Meeting_ID"," ");
+	info zoho.crm.updateRecord("Workshop_Checklists",id,New);
+}
