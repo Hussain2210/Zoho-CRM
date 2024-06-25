@@ -1,0 +1,3 @@
+var pid = ZDK.Page.getField('Projects').getValue().id;
+console.log("project : ", pid);
+var ship = ZDK.Page.getField('product').setCriteria("(project:equals:" + pid + ")", { filterOnSearch: true });
