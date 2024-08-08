@@ -1,0 +1,35 @@
+
+/*
+This is a sample function. Uncomment to execute or make changes to this function.  
+*/
+organizationID = organization.get("organization_id");
+itemID = item.get("item_id");
+rec = zoho.inventory.getRecordsByID("items",organizationID,itemID,"inventory_conn");
+info rec;
+item_Rec = rec.getJSON("item");
+customfield = item_Rec.getJSON("custom_field_hash");
+// creator_id = customfield.getJSON("cf_creator_id");
+creator_id = 4386052000000303003;
+//info creator_id;
+info item_Rec.getJSON("image_name");
+image = invokeurl
+[
+	url :"https://www.zohoapis.com/inventory/v1/items/" + itemID + "/image?organization_id=" + organizationID
+	type :GET
+	connection:"inventory_conn"
+];
+info image;
+image.setParamName("file");
+upload_listing = invokeurl
+[
+	url :"https://creator.zoho.com/api/v2/powerpromotions/power-promotion/report/All_Items/" + creator_id + "/Product_Image/upload"
+	type :POST
+	files:image
+	connection:"creator_conn"
+];
+info "Image Upload Successfully " + upload_listing;
+item_map = Map();
+item_map.put("Inventory_ID",item_Rec);
+other_map = Map();
+rec_update = zoho.creator.updateRecord("helpdesk798","power-promotion","All_Items",creator_id,item_map,other_map,"creator_conn");
+info rec_update;
