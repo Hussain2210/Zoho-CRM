@@ -1,0 +1,96 @@
+dataMap = Map();
+header = Map();
+header.put("Accept","application/vnd.api+json");
+workdriveID = "a5hbtbe9b10b0ac8c4385a69096ed1d13d425";
+get_contact_rec = zoho.crm.getRecordById("Contacts",cntct_id);
+contact_name = get_contact_rec.get("Last_Name");
+if(contact_name != "")
+{
+	workdrive_name = contact_name + " - Folder";
+	response = invokeurl
+	[
+		url :"https://www.zohoapis.eu/workdrive/api/v1/teamfolders/" + workdriveID + "/folders"
+		type :GET
+		headers:header
+		connection:"workdriveconnection"
+	];
+	workdrive_folder_id = "";
+	if(!response.get("data").isEmpty())
+	{
+		for each  foldr in response.get("data")
+		{
+			folder_name = foldr.get("attributes").get("name");
+			if(folder_name == workdrive_name)
+			{
+				workdrive_folder_id = foldr.get("id");
+				break;
+			}
+		}
+	}
+	if(workdrive_folder_id == "")
+	{
+		workdrive_folder = zoho.workdrive.createFolder(workdrive_name,workdriveID,"workdriveconnection");
+		if(workdrive_folder != null)
+		{
+			workdrive_folder_id = workdrive_folder.get("data").get("id");
+		}
+	}
+	dataMap.put("Workdrive_Contact_Folder",workdrive_name);
+}
+if(get_contact_rec.get("Account_Name") != "")
+{
+	acc_name = get_contact_rec.get("Account_Name").get("name");
+	acc_sub_folder = acc_name + " Account - Folder";
+	response1 = invokeurl
+	[
+		url :"https://www.zohoapis.eu/workdrive/api/v1/teamfolders/" + workdrive_folder_id + "/folders"
+		type :GET
+		headers:header
+		connection:"workdriveconnection"
+	];
+	acc_workdrive_folder_id = "";
+	if(!response1.get("data").isEmpty())
+	{
+		for each  sub_folder in response1.get("data")
+		{
+			sub_folder_name = sub_folder.get("name");
+			if(sub_folder_name == acc_sub_folder)
+			{
+				acc_workdrive_folder_id = sub_folder.get("id");
+				break;
+			}
+		}
+	}
+	if(acc_workdrive_folder_id == "")
+	{
+		acc_workdrive_folder = zoho.workdrive.createFolder(acc_sub_folder,workdrive_folder_id,"workdriveconnection");
+		if(acc_workdrive_folder != null)
+		{
+			acc_workdrive_folder_id = acc_workdrive_folder.get("data").get("id");
+		}
+		data1 = Map();
+		data_param_map1 = Map();
+		att_param_map1 = Map();
+		att_param_map1.put("resource_id",acc_workdrive_folder_id);
+		att_param_map1.put("shared_type","publish");
+		att_param_map1.put("role_id","34");
+		data_param_map1.put("attributes",att_param_map1);
+		data_param_map1.put("type","permissions");
+		data1.put("data",data_param_map1);
+		acc_external_link = invokeurl
+		[
+			url :"https://www.zohoapis.eu/workdrive/api/v1/permissions"
+			type :POST
+			parameters:data1.toString()
+			headers:header
+			connection:"workdriveconnection"
+		];
+		acc_link_external = acc_external_link.get("data").get("attributes").get("permalink");
+		dataMap.put("Workdrive_Link",acc_link_external);
+	}
+	dataMap.put("Workdrive_Acc_Folder",acc_sub_folder);
+}
+if(!dataMap.isEmpty())
+{
+	update_crm_data = zoho.crm.updateRecord("Contacts",cntct_id,dataMap);
+}
