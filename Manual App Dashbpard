@@ -1,0 +1,759 @@
+<%{
+	protocol_rec = Erdbaron[Login_User == zoho.loginuserid] sort by Added_Time desc;
+	active_status = 0;
+	inactive_status = 0;
+	for each  rec1 in protocol_rec
+	{
+		status = rec1.Status;
+		if(status == "Active")
+		{
+			active_status = active_status + 1;
+		}
+		else
+		{
+			inactive_status = inactive_status + 1;
+		}
+	}
+	project_rec = Project_Form[Login_user == zoho.loginuserid] sort by Added_Time desc;
+	associated_count = 0;
+	for each  rec in project_rec
+	{
+		associated_project = rec.Erdbaron1;
+		if(associated_project != null)
+		{
+			associated_count = associated_count + 1;
+		}
+	}
+	view_project = Project_Form[Shared_with_Email.contains(zoho.loginuserid) && Shared_Permission == "Viewer"] sort by Added_Time desc;
+	view_project_count = 0;
+	for each  rec in view_project
+	{
+		associated_project = rec.Erdbaron1;
+		if(associated_project != null)
+		{
+			view_project_count = view_project_count + 1;
+		}
+	}
+	edit_project = Project_Form[Shared_with_Email.contains(zoho.loginuserid) && Shared_Permission == "Editor"] sort by Added_Time desc;
+	edit_project_count = 0;
+	for each  rec in edit_project
+	{
+		associated_project = rec.Erdbaron1;
+		if(associated_project != null)
+		{
+			edit_project_count = edit_project_count + 1;
+		}
+	}
+	%>
+<style>
+    .mainDIv {
+        box-sizing: border-box;
+        font-size: 17px;
+        font-weight: 400;
+        font-family: 'Roboto', sans-serif;
+    }
+    .mainDIv a {
+        text-decoration: none;
+        color: black;
+    }
+    .embdDiv {
+        border: 1px solid #e7e7e7;
+        border-radius: 5px;
+    }
+    .hdrNote {
+        font-size: 20px;
+        line-height: 50px;
+        margin: 0;
+        float: left;
+        font-weight: 400;
+    }
+    .cmpnyHdr {
+        box-sizing: border-box;
+        float: left;
+        font-weight: 600;
+        font-size: 20px;
+        transition: 0.5s;
+    }
+    .cmpnySpan {
+        padding: 15px 0px 15px 20px;
+        transition: 0.5s;
+        position: relative;
+        display: inline-block;
+        vertical-align: top;
+    }
+    .cmpnyAnch,
+    .editAnch {
+        color: #000;
+        text-decoration: none;
+        transition: 0.5s;
+    }
+    .editAnch {
+        display: none;
+        transition: 0.5s;
+        position: absolute;
+        right: -35px;
+    }
+    .cmpnySpan:hover .cmpnyAnch {
+        color: #3a87d9;
+        cursor: pointer;
+        transition: 0.5s;
+    }
+    .cmpnySpan:hover .editAnch {
+        display: inherit;
+        transition: 0.5s;
+    }
+    .editIcon {
+        font-size: 14px;
+        padding: 5px;
+        box-sizing: border-box;
+        border-radius: 10px;
+        margin-left: 10px;
+        background: #f7f7f7;
+        transition: 0.5s;
+    }
+    .helpAnch {
+        float: right;
+        padding: 2px 8px;
+        border-radius: 26px;
+        border: 1px solid #ccc;
+        color: #3590e1;
+        margin: 14px 15px 10px 0px;
+        width: 26px;
+        height: 26px;
+        box-sizing: border-box;
+    }
+    .helpAnch:hover {
+        border: 1px solid #3590e1;
+        color: #3590e1;
+    }
+    .wrKPlcDIv {
+        /*width:40%; float:left; */
+        flex: 1;
+        padding: 35px 35px 25px 35px;
+        margin-right: 20px;
+        border-radius: 15px;
+        box-sizing: border-box;
+        transition: 0.2s ease all;
+        /*border-right:1px solid #e6e6e6;*/
+    }
+    .wrKPlcDIv:last-child {
+        margin-right: 0;
+    }
+    /*
+    .wrKPlcDIv:hover {
+        box-shadow: 0 2px 6px 2px rgba(0, 0, 0, 0.07);
+    }*/ 
+    /*hoverCases*/
+    .clrBlue:hover {
+        background: rgba(53, 144, 225, 0.1);
+    }
+    .clrPink:hover {
+        background: rgba(144, 93, 168, 0.1);
+    }
+    .clrGreen:hover {
+        background: rgba(6, 166, 160, 0.1);
+    }
+    .clrPaleGreen:hover {
+        background: rgba(29, 192, 129, 0.1);
+    }
+    .clrOrange:hover {
+        background: rgba(255, 125, 44, 0.1);
+    }
+    .clrRed:hover {
+        background: rgba(226, 92, 188, 0.1);
+    }
+    a.wrKPlcDIv {
+        cursor: pointer;
+    }
+    .emplyDiv {
+        flex: 2;
+        cursor: pointer;
+        padding: 40px;
+        box-sizing: border-box;
+    }
+    .bottomContnt div {
+        flex: 1;
+        padding: 0px 15px 0px 0px;
+        margin: 10px 0px 7px 0px;
+        box-sizing: border-box;
+        border-right: 1px solid #e6e6e6;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .bottomContnt div.rightCntnt {
+        padding-left: 20px;
+        border-right: 0;
+        padding-right: 0;
+    }
+    .bottomContnt h3 {
+        font-weight: 400;
+        font-size: 14px;
+        margin: 0;
+    }
+    .bottomContnt p {
+        margin: 5px 0px 0px 0px;
+        color: #4392E6;
+        font-size: 20px;
+        font-weight: 600;
+    }
+    .iconDIv {
+        display: inline-block;
+        vertical-align: top;
+        width: 46px;
+        height: 45px;
+        border-radius: 8px;
+        background: #3590E1;
+        text-align: center;
+        color: #fff;
+        padding-top: 12px;
+        box-sizing: border-box;
+    }
+    .iconDIv i {
+        font-size: 20px;
+    }
+    .cntntDiv {
+        width: calc(100% - 70px);
+        display: inline-block;
+        vertical-align: top;
+        margin-left: 15px;
+        font-size: 16px;
+    }
+    .topContnt h3 {
+        margin: 0;
+        font-weight: 600;
+    }
+    .topContnt p {
+        margin: 4px 0px;
+        color: #333333;
+        line-height: 20px;
+        font-size: 14px;
+        min-height: 50px;
+        max-width: 300px;
+    }
+    /*.firstDiv .topContnt p{ max-width: 300px;     min-height: 50px;  }*/
+    .bottomContnt {
+        display: flex;
+    }
+    .clrBlue .iconDIv {
+        background: #3D8EE5;
+    }
+    .clrBlue .bottomContnt p,
+    .clrBlue .bottomContnt h3 {
+        color: #3590E1;
+    }
+    .clrBlue {
+        background: rgba(53, 144, 225, 0.06);
+    }
+    .clrPink .iconDIv {
+        background: #905DA8;
+    }
+    .clrPink .bottomContnt p,
+    .clrPink .bottomContnt h3 {
+        color: #905DA8;
+    }
+    .clrPink {
+        background: rgba(144, 93, 168, 0.06);
+    }
+    /* .secondDIv .clrBlue { border-top:1px solid #eee; } .secondDIv{     border-top: 1px solid #ededed; } */
+    .wrapperDiv {
+        display: flex;
+        padding: 2%;
+    }
+    /*.secondDIv .wrKPlcDIv{ width:33.3%; } */
+    .secondDIv .wrKPlcDIv:last-child {
+        border-right: 0;
+    }
+    .btnDiv {
+        padding: 15px 20px !important;
+        border-radius: 10px;
+        background: #cbf8cb;
+        text-align: center;
+        color: #1ea234;
+    }
+    .thirdDIv .wrKPlcDIv {
+        width: 100% !important;
+        flex: 1 !important;
+        border-right: none !important;
+    }
+    .thirdDIv .btnParntDIv {
+        width: 20%;
+        float: left;
+        border: 0;
+        box-sizing: border-box;
+    }
+    .thirdDIv .btnParntDIv:last-child {
+        border-right: 0;
+    }
+    .clrGreen {
+        background: rgba(6, 166, 160, 0.06);
+    }
+    .clrGreen .iconDIv {
+        background: #06A6A0;
+    }
+    .clrGreen .bottomContnt p,
+    .clrGreen .bottomContnt h3 {
+        color: #06A6A0;
+    }
+    .clrLimeGreen .iconDIv {
+        background: #1DC081;
+    }
+    .clrLimeGreen .bottomContnt p,
+    .clrLimeGreen .bottomContnt h3 {
+        color: #1DC081;
+    }
+    .clrLimeGreen .btnDiv {
+        background: rgba(29, 192, 129, 0.06);
+        color: #1DC081;
+        border: 0;
+        flex: 0.5;
+        margin-top: 10px;
+    }
+    .clrLimeGreen {
+        background: rgba(29, 192, 129, 0.06);
+    }
+    .clrOrange .iconDIv {
+        background: #FF7D2C;
+    }
+    .clrOrange .bottomContnt p,
+    .clrOrange .bottomContnt h3 {
+        color: #FF7D2C;
+    }
+    .clrOrange .btnDiv {
+        background: rgba(226, 92, 118, 0.08);
+        color: #FF7D2C;
+        border: 0;
+    }
+    .clrOrange {
+        background: rgba(255, 125, 44, 0.06);
+    }
+    .clrRed .iconDIv {
+        background: #E25C76;
+    }
+    .clrRed .bottomContnt p,
+    .clrRed .bottomContnt h3 {
+        color: #E25C76;
+    }
+    .clrRed {
+        background: rgba(226, 92, 188, 0.06);
+    }
+    .clrPaleGreen .iconDIv {
+        background: #1ec081;
+    }
+    .clrPaleGreen .bottomContnt p,
+    .clrPaleGreen .bottomContnt h3 {
+        color: #1ec081;
+    }
+    .clrPaleGreen {
+        background: rgba(29, 192, 129, 0.06);
+    }
+    /* .welcomeNote{ margin: 0px -20px 10px -20px; } */
+    .clrGreen .leftCntnt p {
+        font-size: 18px;
+    }
+    .clrGreen .rightCntnt p {
+        font-size: 18px;
+    }
+    .btnDiv i {
+        font-size: 16px;
+        padding-right: 5px;
+    }
+    .options {
+        float: right;
+        padding: 13px;
+        box-sizing: border-box;
+        height: 55px;
+        border-left: 1px solid #ddd;
+    }
+    .options div {
+        display: block;
+        float: left;
+        font-size: 14px;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+        color: #3590e1;
+        text-align: center;
+    }
+    .options div:hover {
+        border: 1px solid #3590e1;
+    }
+    .options i {
+        float: left;
+        padding-top: 1px;
+    }
+    .addemployee-container {
+        position: absolute;
+        bottom: 0;
+        background: #905DA8;
+        left: 0;
+        width: 100%;
+        padding: 20px;
+        color: #fff;
+        text-align: center;
+        box-sizing: border-box;
+        font-size: 15px;
+        transition: 0.5s;
+    }
+    .wrKPlcDIv {
+        flex: 1;
+        padding: 25px;
+        margin-right: 20px;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
+        transition: 0.5s;
+    }
+    .withCTAPanel:hover .addemployee-container {
+        background: #85559b;
+    }
+    .withCTAPanel:hover {
+        box-shadow: none !important;
+        background: rgba(144, 93, 168, 0.06) !important;
+    }
+    .wrapperDiv {
+        display: flex;
+        padding: 20px 20px 0;
+    }
+    .thirdDIv a {
+        -ms-flex: 1;
+        /* IE 10 */
+        flex: 1;
+        margin-right: 10px;
+        padding: 15px 20px;
+        box-sizing: border-box;
+        background: #eaf3fc;
+        border-radius: 10px;
+        text-align: left;
+        font-size: 15px;
+        font-weight: 600;
+    }
+    .thirdDIv a:hover {
+        background: #DEEDFC;
+    }
+    .thirdDIv {
+        padding: 15px 20px;
+    }
+    .thirdDIv i {
+        color: #368fe1;
+        font-size: 17px;
+        margin: 0px 12px 0px 0px;
+    }
+    .thirdDIv a:last-child {
+        margin-right: 0px;
+    }
+    .thirdDIv a p {
+        margin: 2px;
+    }
+    .thirdDIv div {
+        display: flex;
+    }
+  .tabbed {
+overflow-x: hidden;
+}
+
+.container {
+  text-align: left;
+  margin-top: 10px;
+}
+.btn-style{
+// 	margin-left: 5px;
+}
+.button {
+  background-color: #D6AD53;
+//       border-color: #007bff;
+      color: #fff;
+      padding: 10px 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      /* Added text shadow for better readability */
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+	  margin:1px
+  }
+
+  .button:hover {
+    background-color:white;
+	color: #D6AD53;
+      border-color: #D6AD53;
+  }
+
+table, th, td {
+//   border: 1px solid black;
+  border-collapse: collapse;
+  padding:5px;
+}
+
+table{
+	width:100%;
+	border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 10px 10px 0 0;
+        overflow: hidden;
+}
+td,th{
+  padding: 5px;
+  padding-top:10px;
+  padding-left:5px;
+  text-align: left;
+}
+
+.tab-container {
+display: inherit;
+margin: 0 auto;
+}
+
+.tabRadio {
+/* hiding the inputs */
+display: none;
+}
+
+.tabs {
+display: flex;
+align-items: stretch;
+text-align: center;
+list-style: none;
+padding: 0;
+margin: 0;
+}
+
+.tabLabel {
+display: block;
+margin-bottom: -1px;
+padding: 12px 15px;
+border: 1px solid transparent;
+// color: #666;
+font-size: 16px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+// .tab:hover label {
+// border-bottom-color: #3987D9;
+// color: #3987D9;
+// }
+
+.tab-content {
+opacity: 0;
+height: 0vh;
+overflow: auto;
+}
+
+	.table-container {
+  overflow-x: hidden; /* Hide horizontal overflow */
+}
+
+    td:hover {
+        background-color: #dddddd;
+    }
+
+/* As we cannot replace the numbers with variables or calls to element properties, the number of this selector parts is our tab count limit */
+
+// .tabRadio:nth-of-type(1):checked~.tabs .tab:nth-of-type(1) label,
+// .tabRadio:nth-of-type(2):checked~.tabs .tab:nth-of-type(2) label{
+// // border-top-color: #fff;
+// // border-bottom-color: #3987D9;
+// border-color: #D6AD53;
+// background: White;
+// color: #D6AD53;
+// }
+
+.tabRadio:nth-of-type(1):checked~.tab-content:nth-of-type(1),
+.tabRadio:nth-of-type(2):checked~.tab-content:nth-of-type(2){
+border: 1px solid #e5e5e5;
+height: 50vh;
+border-radius: 10px;
+opacity: 1;
+}
+
+.no_record_wrapper .zc-importdata-report,
+.no_record_wrapper span {
+display: none !important;
+}
+
+.mainDIv {
+// padding: 20px;
+box-size: border-boxing;
+margin: 0 auto;
+}
+
+.mobDiv {
+display: none;
+}
+
+@media only screen and (max-width: 600px) {
+.webDiv {
+display: none;
+}
+.mobDiv {
+display: block;
+}
+}
+
+.view-outer-wrapper .view-header+.reportfullwidth.custom-report {
+background-color: #fff !important;
+}
+
+div[elname='zc-view-component'] {
+border: none !important;
+}
+
+div[elname='zc-view-component'] .zc-card-report {
+background-color: #fff !important;
+border-top: 1px solid #e5e5e5 !important;}
+
+.recordTab
+{
+	background-color: #F2F9FF;
+	border-color: #F2F9FF;
+}
+.view-outer-wrapper .reportfullwidth .record {
+    border-color: #F2F9FF;
+	border-radius: 3%;
+}
+div[elname="zcsinglecard"] div[elname="recordcontainerwrapper"] {
+	border: none !important;
+}
+.record-container .scroll-fix {
+		border-bottom:none;
+		}   
+
+</style>
+<h3 style="margin:0;font-size:18px; font-weight:400;">Overview</h3><br>
+
+   <div class="tabbed">
+      <input checked="" name="css-tabs" class="tabRadio" id="tab1" type="radio">
+ <input name="css-tabs" class="tabRadio" id="tab2" type="radio">
+ 
+      <ul class="tabs">
+         <div class="tab-container">
+<li class="tab"><label for="tab1" class="tabLabel button">Projects</label></li>
+<li class="tab"><label for="tab2" class="tabLabel button">Protocols</label></li>
+         </div>
+      </ul>
+ <div class="tab-content">
+<div class="mainDIv webDiv">
+<div class="wrapperDiv firstDiv">
+                                                <span class="wrKPlcDIv clrBlue" style="background-color:#fff0f1;">
+                                                   
+                                                   <div class="cntntDiv">
+                                                      <div class="topContnt">
+                                                         <h3>Total Projects</h3>
+                                                         <p></p>
+                                                      </div>
+                                                   </div>
+                                                   <div class="bottomContnt" style="margin-top:-25px;text-align:center;">
+                                                      <div class="leftCntnt" style="border-right:none;">
+                                                         <h3 style="color:#ff7c89;font-size:20px;font-weight:bold;"><%=project_rec.count()%></h3>
+                                                      </div>
+													  </div>
+                                                </span>										
+												 <span class="wrKPlcDIv clrOrange">
+                                                  
+                                                   <div class="cntntDiv">
+                                                      <div class="topContnt">
+                                                         <h3>Associated Projects</h3>
+                                                         <p></p>
+                                                      </div>
+                                                   </div>
+                                                   <div class="bottomContnt" style="margin-top:-25px;text-align:center;">
+                                                      <div class="leftCntnt" style="border-right:none;">
+                                                         <h3 style="margin-top: 19px;font-size:20px;font-weight:bold;"><%=associated_count%></h3>
+                                                      </div>
+                                                   </div>
+                                                </span>
+												
+												 <span class="wrKPlcDIv clrBlue" style="background-color:#fff0f1;">
+                                                   
+                                                   <div class="cntntDiv">
+                                                      <div class="topContnt">
+                                                         <h3>Viewer</h3>
+                                                         <p></p>
+                                                      </div>
+                                                   </div>
+                                                   <div class="bottomContnt" style="margin-top:-25px;text-align:center;">
+                                                      <div class="leftCntnt" style="border-right:none;">
+													 <a style="color:#ff7c89;font-size:20px;font-weight:bold;" href= "#Report:Shared_View?zc_LoadIn=dialog"><%=view_project.count()%></a>
+                                                         
+                                                      </div>
+													  </div>
+                                                </span>	
+												 <span class="wrKPlcDIv clrBlue" style="background-color:#fff0f1;">
+                                                   
+                                                   <div class="cntntDiv">
+                                                      <div class="topContnt">
+                                                         <h3>Editor</h3>
+                                                         <p></p>
+                                                      </div>
+                                                   </div>
+                                                   <div class="bottomContnt" style="margin-top:-25px;text-align:center;">
+                                                      <div class="leftCntnt" style="border-right:none;">
+													  
+                                                          <a style="color:#ff7c89;font-size:20px;font-weight:bold;" href= "#Report:Shared_View_Edit?zc_LoadIn=dialog"><%=edit_project.count()%></a>
+                                                      </div>
+													  </div>
+                                                </span>	
+												</div>
+												</div>
+												<br>
+												<a href = "#Form:Project_Form","same window"><button class="button">Create Project</button></a>
+         <div reportLinkName="Project_Form_Report" params="zc_Header=true&zc_MoreAction=true&zc_AddRec=false" elname="zc-component" class="embdDIv divEmbedContainer table-container" iscontentloaded="true">
+</div>  
+      </div>
+ <div class="tab-content">
+<div class="mainDIv webDiv">
+<div class="wrapperDiv firstDiv">
+                                                <span class="wrKPlcDIv clrBlue" style="background-color:#fff0f1;">
+                                                   
+                                                   <div class="cntntDiv">
+                                                      <div class="topContnt">
+                                                         <h3>Total Protocols</h3>
+                                                         <p></p>
+                                                      </div>
+                                                   </div>
+                                                   <div class="bottomContnt" style="margin-top:-25px;text-align:center;">
+                                                      <div class="leftCntnt" style="border-right:none;">
+                                                         <h3 style="color:#ff7c89;font-size:20px;font-weight:bold;"><%=protocol_rec.count()%></h3>
+                                                      </div>
+													  </div>
+                                                </span>										
+												 <span class="wrKPlcDIv clrOrange">
+                                                   
+                                                   <div class="cntntDiv">
+                                                      <div class="topContnt">
+                                                         <h3>Active Protocol</h3>
+                                                         <p></p>
+                                                      </div>
+                                                   </div>
+                                                   <div class="bottomContnt" style="margin-top:-25px;text-align:center;">
+                                                      <div class="leftCntnt" style="border-right:none;">
+                                                         <h3 style="margin-top: 19px;font-size:20px;font-weight:bold;"><%=active_status%></h3>
+                                                      </div>
+                                                   </div>
+                                                </span>
+												<span class="wrKPlcDIv clrBlue" style="background-color:#fff0f1;">
+                                                   
+                                                   <div class="cntntDiv">
+                                                      <div class="topContnt">
+                                                         <h3>Inactive Protocols</h3>
+                                                         <p></p>
+                                                      </div>
+                                                   </div>
+                                                   <div class="bottomContnt" style="margin-top:-25px;text-align:center;">
+                                                      <div class="leftCntnt" style="border-right:none;">
+                                                         <h3 style="color:#ff7c89;font-size:20px;font-weight:bold;"><%=inactive_status%></h3>
+                                                      </div>
+                                                </span>
+												</div>
+												</div>
+												<br>
+												<a href= "#Form:Erdbaron","same window"><button class="button">Create Protocol</button></a>
+         <div reportLinkName="Erdbaron_Report" params="zc_Header=true&zc_MoreAction=true&zc_AddRec=false" elname="zc-component" class="embdDIv divEmbedContainer table-container" iscontentloaded="true">
+</div>  
+      </div>
+</div>
+<%
+
+}%>
