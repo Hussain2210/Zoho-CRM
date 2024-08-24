@@ -1,0 +1,34 @@
+// id = 6087586000008564001;
+Contacts = zoho.crm.getRecordById("Contacts",id);
+dataMap = Map();
+dataMap.put("uniqueIdentifier",id);
+dataMap.put("firstName",Contacts.get("First_Name"));
+dataMap.put("lastName",Contacts.get("Last_Name"));
+dataMap.put("email",Contacts.get("Email"));
+dataMap.put("phone",ifnull(Contacts.get("Phone"),""));
+dateofBirth = Contacts.get("Date_of_Birth") + "T00:00:00";
+dataMap.put("dateOfBirth",dateofBirth);
+encounters = Map();
+encounterslist = List();
+if(Contacts.get("Account_Name") != null)
+{
+	accountId = Contacts.get("Account_Name").get("id");
+	encounters.put("uniqueIdentifier",accountId);
+	accountRes = zoho.crm.getRecordById("Accounts",accountId);
+	encounters.put("admissionDate",accountRes.get("Admission_Date").getPrefix("-07:00"));
+	encounters.put("dischargeDate",accountRes.get("Discharge_Date").getPrefix("-07:00"));
+	encounters.put("accountNumber",ifnull(accountRes.get("Account_Number"),""));
+	encounterslist.add(encounters);
+}
+dataMap.put("encounters",encounterslist);
+header = Map();
+header.put("Accept","application/json");
+header.put("Content-Type","application/json");
+rec = invokeurl
+[
+	url :" https://gg-integration-middleware-798291894.development.catalystserverless.com/server/gg_integration_middleware_function/individual"
+	type :POST
+	parameters:dataMap.toString()
+	headers:header
+];
+info rec;
