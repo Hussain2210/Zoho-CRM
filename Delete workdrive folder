@@ -1,0 +1,29 @@
+//id = 745317000001331031;
+// get_cont_rec = zoho.crm.getRecordById("Contacts",id);
+// //info get_cont_rec;
+// work_drive_link = get_cont_rec.get("WorkDrive_URL");
+// info work_drive_link;
+workdrive_folder_id = work_drive_link.getSuffix("/folder/");
+info "Extracted WorkDrive Folder ID: " + workdrive_folder_id;
+header = Map();
+header.put("Accept","application/vnd.api+json");
+data = Map();
+data_param1 = Map();
+att_param1 = Map();
+att_param1.put("status","51");
+data_param1.put("attributes",att_param1);
+data_param1.put("type","files");
+data.put("data",data_param1);
+response = invokeurl
+[
+	url :"https://www.zohoapis.eu/workdrive/api/v1/files/" + workdrive_folder_id
+	type :PATCH
+	parameters:data.toString()
+	headers:header
+	connection:"delete_folder"
+];
+info response;
+
+Delete workdrive folder when the CRM conatct delete
+
+Be note the get record by id is not working in delete function you can pass the value directly.
