@@ -1,0 +1,15 @@
+rec = zoho.crm.getRecordById("Test_ACL",rec_Id);
+subform_Data = rec.getJSON("Workshop_Attendies");
+for each  subformrec in subform_Data
+{
+	linkinId = subformrec.getJSON("Name1");
+	if(linkinId != null)
+	{
+		linkid = linkinId.getJSON("id");
+		create_map = Map();
+		create_map.put("Workshop_Delegates",linkid);
+		create_map.put("Test_ACL",rec_Id);
+		create_rec = zoho.crm.createRecord("Workshop_X_Test_ACL",create_map);
+		info create_rec;
+	}
+}
