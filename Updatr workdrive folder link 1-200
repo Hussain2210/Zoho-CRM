@@ -1,0 +1,44 @@
+header = Map();
+header.put("Accept","application/vnd.api+json");
+first_count = 0;
+last_count = 0;
+get_all_rec = zoho.crm.getRecords("Contacts",26,200);
+for each  patnt in get_all_rec
+{
+	id = patnt.get("id");
+	get_cont_rec = zoho.crm.getRecordById("Contacts",id);
+	url_link = get_cont_rec.get("WorkDrive_URL");
+	url_link_id = url_link.getSuffix("/folder/");
+	if(url_link_id != "")
+	{
+		if(get_cont_rec.get("First_Name") != null)
+		{
+			last_name = upper(get_cont_rec.get("Last_Name"));
+			contact_name = last_name + " " + get_cont_rec.get("First_Name") + " (" + id + ")";
+			first_count = first_count + 1;
+		}
+		else
+		{
+			last_name = upper(get_cont_rec.get("Last_Name"));
+			contact_name = upper(last_name + " (" + id + ")");
+			last_count = last_count + 1;
+		}
+		data = Map();
+		data_param1 = Map();
+		att_param1 = Map();
+		att_param1.put("name",contact_name);
+		data_param1.put("attributes",att_param1);
+		data_param1.put("type","files");
+		data.put("data",data_param1);
+		response = invokeurl
+		[
+			url :"https://www.zohoapis.eu/workdrive/api/v1/files/" + url_link_id
+			type :PATCH
+			parameters:data.toString()
+			headers:header
+			connection:"workdrive"
+		];
+	}
+}
+info "first count = " + first_count;
+info "last count = " + last_count;
