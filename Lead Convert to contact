@@ -1,0 +1,89 @@
+leadDetails = zoho.crm.getRecordById("Leads", leadId);
+
+ContactMap = map();
+ContactMap.put("First_Name", ifnull(leadDetails.get("First_Name"),""));
+ContactMap.put("Last_Name", ifnull(leadDetails.get("Last_Name"),""));
+ContactMap.put("Mailing_City", ifnull(leadDetails.get("City"),""));
+ContactMap.put("Mailing_Country", ifnull(leadDetails.get("Country"),""));
+ContactMap.put("Mailing_State", ifnull(leadDetails.get("State"),""));
+ContactMap.put("Mailing_Street", ifnull(leadDetails.get("Street"),""));
+ContactMap.put("Mailing_Zip", ifnull(leadDetails.get("Zip_Code"),""));
+ContactMap.put("Description", ifnull(leadDetails.get("Description"),""));
+ContactMap.put("Fax", ifnull(leadDetails.get("Fax"),""));
+ContactMap.put("Title", ifnull(leadDetails.get("Title"),""));
+ContactMap.put("Email", ifnull(leadDetails.get("Email"),""));
+ContactMap.put("Lead_Source", ifnull(leadDetails.get("Lead_Source"),""));
+ContactMap.put("Mobile", ifnull(leadDetails.get("Mobile"),""));
+ContactMap.put("Phone", ifnull(leadDetails.get("Phone"),""));
+ContactMap.put("Secondary_Email", ifnull(leadDetails.get("Secondary_Email"),""));
+ContactMap.put("Skype_ID", ifnull(leadDetails.get("Skype_ID"),""));
+ContactMap.put("Twitter", ifnull(leadDetails.get("Twitter"),""));
+ContactCreate = zoho.crm.create("Contacts", ContactMap);
+info ContactCreate;
+newcontactId = ContactCreate.get("id");
+
+// Copy Related notes
+
+RelatedNotes = zoho.crm.getRelatedRecords("Notes", "Leads",   leadId);
+for each note in RelatedNotes
+{
+notemap = Map();
+notemap.put("Parent_Id",newcontactId);
+notemap.put("Note_Content",note.get("Note_Content"));
+notemap.put("Note_Title",ifnull(note.get("Note_Title"),""));
+notemap.put("se_module","Contacts");
+notecreate = zoho.crm.create("Notes",notemap);
+}
+
+// Copy activties
+reltasks = zoho.crm.getRelatedRecords("Tasks","Leads",  leadId);
+for each task in reltasks
+{
+taskmap = Map();
+taskmap.put("What_Id",newcontactId);
+taskmap.put("$se_module","Contacts");
+taskmap.put("Who_Id",newcontactId);
+updatetask = zoho.crm.update("Tasks",task.get("id"),taskmap);
+info updatetask;
+}
+relevents = zoho.crm.getRelatedRecords("Events","Leads",  leadId);
+for each events in relevents
+{
+eventmap = Map();
+eventmap.put("What_Id",newcontactId);
+eventmap.put("$se_module","Contacts");
+eventmap.put("Who_Id",newcontactId);
+updateevent = zoho.crm.update("Events",events.get("id"),eventmap);
+info updateevent;
+}
+relcalls = zoho.crm.getRelatedRecords("Calls","Leads",  leadId);
+for each call in relcalls
+{
+callmap = Map();
+callmap.put("What_Id",newcontactId);
+callmap.put("$se_module","Contacts");
+callmap.put("Who_Id",newcontactId);
+updatecall = zoho.crm.update("Calls",call.get("id"),callmap);
+info updatecall;
+}
+
+// Copy Attachment
+relatedrcords = zoho.crm.getRelatedRecords("Attachments","Leads",  leadId);
+attachid = List();
+for each ele in relatedrcords
+{
+attachementId = ele.get("id");
+attachid.add(attachementId);
+}
+for each ele in attachid
+{
+
+downloadFile = invokeurl
+[
+url: "https://www.zohoapis.com/crm/v2/Leads/" + leadId + "/Attachments/" + ele
+type: GET
+connection : "customfunction"
+
+];
+info resp2;
+}
