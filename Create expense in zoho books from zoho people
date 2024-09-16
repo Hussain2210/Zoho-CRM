@@ -1,0 +1,126 @@
+
+rec = zoho.people.getRecordByID("travelexpenses",id);
+//info rec ;
+Line_List = List();
+iList = List();
+itemMap = Map();
+books_map = Map();
+json = Map();
+Itemize = rec.get("tabularSections").getJSON("Itemize");
+for each  rec1 in Itemize
+{
+	itemMap.put("amount",ifNull(rec1.get("Amount")," "));
+	itemMap.put("description",ifNull(rec1.get("NOTES")," "));
+	itemMap.put("TAX",ifNull(rec1.get("TAX"),0));
+	////////////////////////Getting Expense Account////////////
+	if(rec1.get("EXPENSE_ACCOUNT") != null)
+	{
+		Organization_ID = "793443842";
+		searchParam = "account_name=" + rec1.getJSON("EXPENSE_ACCOUNT");
+		response1 = invokeurl
+		[
+			url :"https://www.zohoapis.com/books/v3/chartofaccounts?organization_id=793443842&account_name=" + rec1.getJSON("EXPENSE_ACCOUNT")
+			type :GET
+			connection:"books_connection"
+		];
+		// info response1;
+		if(response1.get("chartofaccounts").getJSON("account_name") == rec1.getJSON("EXPENSE_ACCOUNT"))
+		{
+			Expense_Account1 = response1.get("chartofaccounts").getJSON("account_id");
+			itemMap.put("account_id",Expense_Account1);
+		}
+	}
+	iList.add(itemMap);
+}
+json.put("line_items",iList);
+// //////////////////////////////////////Customer_Name///////////////////
+if(rec.getJSON("Customer_Name") != null)
+{
+	//info rec.getJSON("Customer_Name");
+	Organization_ID = "793443842";
+	searchParam = Map();
+	searchParam.put("contact_name",rec.getJSON("Customer_Name"));
+	response = zoho.books.getRecords("Contacts",Organization_ID,searchParam,"books_connection");
+	contact = response.get("contacts");
+	contact_id = contact.get(0).get("contact_id");
+	customer_name = contact.get(0).get("customer_name");
+	//info "customer_name: " + customer_name;
+	if(contact.get(0).get("customer_name") == rec.getJSON("Customer_Name"))
+	{
+		//info contact.get(0).get("customer_name");
+		json.put("customer_id",contact_id);
+	}
+}
+//////////////////////Paid_Through//////////
+searchParam = "account_name=" + rec.getJSON("Paid_Through");
+response2 = invokeurl
+[
+	url :"https://www.zohoapis.com/books/v3/chartofaccounts?organization_id=793443842&account_name=" + rec.getJSON("Paid_Through")
+	type :GET
+	connection:"books_connection"
+];
+//info "response2" + response2;
+if(response2.get("chartofaccounts").getJSON("account_name") == rec.getJSON("Paid_Through"))
+{
+	Paid_Through = response2.get("chartofaccounts").getJSON("account_id");
+	//info "Paid_Through : " + Paid_Through;
+	json.put("paid_through_account_id",Paid_Through);
+}
+///////////////Add user ////////////////////////////
+if(rec.get("EmployeeID") == "Ali - Haidar")
+{
+	json.put("user_id",3576258000006076003);
+	json.put("employee_id",3576258000006076003);
+}
+if(rec.get("EmployeeID") == "Samer - Daher")
+{
+	json.put("user_id",3576258000000075001);
+	json.put("employee_id",3576258000000075001);
+}
+if(rec.get("EmployeeID") == "Jehad - Jaarah")
+{
+	json.put("user_id",3576258000001369001);
+	json.put("employee_id",3576258000001369001);
+}
+if(rec.get("EmployeeID") == "Dina - Hamdan")
+{
+	json.put("user_id",3576258000005072651);
+	json.put("employee_id",3576258000005072651);
+}
+if(rec.get("EmployeeID") == "Ziad - Ghosn")
+{
+	json.put("user_id",3576258000003552009);
+	json.put("employee_id",3576258000003552009);
+}
+if(rec.get("EmployeeID") == "Zohdi - Jaara")
+{
+	json.put("user_id",3576258000004169001);
+	json.put("employee_id",3576258000004169001);
+}
+if(rec.get("EmployeeID") == "Shoroq - Khalil")
+{
+	json.put("user_id",3576258000004132001);
+	json.put("employee_id",3576258000004132001);
+}
+if(rec.get("EmployeeID") == "Asem - Al Nsour")
+{
+	json.put("user_id",3576258000005813001);
+	json.put("employee_id",3576258000005813001);
+}
+//////////////////Maping field///////////////////////////
+json.put("branch_name",ifNull(rec.getJSON("Branch")," "));
+json.put("date",rec.getJSON("Date1").toDate("dd-MMM-yyyy"));
+json.put("employee_name",ifNull(rec.getJSON("EmployeeID")," "));
+json.put("tax_treatment",rec.getJSON("Tax_Treatment"));
+json.put("reference_number",ifNull(rec.getJSON("Reference")," "));
+info json;
+//////////////////////Create record in zoho books//////////////
+expenses_create = zoho.books.createRecord("expenses",793443842,json,"books_connection");
+info expenses_create;
+expense_di = expenses_create.get("expense").getJSON("expense_id");
+/////////////////////update books id in ZOho people//////////////////
+param_map = Map();
+param_map.put("Zoho_books_expense_ID",expense_di);
+param_map.put("recordid",id);
+update_people = zoho.people.update("travelexpenses",param_map,"people");
+info update_people;
