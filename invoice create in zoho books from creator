@@ -1,0 +1,56 @@
+void ftech_customer(string Email)
+{
+Reservations = Reservations[Email == input.Email];
+// info Reservations;
+Invoice_No = Reservations.Invoice_No;
+Email = Reservations.Email;
+Organization_ID = "815928412";
+items_ID = "4206966000000375005";
+searchParam = "email=" + Email;
+response = zoho.books.getRecords("Contacts",Organization_ID,searchParam,"zoho_books");
+contact = response.get("contacts");
+contact_id = contact.get(0).get("contact_id");
+response1 = zoho.books.getRecordsByID("Contacts",Organization_ID,contact_id,"zoho_books");
+items = zoho.books.getRecordsByID("items",Organization_ID,"4206966000000375005","zoho_books");
+name = items.get("item").get("name");
+if(Reservations.Agreed_Rental_Fee != null)
+{
+Agreed_Rental_Fee = Reservations.Agreed_Rental_Fee;
+info Agreed_Rental_Fee;
+}
+date = zoho.currentdate;
+newdate = date.toString("yyyy-MM-dd");
+date2 = date.addDay(1);
+newdate2 = date2.toString("yyyy-MM-dd");
+invoice_map = Map();
+custom_field = Map();
+new_cust = List();
+// info "date resp: " + newdate + " due date resp: " + newdate2 ;
+invoice_map.put("customer_id",contact_id);
+invoice_map.put("date",newdate);
+invoice_map.put("due_date",newdate2);
+custom_field.put("label","Invoice created");
+custom_field.put("value",true);
+new_cust.add(custom_field);
+invoice_map.put("custom_fields",new_cust);
+item_map = Map();
+new = List();
+item_map.put("item_id",items_ID);
+item_map.put("quantity",1);
+item_map.put("rate",Agreed_Rental_Fee);
+new.add(item_map);
+invoice_map.put("line_items",new);
+// info invoice_map;
+url = "https://www.zohoapis.com/books/v3/invoices?organization_id=" + Organization_ID;
+info "END URL";
+resp = invokeurl
+[
+url :url
+type :POST
+parameters:invoice_map.toString()
+connection:"zoho_books"
+];
+// info "RESP MSG: " + resp;
+// invoice_number = resp.get("invoice").get("invoice_number");
+// Invoice_No = invoice_number;
+}
