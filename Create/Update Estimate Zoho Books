@@ -1,0 +1,76 @@
+data = zoho.crm.getRecordById("Quotes",id);
+customer_name = data.get("Account_Name").get("name");
+search_map = Map();
+search_map.put("contact_name",customer_name);
+search_cus = zoho.books.getRecords("contacts",750553355,search_map,"zohobooks");
+if(search_cus.get("contacts").size() > 0)
+{
+	zBcus_id = search_cus.get("contacts").getJSON("contact_id");
+	create_map = Map();
+	create_map.put("customer_id",zBcus_id);
+	create_map.put("status","draft");
+	create_map.put("date",zoho.currentdate.toString("yyyy-MM-dd"));
+	product_details = data.getJSON("Product_Details");
+	item_list = List();
+	for each  pdata in product_details
+	{
+		pname = pdata.get("product").get("name");
+		search_item = Map();
+		search_item.put("name",pname);
+		search_item.put("status","active");
+		search_items = zoho.books.getRecords("items",750553355,search_item,"zohobooks");
+		if(search_items.get("items").size() > 0)
+		{
+			zBitem_id = search_items.get("items").getJSON("item_id");
+			item_map = Map();
+			item_map.put("item_id",zBitem_id);
+			item_map.put("rate",pdata.get("list_price"));
+			item_map.put("quantity",pdata.get("quantity"));
+			item_map.put("discount",pdata.get("Discount"));
+			item_list.add(item_map);
+		}
+		else
+		{
+			create_map = Map();
+			create_map.put("Parent_Id",id);
+			create_map.put("$se_module","Quotes");
+			create_map.put("Note_Title","Item Not Found");
+			create_map.put("Note_Content","Item " + pname + " not found in zoho books");
+			c = zoho.crm.createRecord("Notes",create_map);
+		}
+	}
+	create_map.put("line_items",item_list);
+	create_map.put("discount",data.get("Discount"));
+	create_map.put("adjustment",data.get("Adjustment"));
+	//info create_map;
+	if(data.get("zBooks_Estimate_ID") == "" || data.get("zBooks_Estimate_ID") == null)
+	{
+		resp = zoho.books.createRecord("estimates",750553355,create_map,"zohobooks");
+		if(resp.getJSON("estimate").size() > 0)
+		{
+			zBooksEstId = resp.get("estimate").get("estimate_id");
+			resp2 = invokeurl
+			[
+				url :"https://www.zohoapis.com/books/v3/estimates/" + zBooksEstId + "/status/sent?organization_id=750553355"
+				type :POST
+				connection:"zohobooks"
+			];
+			crm_map = Map();
+			crm_map.put("zBooks_Estimate_ID",zBooksEstId);
+			zoho.crm.updateRecord("Quotes",id,crm_map);
+		}
+	}
+	else
+	{
+		zoho.books.updateRecord("estimates",750553355,data.get("zBooks_Estimate_ID"),create_map,"zohobooks");
+	}
+}
+else
+{
+	create_map = Map();
+	create_map.put("Parent_Id",id);
+	create_map.put("$se_module","Quotes");
+	create_map.put("Note_Title","Estimate not created in zoho books");
+	create_map.put("Note_Content","Customer not found in zoho books");
+	c = zoho.crm.createRecord("Notes",create_map);
+}
