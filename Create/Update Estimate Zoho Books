@@ -1,76 +1,141 @@
-data = zoho.crm.getRecordById("Quotes",id);
+dealResponse = zoho.crm.getRecordById("Deals",deal_id);
+Main_MAP = Map();
+if(dealResponse.get("Deal_Name") != null)
+{
+quote_subject = dealResponse.get("Deal_Name") + " - Estimate";
+Main_MAP.put("Subject",quote_subject);
+}
+Main_MAP.put("Deal_Name",deal_id);
+Main_MAP.put("Estimate_Status","Draft");
+if(dealResponse.get("Account_Name") != null)
+{
+Main_MAP.put("Account_Name",dealResponse.get("Account_Name").get("id"));
+}
+if(dealResponse.get("Contact_Name") != null)
+{
+Main_MAP.put("Contact_Name",dealResponse.get("Contact_Name").get("id"));
+}
+Main_MAP.put("Quote_Stage",ifnull(dealResponse.get("Stage"),""));
+Main_MAP.put("Valid_Till",ifnull(dealResponse.get("Closing_Date"),""));
+Main_MAP.put("Currency",ifnull(dealResponse.get("Currency"),""));
+Main_MAP.put("Exchange_Rate",ifnull(dealResponse.get("Exchange_Rate"),""));
+if(dealResponse.get("Estimate") != null && dealResponse.get("Estimate").size() > 0)
+{
+Product_list = LIST();
+for each lineitem in dealResponse.get("Estimate")
+{
+product_MAP = Map();
+if(lineitem.get("Product_name") != null)
+{
+product_MAP.put("product",lineitem.get("Product_name").get("id"));
+product_MAP.put("quantity",ifnull(lineitem.get("Qty"),1));
+product_MAP.put("product_description",ifnull(lineitem.get("Description"),""));
+Product_list.add(product_MAP);
+}
+}
+Main_MAP.put("Product_Details",Product_list);
+}
+Main_MAP.put("Description",ifnull(dealResponse.get("Description"),""));
+// info "Main_MAP => " + Main_MAP;
+Quote_search_Response = zoho.crm.searchRecords("Quotes","(Deal_ID:equals:" + deal_id + ")");
+if(Quote_search_Response.size() > 0)
+{
+// info Quote_search_Response;
+quoteID = Quote_search_Response.get(0).get("id");
+update_Quote = zoho.crm.updateRecord("Quotes",quoteID,Main_MAP);
+info "update_Quote =>>>> " + update_Quote;
+New = Map();
+New.put("Estimate1",quoteID);
+zoho.crm.updateRecord("Deals",deal_id,New);
+}
+else
+{
+Main_MAP.put("Deal_ID",deal_id.totext());
+Quote_Created = zoho.crm.createRecord("Quotes",Main_MAP);
+info "Quote_Created => " + Quote_Created.getJSON("id");
+
+quoteID = Quote_Created.getJSON("id");
+New = Map();
+New.put("Estimate1",Quote_Created.getJSON("id"));
+info "update deal data " + zoho.crm.updateRecord("Deals",deal_id,New);
+}
+/////////////////////////Quote Create////////////////
+data = zoho.crm.getRecordById("Quotes",quoteID);
 customer_name = data.get("Account_Name").get("name");
 search_map = Map();
 search_map.put("contact_name",customer_name);
 search_cus = zoho.books.getRecords("contacts",750553355,search_map,"zohobooks");
 if(search_cus.get("contacts").size() > 0)
 {
-	zBcus_id = search_cus.get("contacts").getJSON("contact_id");
-	create_map = Map();
-	create_map.put("customer_id",zBcus_id);
-	create_map.put("status","draft");
-	create_map.put("date",zoho.currentdate.toString("yyyy-MM-dd"));
-	product_details = data.getJSON("Product_Details");
-	item_list = List();
-	for each  pdata in product_details
-	{
-		pname = pdata.get("product").get("name");
-		search_item = Map();
-		search_item.put("name",pname);
-		search_item.put("status","active");
-		search_items = zoho.books.getRecords("items",750553355,search_item,"zohobooks");
-		if(search_items.get("items").size() > 0)
-		{
-			zBitem_id = search_items.get("items").getJSON("item_id");
-			item_map = Map();
-			item_map.put("item_id",zBitem_id);
-			item_map.put("rate",pdata.get("list_price"));
-			item_map.put("quantity",pdata.get("quantity"));
-			item_map.put("discount",pdata.get("Discount"));
-			item_list.add(item_map);
-		}
-		else
-		{
-			create_map = Map();
-			create_map.put("Parent_Id",id);
-			create_map.put("$se_module","Quotes");
-			create_map.put("Note_Title","Item Not Found");
-			create_map.put("Note_Content","Item " + pname + " not found in zoho books");
-			c = zoho.crm.createRecord("Notes",create_map);
-		}
-	}
-	create_map.put("line_items",item_list);
-	create_map.put("discount",data.get("Discount"));
-	create_map.put("adjustment",data.get("Adjustment"));
-	//info create_map;
-	if(data.get("zBooks_Estimate_ID") == "" || data.get("zBooks_Estimate_ID") == null)
-	{
-		resp = zoho.books.createRecord("estimates",750553355,create_map,"zohobooks");
-		if(resp.getJSON("estimate").size() > 0)
-		{
-			zBooksEstId = resp.get("estimate").get("estimate_id");
-			resp2 = invokeurl
-			[
-				url :"https://www.zohoapis.com/books/v3/estimates/" + zBooksEstId + "/status/sent?organization_id=750553355"
-				type :POST
-				connection:"zohobooks"
-			];
-			crm_map = Map();
-			crm_map.put("zBooks_Estimate_ID",zBooksEstId);
-			zoho.crm.updateRecord("Quotes",id,crm_map);
-		}
-	}
-	else
-	{
-		zoho.books.updateRecord("estimates",750553355,data.get("zBooks_Estimate_ID"),create_map,"zohobooks");
-	}
+zBcus_id = search_cus.get("contacts").getJSON("contact_id");
+create_map = Map();
+create_map.put("customer_id",zBcus_id);
+create_map.put("status","draft");
+create_map.put("current_sub_status","draft");
+create_map.put("Estimate_Status","draft");
+create_map.put("date",zoho.currentdate.toString("yyyy-MM-dd"));
+product_details = data.getJSON("Product_Details");
+item_list = List();
+for each pdata in product_details
+{
+pname = pdata.get("product").get("name");
+search_item = Map();
+search_item.put("name",pname);
+search_item.put("status","active");
+search_items = zoho.books.getRecords("items",750553355,search_item,"zohobooks");
+if(search_items.get("items").size() > 0)
+{
+zBitem_id = search_items.get("items").getJSON("item_id");
+item_map = Map();
+item_map.put("item_id",zBitem_id);
+item_map.put("rate",pdata.get("list_price"));
+item_map.put("quantity",pdata.get("quantity"));
+item_map.put("discount",pdata.get("Discount"));
+item_list.add(item_map);
 }
 else
 {
-	create_map = Map();
-	create_map.put("Parent_Id",id);
-	create_map.put("$se_module","Quotes");
-	create_map.put("Note_Title","Estimate not created in zoho books");
-	create_map.put("Note_Content","Customer not found in zoho books");
-	c = zoho.crm.createRecord("Notes",create_map);
+create_map = Map();
+create_map.put("Parent_Id",quoteID);
+create_map.put("$se_module","Quotes");
+create_map.put("Note_Title","Item Not Found");
+create_map.put("Note_Content","Item " + pname + " not found in zoho books");
+c = zoho.crm.createRecord("Notes",create_map);
+}
+}
+create_map.put("line_items",item_list);
+create_map.put("discount",data.get("Discount"));
+create_map.put("adjustment",data.get("Adjustment"));
+//info create_map;
+if(data.get("zBooks_Estimate_ID") == "" || data.get("zBooks_Estimate_ID") == null)
+{
+resp = zoho.books.createRecord("estimates",750553355,create_map,"zohobooks");
+info "Create estinate in books : " + resp;
+estimate_number = resp.get("estimate").getJSON("estimate_number");
+New = Map();
+New.put("Estimate_No",estimate_number);
+info zoho.crm.updateRecord("Deals",deal_id,New);
+if(resp.getJSON("estimate").size() > 0)
+{
+zBooksEstId = resp.get("estimate").get("estimate_id");
+Estimate_Number = resp.get("estimate").get("estimate_number");
+crm_map = Map();
+crm_map.put("zBooks_Estimate_ID",zBooksEstId);
+crm_map.put("Estimate_Number",Estimate_Number);
+info "update number in quote: " + zoho.crm.updateRecord("Quotes",quoteID,crm_map,{"trigger":{"workflow"}});
+}
+}
+else
+{
+info "update estiante in books " + zoho.books.updateRecord("estimates",750553355,data.get("zBooks_Estimate_ID"),create_map,"zohobooks");
+}
+}
+else
+{
+create_map = Map();
+create_map.put("Parent_Id",quoteID);
+create_map.put("$se_module","Quotes");
+create_map.put("Note_Title","Estimate not created in zoho books");
+create_map.put("Note_Content","Customer not found in zoho books");
+c = zoho.crm.createRecord("Notes",create_map);
 }
