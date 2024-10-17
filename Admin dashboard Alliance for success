@@ -1,0 +1,103 @@
+<%{
+	myid = Mentor[Email1 == zoho.loginuserid];
+	profileName = thisapp.permissions.loginUserProfile();
+	myself = myid.First_Name + ",  ID= " + myid.MentorID + ",   " + profileName + ",   ";
+	%>
+<div><table bgcolor="##E9F0F8" cellpadding="5" cellspacing="10" width="100%" border="1">
+<tbody><tr><td valign="top" width="87%">
+<img src="https://mcusercontent.com/34935973e93b481f349c7b6c5/images/e216c26c-214d-de55-efdc-2bd98c4d4d88.png" aligin="left" alt="AFS Logo" width="350" height="150"><br>
+<table bgcolor="##E9F0F8" width="100%" cellspacing="0" cellpadding="3" border="0" BORDERCOLOR="RED" class="zc-viewtable">
+<tbody>
+<tr><td colspan="2" class="zc-viewheader zc-viewheader-height"><h2>AFS Admin / Coordinator Home Page</h2><hr>Hi <%=zoho.loginuserid%> <%=profileName%><hr>
+</td></tr>
+<tr bgcolor="#E9F0F8" ><td border="1" bgcolor="#E9F0F8" width="20%">
+        <h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success#Report:Mentor_Report" target="_parent">All Volunteers</a></h3>
+ </td><td  width="80%">- View a list of all Mentors and Tutors
+</td></tr> <hr>
+
+<tr bgcolor="#FBFCFC" ><td border="1" bgcolor="#FBFCFC" width="20%"><h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success#Report:Student_Particpant_Report" target="_parent">All Students</a></h3>
+</td><td  width="80%">- View a list of all Students, with links to their interests and student progress summaries
+</td></tr>
+<tr td border="1" bgcolor="#E9F0F8" ><td border="1" bgcolor="#E9F0F8" width="20%"><h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success/#Report:Monthly_Progress_Report_Report" target="_parent">All Student Progress Reports</a></h3>
+</td><td  width="80%">-View all student progress reports submitted by mentors and tutors
+</td></tr>
+<tr td border="1" bgcolor="#FBFCFC" ><td border="1" bgcolor="#FBFCFC" width="20%"><h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success/#Report:TutorAssigment_Report" target="_parent">All Tutor Asignments </a></h3>
+</td><td  width="80%">-View all current tutor assignments
+</td></tr>
+<tr bgcolor="#E9F0F8" ><td border="1" bgcolor="#E9F0F8" width="20%"><h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success#Report:TaskCheckllst_Report" target="_parent">View Task Checklist</a></h3>
+</td><td  width="80%">- View all the tasks associated with Junior and Senior years
+</td></tr>
+<tr bgcolor="#FBFCFC" ><td border="1" bgcolor="#FBFCFC" width="20%"><h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success#Report:All_Student_Workshops" target="_parent">View Student Workshops</a></h3>
+</td><td  width="80%">- View all the student workshops and add any new workshops
+</td></tr>
+<tr bgcolor="#E9F0F8" ><td border="1" bgcolor="#E9F0F8" width="20%"><h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success#Form:Email_Application" target="_parent">Email Mentor Application Forms</a></h3>
+</td><td  width="80%">- Send an email to a prospective mentor or tutor with links to the application
+</td></tr>
+<tr bgcolor="#FBFCFC" ><td border="1" bgcolor="#FBFCFC" width="20%"><h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success#Form:Email_Student_Interest_Form" target="_parent">Email Student Interest Survey</a></h3>
+</td><td  width="80%">- Send an email to the school or student with a link to the Student Interest Survey
+</td></tr>
+<tr td border="1" bgcolor="E9F0F8" ><td border="1" bgcolor="E9F0F8" width="20%"><h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success/#Form:Referrals_Made" target="_parent">Record a Referral</a></h3>
+</td><td  width="80%">- Record a referral that was made for a student 
+</td></tr>
+<tr td border="1" bgcolor="FBFCFC" ><td border="1" bgcolor="FBFCFC" width="20%"><h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success/#Report:All_Referrals_Made" target="_parent">View all Referrals</a></h3>
+</td><td  width="80%">- View all referrals that was made for students 
+</td></tr>
+<tr bgcolor="#FBFCFC" ><td border="1" bgcolor="#FBFCFC" width="20%"><h3><a href="https://vandervenauction.zohocreator.com/portal/alliance-for-success#Page:AFS_Monthly_Metrics" target="_parent">Monthly Metrics</a></h3>
+</td><td  width="80%">- Send an email to the school or student with a link to the Student Interest Survey
+</td></tr>
+
+</tbody></table>
+</td></tr></tbody></table><style>*.zc-viewtable { \n	width : 100%;\n	border-top : none;\n	border-right : 1px solid rgb(93,155,215);\n	border-left : 1px solid rgb(93,155,215);\n	border-bottom : 1px solid rgb(93,155,215);\n}\n*.zc-viewheader { \n	background-color : rgb(127, 190, 251);\n	padding : 5px 5px;\n	text-align : left;\n	border-top : 1px solid rgb(93,155,215);\n	border-left : 1px solid rgb(93,155,215);\n	border-right : 1px solid rgb(93,155,215);\n	border-bottom : 1px solid rgb(93,155,215);\n	background-image : none;\n}\n*.zc-viewheader-height { \n	height : 25px;\n} \n.zc-viewrowheader-template\n{\n	background-color : rgb(127, 190, 251);\n	padding : 5px 5px;\n	text-align : left;\n	border-top : 1px solid rgb(93,155,215);\n	border-left : 1px solid rgb(93,155,215);\n	border-right : 1px solid rgb(93,155,215);\n	border-bottom : 1px solid rgb(93,155,215);\n	background-image : none;\n} \n\n*.zc-viewrow td { \n	border-left : none;\n	border-bottom : 1px solid rgb(205,228,249);\n	border-right : 1px solid rgb(205,228,249);\n	vertical-align : middle;\n	white-space : nowrap;\n	height : 27px;\n	font-size : 12px;\n	padding : 3px;\n} \n*.zc-row-1 { \n	background-color : rgb(255, 255, 255);\n} \n.zc-summarytable-template\n{\n	border:1px solid #CFE2A9;\n}\n.zc-summary-label-template\n{\n	font: 12px "Arimo", sans-serif;\n	background-color :rgb(127, 190, 251);\n	border-bottom:1px solid #DBEBBB;\n	border-right:1px solid #DBEBBB;\n	height:25px;\n}\n\n.zc-summary-data-template\n{\n	font: 12px "Arimo", sans-serif;\n	height:25px;\n	background-color:#FFFFFF;\n	border-bottom:1px solid #DBEBBB;\n}
+</style></div>
+<%
+	if(zoho.loginuserid == "msmith@lunchbreak.org")
+	{
+		%>
+<div><table bgcolor="lightblue" cellpadding="5" cellspacing="10" width="100%" border="1">
+<tbody><tr><td valign="top" width="87%">
+<table bgcolor="lightblue" width="100%" cellspacing="0" cellpadding="3" border="0" BORDERCOLOR="RED" class="zc-viewtable">
+<tbody>
+<tr><td colspan="2" class="zc-viewheader zc-viewheader-height"><h2>Dveloper Home Page</h2><hr>Hi <%=zoho.loginuser%> <%=zoho.loginuserid%> <hr>
+</td></tr>
+<tr bgcolor="white" ><td border="1" bgcolor="white" width="20%">
+        <h3><a href="https://creatorapp.zoho.com/vanderven/alliance-for-success/#Report:Mentor_Report" target="_parent">All Mentors</a></h3>
+ </td><td  width="80%">- View a list of all Mentors
+</td></tr> <hr>
+<tr td border="1" bgcolor="lightblue" ><td border="1" bgcolor="lightblue" width="20%"><h3><a href="https://creatorapp.zoho.com/vanderven/alliance-for-success/#Report:TutorAssigment_Report" target="_parent">Tutor Assignments</a></h3>
+</td><td  width="80%">- View a list of all Resources/Volunteers 
+</td></tr>
+<tr bgcolor="white" ><td border="1" bgcolor="white" width="20%"><h3><a href="https://creatorapp.zoho.com/vanderven/alliance-for-success/#Report:Student_Particpant_Report" target="_parent">All Students</a></h3>
+</td><td  width="80%">- View a list of all Students, with links to their interests and monthly reports
+</td></tr>
+<tr td border="1" bgcolor="lightblue" ><td border="1" bgcolor="lightblue" width="20%"><h3><a href="https://creatorapp.zoho.com/vanderven/alliance-for-success/#Report:Monthly_Progress_Report_Report" target="_parent">All Monthly Progress Reports</a></h3>
+</td><td  width="80%">-View all monthly progress reports
+</td></tr>
+<tr td border="1" bgcolor="white" ><td border="1" bgcolor="white" width="20%"><h3><a href="https://creatorapp.zoho.com/vanderven/alliance-for-success/#Form:Referrals_Made" target="_parent">Record a Referral</a></h3>
+</td><td  width="80%">- Record a referral that was made for a student 
+</td></tr>
+<tr td border="1" bgcolor="lightblue" ><td border="1" bgcolor="lightblue" width="20%"><h3><a href="https://creatorapp.zoho.com/vanderven/alliance-for-success/#Report:All_Referrals_Made" target="_parent">View all Referrals</a></h3>
+</td><td  width="80%">- View all referrals that was made for students 
+</td></tr>
+<tr td border="1" bgcolor="lightblue" ><td border="1" bgcolor="lightblue" width="20%"><h3><a href="https://creatorapp.zoho.com/vanderven/alliance-for-success/#Report:All_Student_Workshops" target="_parent">View Student Workshops</a></h3>
+</td><td  width="80%">- View all the student workshops and add any new workshops
+</td></tr>
+
+https://creatorapp.zoho.com/vanderven/alliance-for-success/#Form:Referrals_Made
+<tr bgcolor="white" ><td border="1" bgcolor="white" width="20%"><h3><a href="https://creatorapp.zoho.com/vanderven/alliance-for-success/#Form:Email_Application" target="_parent">Email Mentor Application Forms</a></h3>
+</td><td  width="80%">- Send an email to a prospective mentor or tutor with links to the application
+</td></tr>
+<tr bgcolor="lightblue" ><td border="1" bgcolor="lightblue" width="20%"><h3><a href="https://creatorapp.zoho.com/vanderven/alliance-for-success/#Form:Email_Student_Interest_Form" target="_parent">Email Student Interest Survey</a></h3>
+</td><td  width="80%">- Send an email to the school or student with a link to the Student Interest Survey
+</td></tr>
+<tr bgcolor="white" ><td border="1" bgcolor="white" width="20%"><h3><a href="https://creatorapp.zoho.com/vanderven/alliance-for-success/#FReport:TaskCheckllst_Report" target="_parent">View Task Checklist</a></h3>
+</td><td  width="80%">- View all the tasks associated with Junior and Senior years
+</td></tr>
+</tbody></table>
+</td></tr></tbody></table><style>*.zc-viewtable { \n	width : 100%;\n	border-top : none;\n	border-right : 1px solid rgb(93,155,215);\n	border-left : 1px solid rgb(93,155,215);\n	border-bottom : 1px solid rgb(93,155,215);\n}\n*.zc-viewheader { \n	background-color : rgb(127, 190, 251);\n	padding : 5px 5px;\n	text-align : left;\n	border-top : 1px solid rgb(93,155,215);\n	border-left : 1px solid rgb(93,155,215);\n	border-right : 1px solid rgb(93,155,215);\n	border-bottom : 1px solid rgb(93,155,215);\n	background-image : none;\n}\n*.zc-viewheader-height { \n	height : 25px;\n} \n.zc-viewrowheader-template\n{\n	background-color : rgb(127, 190, 251);\n	padding : 5px 5px;\n	text-align : left;\n	border-top : 1px solid rgb(93,155,215);\n	border-left : 1px solid rgb(93,155,215);\n	border-right : 1px solid rgb(93,155,215);\n	border-bottom : 1px solid rgb(93,155,215);\n	background-image : none;\n} \n\n*.zc-viewrow td { \n	border-left : none;\n	border-bottom : 1px solid rgb(205,228,249);\n	border-right : 1px solid rgb(205,228,249);\n	vertical-align : middle;\n	white-space : nowrap;\n	height : 27px;\n	font-size : 12px;\n	padding : 3px;\n} \n*.zc-row-1 { \n	background-color : rgb(255, 255, 255);\n} \n.zc-summarytable-template\n{\n	border:1px solid #CFE2A9;\n}\n.zc-summary-label-template\n{\n	font: 12px "Arimo", sans-serif;\n	background-color :rgb(127, 190, 251);\n	border-bottom:1px solid #DBEBBB;\n	border-right:1px solid #DBEBBB;\n	height:25px;\n}\n\n.zc-summary-data-template\n{\n	font: 12px "Arimo", sans-serif;\n	height:25px;\n	background-color:#FFFFFF;\n	border-bottom:1px solid #DBEBBB;\n}
+</style></div>
+Admin
+		<div elname="zc-component" viewlinkname="Mentor_Student_Particpant_Report1" params="zc_Header=true&amp;zc_Footer=false&amp;zc_AddRec=false&amp;zc_DelRec=false&amp;zc_DuplRec=false&amp;zc_EditBulkRec=false&amp;zc_Search=false&amp;zc_RecLimit=false&amp;zc_SumRow=false&amp;zc_ColMenu=false&amp;zc_RecSelect=false&amp;zc_AltRowClr=false&amp;zc_SaveRec=false">Loading View...</div>	<div><p></p></div><br><br><br>
+<%
+	}
+
+}%>
