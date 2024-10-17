@@ -1,0 +1,87 @@
+TestACLResponse = zoho.crm.getRecordById("Test_ACL",testACL_id);
+if(TestACLResponse.get("Workshop_Attendies") != null)
+{
+	TestACL_subform = TestACLResponse.get("Workshop_Attendies");
+	for each  v1 in TestACL_subform
+	{
+		if(v1.get("Name1") != null)
+		{
+			WDName = v1.get("Name1").get("name");
+			searchResponse = zoho.crm.searchRecords("Workshop_attendies_test","(Name:equals:" + WDName + ")");
+			if(searchResponse.size() > 0)
+			{
+				delegateName = searchResponse.get(0).get("Name");
+				info "delegateName => " + delegateName;
+				delegate_id = searchResponse.get(0).get("id");
+				info "delegate_id => " + delegate_id;
+				WDResponse = zoho.crm.getRecordById("Workshop_attendies_test",delegate_id);
+				if(WDResponse.get("ACL_Details") != "" && WDResponse.get("ACL_Details").size() > 0)
+				{
+					info "hello1111111111";
+					mainMAP = Map();
+					mainLIST = list();
+					WDSubform = WDResponse.get("ACL_Details");
+					for each  v2 in WDSubform
+					{
+						subformDataMap = Map();
+						n1 = v2.get("Test_ACL").get("name");
+						n2 = v2.get("Program");
+						n3 = v2.get("Business_Line");
+						if(TestACLResponse.get("Name") == n1 && TestACLResponse.get("Program") == n2 && TestACLResponse.get("Business_Line") == n3)
+						{
+							subformDataMap.put("Test_ACL",v2.get("Test_ACL").get("id"));
+							subformDataMap.put("Program",ifnull(v2.get("Program"),""));
+							subformDataMap.put("Business_Line",ifnull(v2.get("Business_Line"),""));
+							subformDataMap.put("End_Date_Time_of_Workshop",ifnull(v2.get("End_Date_Time_of_Workshop"),""));
+							subformDataMap.put("Day_1",v1.get("Day_1"));
+							subformDataMap.put("Day_2",v1.get("Day_2"));
+							subformDataMap.put("Day_3",v1.get("Day_3"));
+							mainLIST.add(subformDataMap);
+						}
+						else
+						{
+							subformDataMap.put("Test_ACL",v2.get("Test_ACL").get("id"));
+							subformDataMap.put("Program",v2.get("Program"));
+							subformDataMap.put("Business_Line",v2.get("Business_Line"));
+							subformDataMap.put("End_Date_Time_of_Workshop",v2.get("End_Date_Time_of_Workshop"));
+							subformDataMap.put("Day_1",v2.get("Day_1"));
+							subformDataMap.put("Day_2",v2.get("Day_2"));
+							subformDataMap.put("Day_3",v2.get("Day_3"));
+							mainLIST.add(subformDataMap);
+						}
+					}
+					mainMAP.put("ACL_Details",mainLIST);
+					info "mainMAP1 => " + mainMAP;
+					updateRecord = zoho.crm.updateRecord("Workshop_attendies_test",delegate_id,mainMAP);
+					info "updateRecord1 -> " + updateRecord;
+				}
+				else
+				{
+					info "hello222222";
+					mainMAP2 = Map();
+					mainLIST2 = list();
+					for each  T_acl in TestACL_subform
+					{
+						if(T_acl.get("Name1").get("name") == searchResponse.get(0).get("Name"))
+						{
+							acl_map = Map();
+							acl_map.put("Test_ACL",testACL_id);
+							acl_map.put("Program",ifnull(TestACLResponse.get("Program"),""));
+							acl_map.put("Business_Line",ifnull(TestACLResponse.get("Business_Line"),""));
+							acl_map.put("End_Date_Time_of_Workshop",ifnull(TestACLResponse.get("End_Date_Time_of_Workshop"),""));
+							acl_map.put("Day_1",ifnull(T_acl.get("Day_1"),""));
+							acl_map.put("Day_2",ifnull(T_acl.get("Day_2"),""));
+							acl_map.put("Day_3",ifnull(T_acl.get("Day_2"),""));
+							mainLIST2.add(acl_map);
+						}
+					}
+					mainMAP2.put("ACL_Details",mainLIST2);
+					info "mainMAP2 => " + mainMAP2;
+					updateRecord2 = zoho.crm.updateRecord("Workshop_attendies_test",delegate_id,mainMAP2);
+					info "updateRecord2 -> " + updateRecord2;
+				}
+				info "==========================";
+			}
+		}
+	}
+}
