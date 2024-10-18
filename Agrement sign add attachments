@@ -1,0 +1,33 @@
+void Update_Attachment_in_Companies(map payload)
+{
+info payload;
+optionalMap = Map();
+optionalMap.put("trigger",{"workflow"});
+customerEmail = payload.getJSON("actions").get(0).getJSON("recipient_email");
+document_id = payload.getJSON("request_id");
+info customerEmail;
+get_doc = invokeurl
+[
+	url :"https://sign.zoho.com/api/v1/requests/" + document_id + "/pdf"
+	type :GET
+	connection:"sign"
+];
+info get_doc;
+//Now Search for Crm Contact first then add this to their Related Deal
+searchedAccount = zoho.crm.searchRecords("Leads","(Email:equals:" + customerEmail + ")",1,200,"crm");
+info "Searched Acount==" + searchedAccount;
+if(searchedAccount.size() > 0)
+{
+	searchedAccount = searchedAccount.get(0);
+	//Now add the Doc in the Attachment
+	get_doc.setParamName("file");
+	response = invokeurl
+	[
+		url :"https://www.zohoapis.com/crm/v6/Leads/" + searchedAccount.getJSON("id") + "/Attachments"
+		type :POST
+		files:get_doc
+		connection:"crm"
+	];
+	info response;
+}
+}
