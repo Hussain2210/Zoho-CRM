@@ -1,0 +1,65 @@
+ACLResponse = zoho.crm.getRecordById("Test_ACL",ACL_id);
+existingMultilineField = "";
+ProgramName = "";
+EndDate = "";
+if(ACLResponse.get("Certificates_already_issued") != null)
+{
+	existingMultilineField = ACLResponse.get("Certificates_already_issued");
+}
+if(ACLResponse.get("Program") != null)
+{
+	ProgramName = ACLResponse.get("Program");
+}
+if(ACLResponse.get("End_Date_Time_of_Workshop") != null)
+{
+	EndDate = ACLResponse.get("End_Date_Time_of_Workshop").getPrefix("T");
+	info "EndDate => " + EndDate;
+}
+if(ACLResponse.get("Workshop_Attendies").size() > 0)
+{
+	for each  v1 in ACLResponse.get("Workshop_Attendies")
+	{
+		if(v1.get("Issue_Certificate") == true)
+		{
+			if(v1.get("Day_1") == "Attended" || v1.get("Day_2") == "Attended" || v1.get("Day_3") == "Attended")
+			{
+				info v1.get("Name1").get("name");
+				info v1.get("Email");
+				if(existingMultilineField.contains(v1.get("Email")))
+				{
+					info "YES =>  " + ACLResponse.get("Certificates_already_issued");
+				}
+				else
+				{
+					info "no match ";
+					DelegateName = v1.get("Name1").get("name");
+					temp = "https://www.zohoapis.com/crm/v6/settings/email_templates/5505808000021464179";
+					Template = invokeurl
+					[
+						url :temp
+						type :GET
+						connection:"crm_oauth_connection"
+					];
+					contentDetail = Template.get("email_templates").get(0).get("content");
+					contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Account\}",DelegateName);
+					contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Program\}",ProgramName);
+					contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.End_Date\}",EndDate);
+					sendmail
+					[
+						from :zoho.adminuserid
+						to :v1.get("Email")
+						subject :"Certificate of completetion professional workshop"
+						message :contentDetail
+					]
+					updatedMultilineField = existingMultilineField + " , " + v1.get("Email");
+					updateMap = Map();
+					updateMap.put("Certificates_already_issued",updatedMultilineField);
+					info updateMap;
+					UpdateRecord = zoho.crm.updateRecord("Test_ACL",ACL_id,updateMap);
+					info "UpdateRecord => " + UpdateRecord;
+				}
+			}
+		}
+	}
+}
+//=====================================================================================================
