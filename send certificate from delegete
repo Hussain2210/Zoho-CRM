@@ -1,0 +1,54 @@
+WD_Response = zoho.crm.getRecordById("Workshop_attendies_test",WD_id);
+DelegateName = "";
+ProgramName = "";
+EndDate = "";
+if(WD_Response.get("ACL_Details").size() > 0)
+{
+	for each  v1 in WD_Response.get("ACL_Details")
+	{
+		if(v1.get("Day_1") == "Attended" || v1.get("Day_2") == "Attended" || v1.get("Day_3") == "Attended")
+		{
+			info "ACL Issue Certificate => " + v1.get("Issued_Certificate");
+			if(v1.get("Issued_Certificate") == true)
+			{
+				if(v1.get("Test_ACL") != null)
+				{
+					DelegateName = v1.get("Test_ACL").get("name");
+				}
+				ProgramName = ifnull(v1.get("Program"),"");
+				if(v1.get("End_Date_Time_of_Workshop") != null)
+				{
+					EndDate = v1.get("End_Date_Time_of_Workshop").getPrefix("T");
+				}
+				info "Email => " + WD_Response.get("Email");
+				info "DelegateName => " + DelegateName;
+				info "ProgramName => " + ProgramName;
+				info "EndDate => " + EndDate;
+				//======================================================================
+				temp = "https://www.zohoapis.com/crm/v6/settings/email_templates/5505808000021464179";
+				Template = invokeurl
+				[
+					url :temp
+					type :GET
+					connection:"crm_oauth_connection"
+				];
+				contentDetail = Template.get("email_templates").get(0).get("content");
+				contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Account\}",DelegateName);
+				contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Program\}",ProgramName);
+				contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.End_Date\}",EndDate);
+				sendmail
+				[
+					from :zoho.adminuserid
+					to :WD_Response.get("Email")
+					subject :"Certificate of completetion professional workshop11111"
+					message :contentDetail
+				]
+				//======================================================================
+			}
+			else
+			{
+				info "NO EMAIL SEND TO CLIENT....!!!!!!!!!!";
+			}
+		}
+	}
+}
