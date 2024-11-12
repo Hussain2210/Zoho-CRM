@@ -1,0 +1,177 @@
+ACLResponse = zoho.crm.getRecordById("Test_ACL",ACL_id);
+info ACLResponse.get("Account").get("name");
+info ACLResponse.get("Name");
+info ACLResponse.get("Program");
+info ACLResponse.get("End_Date_Time_of_Workshop");
+existingMultilineField = "";
+ProgramName = "";
+EndDate = "";
+if(ACLResponse.get("Certificates_already_issued") != null)
+{
+	existingMultilineField = ACLResponse.get("Certificates_already_issued");
+}
+if(ACLResponse.get("Program") != null)
+{
+	ProgramName = ACLResponse.get("Program");
+}
+if(ACLResponse.get("End_Date_Time_of_Workshop") != null)
+{
+	EndDate = ACLResponse.get("End_Date_Time_of_Workshop").getPrefix("T");
+	info "EndDate => " + EndDate;
+}
+if(ACLResponse.get("Workshop_Attendies").size() > 0)
+{
+	for each  v1 in ACLResponse.get("Workshop_Attendies")
+	{
+		if(v1.get("Issue_Certificate") == true)
+		{
+			if(v1.get("Day_1") == "Attended" || v1.get("Day_2") == "Attended" || v1.get("Day_3") == "Attended")
+			{
+				info v1.get("Name1").get("name");
+				info v1.get("Email");
+				if(existingMultilineField.contains(v1.get("Email")))
+				{
+					info "Certificates Already Issued  =>  " + ACLResponse.get("Certificates_already_issued");
+				}
+				else
+				{
+					if(ACLResponse.get("Account").get("name") == "Tawuniya")
+					{
+						//Tawnia Template
+						temp = "https://www.zohoapis.com/crm/v6/settings/email_templates/5505808000027654032";
+						Template = invokeurl
+						[
+							url :temp
+							type :GET
+							connection:"crm_oauth_connection"
+						];
+						//info "=> "+Template;
+						contentDetail = Template.get("email_templates").get(0).get("content");
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Name\}",ACLResponse.get("Name"));
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Owner\}",ACLResponse.get("Account").get("name"));
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Program\}",ACLResponse.get("Program"));
+						contentDetail = contentDetail.replaceAll("\$\{!users.dob\}",EndDate);
+					}
+					else if(ACLResponse.get("Account").get("name") == "Prince Sultan Aviation Academy - Saudia Academy")
+					{
+						//Prince Sultan Aviation Academy - Saudia Academy => Template
+						temp = "https://www.zohoapis.com/crm/v6/settings/email_templates/5505808000027654045";
+						Template = invokeurl
+						[
+							url :temp
+							type :GET
+							connection:"crm_oauth_connection"
+						];
+						// info "=> "+Template;
+						contentDetail = Template.get("email_templates").get(0).get("content");
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Name\}",ACLResponse.get("Name"));
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Owner\}",ACLResponse.get("Account").get("name"));
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Program\}",ACLResponse.get("Program"));
+						contentDetail = contentDetail.replaceAll("\$\{!users.dob\}",EndDate);
+					}
+					else if(ACLResponse.get("Account").get("name") == "Hay Group Saudi Arabia Limited")
+					{
+						//Hay Group Saudi Arabia Limited => Template
+						temp = "https://www.zohoapis.com/crm/v6/settings/email_templates/5505808000027654112";
+						Template = invokeurl
+						[
+							url :temp
+							type :GET
+							connection:"crm_oauth_connection"
+						];
+						// info "=> "+Template;
+						contentDetail = Template.get("email_templates").get(0).get("content");
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Name\}",ACLResponse.get("Name"));
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Owner\}",ACLResponse.get("Account").get("name"));
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Program\}",ACLResponse.get("Program"));
+						contentDetail = contentDetail.replaceAll("\$\{!users.dob\}",EndDate);
+					}
+					else if(ACLResponse.get("Account").get("name") == "Bupa Arabia for Cooperative Insurance Company")
+					{
+						//Bupa Arabia for Cooperative Insurance Company => Template
+						temp = "https://www.zohoapis.com/crm/v6/settings/email_templates/5505808000027654127";
+						Template = invokeurl
+						[
+							url :temp
+							type :GET
+							connection:"crm_oauth_connection"
+						];
+						// info "=> "+Template;
+						contentDetail = Template.get("email_templates").get(0).get("content");
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Name\}",ACLResponse.get("Name"));
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Owner\}",ACLResponse.get("Account").get("name"));
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Program\}",ACLResponse.get("Program"));
+						contentDetail = contentDetail.replaceAll("\$\{!users.dob\}",EndDate);
+					}
+					else if(ACLResponse.get("Account").get("name") == "Ascend Solutions")
+					{
+						//Ascend Solutions => Template
+						temp = "https://www.zohoapis.com/crm/v6/settings/email_templates/5505808000027654138";
+						Template = invokeurl
+						[
+							url :temp
+							type :GET
+							connection:"crm_oauth_connection"
+						];
+						// info "=> "+Template;
+						contentDetail = Template.get("email_templates").get(0).get("content");
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Name\}",ACLResponse.get("Name"));
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Owner\}",ACLResponse.get("Account").get("name"));
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Program\}",ACLResponse.get("Program"));
+						contentDetail = contentDetail.replaceAll("\$\{!users.dob\}",EndDate);
+					}
+					else
+					{
+						info "Now send EMAIL..!!!";
+						DelegateName = v1.get("Name1").get("name");
+						temp = "https://www.zohoapis.com/crm/v6/settings/email_templates/5505808000021464179";
+						Template = invokeurl
+						[
+							url :temp
+							type :GET
+							connection:"crm_oauth_connection"
+						];
+						contentDetail = Template.get("email_templates").get(0).get("content");
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Account\}",DelegateName);
+						contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Program\}",ProgramName);
+						contentDetail = contentDetail.replaceAll("\$\{!users.dob\}",EndDate);
+					}
+					sendmail
+					[
+						from :zoho.adminuserid
+						to :v1.get("Email")
+						subject :"Certificate Of Completetion Professional Workshop"
+						message :contentDetail
+					]
+					existingMultilineField = existingMultilineField + " , " + v1.get("Email");
+					updateMap = Map();
+					updateMap.put("Certificates_already_issued",existingMultilineField);
+					info updateMap;
+					UpdateRecord = zoho.crm.updateRecord("Test_ACL",ACL_id,updateMap);
+					info "UpdateRecord => " + UpdateRecord;
+				}
+			}
+		}
+	}
+}
+//=====================================================================================================
+// temp = "https://www.zohoapis.com/crm/v6/settings/email_templates/5505808000027654045"; PSAA - Saudia Academy
+// Template = invokeurl 
+// [
+// 	url :temp
+// 	type :GET
+// 	connection:"crm_oauth_connection"
+// ];
+// // info "=> "+Template;
+// contentDetail = Template.get("email_templates").get(0).get("content"); 
+// contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Name\}",ACLResponse.get("Name"));
+// contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Owner\}",ACLResponse.get("Account").get("name"));
+// contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.Program\}",ACLResponse.get("Program"));
+// contentDetail = contentDetail.replaceAll("\$\{!Test_ACL.End_Date_Time_of_Workshop\}",ACLResponse.get("End_Date_Time_of_Workshop"));
+// sendmail
+// [
+// 	from :zoho.adminuserid
+// 	to :"developer@xpertsarena.com"
+// 	subject :"Certificate of completetion professional workshop"
+// 	message :contentDetail
+// ]
