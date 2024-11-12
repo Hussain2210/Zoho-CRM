@@ -1,0 +1,250 @@
+TestACLResponse = zoho.crm.getRecordById("Test_ACL",testACL_id);
+if(TestACLResponse.get("Business_Line") == "90-Minutes")
+{
+	if(TestACLResponse.get("Program_90_Minutes") != null || TestACLResponse.get("Program_90_Minutes").isEmpty() == false)
+	{
+		program = TestACLResponse.get("Program_90_Minutes");
+	}
+}
+if(TestACLResponse.get("Business_Line") == "McLuhan & Davies")
+{
+	if(TestACLResponse.get("Program_MDC") != null || TestACLResponse.get("Program_MDC").isEmpty() == false)
+	{
+		program = TestACLResponse.get("Program_MDC");
+	}
+}
+if(TestACLResponse.get("Business_Line") == "Korn Ferry")
+{
+	if(TestACLResponse.get("Program_KF") != null || TestACLResponse.get("Program_KF").isEmpty() == false)
+	{
+		program = TestACLResponse.get("Program_KF");
+	}
+}
+if(TestACLResponse.get("Business_Line") == "Culture Partners")
+{
+	if(TestACLResponse.get("Program_CP") != null || TestACLResponse.get("Program_CP").isEmpty() == false)
+	{
+		program = TestACLResponse.get("Program_CP");
+	}
+}
+if(TestACLResponse.get("Business_Line") == "Insights Discovery")
+{
+	if(TestACLResponse.get("Program_Insights_Discovery") != null || TestACLResponse.get("Program_Insights_Discovery").isEmpty() == false)
+	{
+		program = TestACLResponse.get("Program_Insights_Discovery");
+	}
+}
+if(TestACLResponse.get("Business_Line") == "Bespoke")
+{
+	if(TestACLResponse.get("Program_Bespoke") != null || TestACLResponse.get("Program_Bespoke").isEmpty() == false)
+	{
+		program = TestACLResponse.get("Program_Bespoke");
+	}
+}
+if(TestACLResponse.get("Business_Line") == "Project-Specific")
+{
+	if(TestACLResponse.get("Program_Project_Specific") != null || TestACLResponse.get("Program_Project_Specific").isEmpty() == false)
+	{
+		program = TestACLResponse.get("Program_Project_Specific");
+	}
+}
+if(TestACLResponse.get("Business_Line") == "Innovation")
+{
+	if(TestACLResponse.get("Program_Innovation") != null || TestACLResponse.get("Program_Innovation").isEmpty() == false)
+	{
+		program = TestACLResponse.get("Program_Innovation");
+	}
+}
+info "PROGRAME --->>  " + program;
+info "BUSINESS =>> " + TestACLResponse.get("Business_Line");
+if(TestACLResponse.get("Workshop_Attendies") != null)
+{
+	TestACL_subform = TestACLResponse.get("Workshop_Attendies");
+	for each  v1 in TestACL_subform
+	{
+		if(v1.get("Name1") != null)
+		{
+			WDName = v1.get("Name1").get("name");
+			searchResponse = zoho.crm.searchRecords("Workshop_attendies_test","(Name:equals:" + WDName + ")");
+			if(searchResponse.size() > 0)
+			{
+				delegateName = searchResponse.get(0).get("Name");
+				info "DELEGATE-NAME => " + delegateName;
+				delegate_id = searchResponse.get(0).get("id");
+				info "DELEGATE-id => " + delegate_id;
+				WDResponse = zoho.crm.getRecordById("Workshop_attendies_test",delegate_id);
+				if(WDResponse.get("ACL_Details") != "" && WDResponse.get("ACL_Details").size() > 0)
+				{
+					info "1111111111";
+					mainMAP = Map();
+					mainLIST = list();
+					WDSubform = WDResponse.get("ACL_Details");
+					// 					info "WDSubform => "+WDSubform;
+					for each  v2 in WDResponse.get("ACL_Details")
+					{
+						if(v2.get("Test_ACL") != null)
+						{
+							info "============================";
+							info "i- " + v2.get("Test_ACL").get("name");
+							info "ii- " + v2.get("Program");
+							info "iii- " + v2.get("Business_Line");
+							info "============================";
+							subformDataMap = Map();
+							n1 = v2.get("Test_ACL").get("name");
+							n2 = ifnull(v2.get("Program"),"");
+							n3 = ifnull(v2.get("Business_Line"),"");
+							if(n1 == TestACLResponse.get("Name") && n2 == program && n3 == TestACLResponse.get("Business_Line"))
+							{
+								info "when 3 same";
+								subformDataMap.put("Test_ACL",v2.get("Test_ACL").get("id"));
+								subformDataMap.put("Program",program);
+								subformDataMap.put("Business_Line",ifnull(v2.get("Business_Line"),""));
+								subformDataMap.put("End_Date_Time_of_Workshop",ifnull(v2.get("End_Date_Time_of_Workshop"),""));
+								subformDataMap.put("Day_1",v1.get("Day_1"));
+								subformDataMap.put("Day_2",v1.get("Day_2"));
+								subformDataMap.put("Day_3",v1.get("Day_3"));
+								mainLIST.add(subformDataMap);
+							}
+							else
+							{
+								info "when 3 not same";
+								subformDataMap.put("Test_ACL",v2.get("Test_ACL").get("id"));
+								subformDataMap.put("Program",program);
+								subformDataMap.put("Business_Line",TestACLResponse.get("Business_Line"));
+								subformDataMap.put("End_Date_Time_of_Workshop",TestACLResponse.get("End_Date_Time_of_Workshop"));
+								subformDataMap.put("Day_1",v1.get("Day_1"));
+								subformDataMap.put("Day_2",v1.get("Day_2"));
+								subformDataMap.put("Day_3",v1.get("Day_3"));
+								mainLIST.add(subformDataMap);
+							}
+						}
+						else
+						{
+							info "TestACL is NULL, first update DELEGATE Subform";
+						}
+					}
+					mainMAP.put("ACL_Details",mainLIST);
+					info "subformDataMap => " + mainMAP;
+					updateRecord = zoho.crm.updateRecord("Workshop_attendies_test",delegate_id,mainMAP);
+					info "updateRecord1 -> " + updateRecord;
+				}
+				else
+				{
+					info "222222";
+					mainMAP2 = Map();
+					mainLIST2 = list();
+					for each  T_acl in TestACLResponse.get("Workshop_Attendies")
+					{
+						//===== name of TestACL subform and SearchRecord SAME ================
+						if(T_acl.get("Name1").get("name") == searchResponse.get(0).get("Name"))
+						{
+							acl_map = Map();
+							acl_map.put("Test_ACL",testACL_id);
+							acl_map.put("Program",program);
+							acl_map.put("Business_Line",ifnull(TestACLResponse.get("Business_Line"),""));
+							acl_map.put("End_Date_Time_of_Workshop",ifnull(TestACLResponse.get("End_Date_Time_of_Workshop"),""));
+							acl_map.put("Day_1",ifnull(T_acl.get("Day_1"),""));
+							acl_map.put("Day_2",ifnull(T_acl.get("Day_2"),""));
+							acl_map.put("Day_3",ifnull(T_acl.get("Day_3"),""));
+							mainLIST2.add(acl_map);
+						}
+					}
+					mainMAP2.put("ACL_Details",mainLIST2);
+					info "acl_map => " + mainMAP2;
+					updateRecord2 = zoho.crm.updateRecord("Workshop_attendies_test",delegate_id,mainMAP2);
+					info "updateRecord2 -> " + updateRecord2;
+				}
+				info "==========================";
+			}
+		}
+	}
+}
+// //========= OLD CODE =================
+// if(TestACLResponse.get("Workshop_Attendies") != null)
+// {
+// 	TestACL_subform = TestACLResponse.get("Workshop_Attendies");
+// 	for each  v1 in TestACL_subform
+// 	{
+// 		if(v1.get("Name1") != null)
+// 		{
+// 			WDName = v1.get("Name1").get("name");
+// 			searchResponse = zoho.crm.searchRecords("Workshop_attendies_test","(Name:equals:" + WDName + ")");
+// 			if(searchResponse.size() > 0)
+// 			{
+// 				delegateName = searchResponse.get(0).get("Name");
+// 				info "delegateName => " + delegateName;
+// 				delegate_id = searchResponse.get(0).get("id");
+// 				info "delegate_id => " + delegate_id;
+// 				WDResponse = zoho.crm.getRecordById("Workshop_attendies_test",delegate_id);
+// 				//info WDResponse;
+// 				info "=> " + WDResponse.get("ACL_Details");
+// 				if(WDResponse.get("ACL_Details") != "" && WDResponse.get("ACL_Details").size() > 0)
+// 				{
+// 					info "hello1111111111";
+// 					mainMAP = Map();
+// 					mainLIST = list();
+// 					WDSubform = WDResponse.get("ACL_Details");
+// 					for each  v2 in WDSubform
+// 					{
+// 						subformDataMap = Map();
+// 						n1 = v2.get("TestACLResponse").get("name");
+// 						n2 = v2.get("Program");
+// 						n3 = v2.get("Business_Line");
+// 						if(TestACLResponse.get("Name") == n1 && TestACLResponse.get("Program") == n2 && TestACLResponse.get("Business_Line") == n3)
+// 						{
+// 							subformDataMap.put("TestACLResponse",v2.get("TestACLResponse").get("id"));
+// 							subformDataMap.put("Program",ifnull(v2.get("Program"),""));
+// 							subformDataMap.put("Business_Line",ifnull(v2.get("Business_Line"),""));
+// 							subformDataMap.put("End_Date_Time_of_Workshop",ifnull(v2.get("End_Date_Time_of_Workshop"),""));
+// 							subformDataMap.put("Day_1",v1.get("Day_1"));
+// 							subformDataMap.put("Day_2",v1.get("Day_2"));
+// 							subformDataMap.put("Day_3",v1.get("Day_3"));
+// 							mainLIST.add(subformDataMap);
+// 						}
+// 						else
+// 						{
+// 							subformDataMap.put("TestACLResponse",v2.get("TestACLResponse").get("id"));
+// 							subformDataMap.put("Program",v2.get("Program"));
+// 							subformDataMap.put("Business_Line",v2.get("Business_Line"));
+// 							subformDataMap.put("End_Date_Time_of_Workshop",v2.get("End_Date_Time_of_Workshop"));
+// 							subformDataMap.put("Day_1",v2.get("Day_1"));
+// 							subformDataMap.put("Day_2",v2.get("Day_2"));
+// 							subformDataMap.put("Day_3",v2.get("Day_3"));
+// 							mainLIST.add(subformDataMap);
+// 						}
+// 					}
+// 					mainMAP.put("ACL_Details",mainLIST);
+// 					info "subformDataMap => " + mainMAP;
+// 					updateRecord = zoho.crm.updateRecord("Workshop_attendies_test",delegate_id,mainMAP);
+// 					info "updateRecord1 -> " + updateRecord;
+// 				}
+// 				else
+// 				{
+// 					info "hello222222";
+// 					mainMAP2 = Map();
+// 					mainLIST2 = list();
+// 					for each  T_acl in TestACL_subform
+// 					{
+// 						if(T_acl.get("Name1").get("name") == searchResponse.get(0).get("Name"))
+// 						{
+// 							acl_map = Map();
+// 							acl_map.put("TestACLResponse",testACL_id);
+// 							acl_map.put("Program",ifnull(TestACLResponse.get("Program"),""));
+// 							acl_map.put("Business_Line",ifnull(TestACLResponse.get("Business_Line"),""));
+// 							acl_map.put("End_Date_Time_of_Workshop",ifnull(TestACLResponse.get("End_Date_Time_of_Workshop"),""));
+// 							acl_map.put("Day_1",ifnull(T_acl.get("Day_1"),""));
+// 							acl_map.put("Day_2",ifnull(T_acl.get("Day_2"),""));
+// 							acl_map.put("Day_3",ifnull(T_acl.get("Day_3"),""));
+// 							mainLIST2.add(acl_map);
+// 						}
+// 					}
+// 					mainMAP2.put("ACL_Details",mainLIST2);
+// 					info "acl_map => " + mainMAP2;
+// 					updateRecord2 = zoho.crm.updateRecord("Workshop_attendies_test",delegate_id,mainMAP2);
+// 					info "updateRecord2 -> " + updateRecord2;
+// 				}
+// 				info "==========================";
+// 			}
+// 		}
+// 	}
+// }
