@@ -1,0 +1,24 @@
+entityMap = crmAPIRequest.toMap().get("record");
+info entityMap;
+response = Map();
+if(entityMap.get("Country") == "Canada")
+{
+Zip_Code = entityMap.get("Zip_Code");
+condition = Zip_Code.toString().trim().replaceAll(" ", "");
+a=condition.matches("([A-Z]{1}[0-9]{1}[A-Z]{1}[0-9]{1}[A-Z]{1}[0-9]{1})");
+info a;
+if ( a == true )
+{
+response.put('status','success');
+}
+else
+{
+response.put('status','error');
+response.put('message', 'ZIP code is Wrong');
+}
+}
+else
+{
+response.put('status','success');
+}
+return response;
