@@ -1,0 +1,34 @@
+SELECT
+		 "Stock Out Flow Table"."Product ID" AS "Product ID",
+		 Items."Item Name" AS "Item Name",
+		 Items."SKU" AS "SKU",
+		 /* 2023 Average Sales */ (SUM(CASE
+				 WHEN YEAR("Transaction Date")  = 2023 THEN "Quantity Out"
+				 ELSE NULL
+			 END)) / 12 AS "2023 Avg-Sales",
+		 /* 2024 Average Sales */ (SUM(CASE
+				 WHEN YEAR("Transaction Date")  = 2024 THEN "Quantity Out"
+				 ELSE NULL
+			 END)) / 12 AS "2024 Avg-Sales",
+		 /* Past 6 Months Average Sales */ (SUM(CASE
+				 WHEN "Transaction Date"  BETWEEN DATE_ADD(current_date(), INTERVAL -6 MONTH)  AND  current_date() THEN "Quantity Out"
+				 ELSE NULL
+			 END)) / 6 AS "Past 6 Months Avg-Sales",
+		 /* Past 3 Months Average Sales */ (SUM(CASE
+				 WHEN "Transaction Date"  BETWEEN DATE_ADD(current_date(), INTERVAL -3 MONTH)  AND  current_date() THEN "Quantity Out"
+				 ELSE NULL
+			 END)) / 3 AS "Past 3 Months Avg-Sales",
+             /* Past 1 Months Average Sales */ (SUM(CASE
+				 WHEN "Transaction Date"  BETWEEN DATE_ADD(current_date(), INTERVAL -1 MONTH)  AND  current_date() THEN "Quantity Out"
+				 ELSE NULL
+			 END)) / 1 AS "Last 1 Months Avg-Sales",
+		 /* December 2024 Sales */ SUM(CASE
+				 WHEN MONTH("Transaction Date")  = 12
+				 AND	YEAR("Transaction Date")  = 2024 THEN "Quantity Out"
+				 ELSE 0
+			 END) AS "Current Month Avg-Sales"
+FROM  "Stock Out Flow Table"
+JOIN "Items" ON "Stock Out Flow Table"."Product ID"  = "Items"."Item ID"  
+GROUP BY Items."Item Name",
+	 Items."SKU",
+	  "Stock Out Flow Table"."Product ID" 
