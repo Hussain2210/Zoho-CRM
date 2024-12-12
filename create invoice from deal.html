@@ -48,11 +48,7 @@ for each  pro in all_products
 }
 Invoice_map.put("Product_Details",items_list);
 
-// invioce_created = zoho.crm.createRecord("Invoices",Invoice_map);
-// invoice_id = invioce_created.get("id");
-// info "Invoice Created!" + invoice_id;
-// // info Invoice_map;
-// info zoho.crm.getRecordById("Invoices",invoice_id);
+
 
 invoice_create = invokeurl
 [
@@ -65,26 +61,5 @@ invoice_create = invokeurl
 info invoice_create;
 invoice_id = invoice_create.get("id");
 info "Invoice Created!" + invoice_id;
-// for each  item in line_items
-// {
-// 	item_map = Map();
-// 	product_name = item.get("Product_Name").get("id");
-// 	Quantity = ifnull(item.get("Quantity"),0);
-// 	List_Price = ifnull(item.get("List_Price"),0);
-// 	Amount = ifnull(item.get("Amount"),0);
-// 	Discount = ifnull(item.get("Amount"),0);
-// 	Tax = ifnull(item.get("Tax"),0);
-// 	Total = ifnull(item.get("Total"),0);
-// 	item_map.put("product",product_name);
-// 	item_map.put("quantity",Quantity);
-// 	item_map.put("list_price",List_Price);
-// 	item_map.put("unit_price",Amount);
-// 	item_map.put("Discount",Discount);
-// 	item_map.put("Tax",Tax);
-// 	item_map.put("total",Total);
-// 	items_list.add(item_map);
-// }
-// Invoice_map.put("Product_Details",items_list);
-// info Invoice_map;
-// info zoho.crm.createRecord("Invoices",Invoice_map);
+
 return "";
