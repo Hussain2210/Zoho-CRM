@@ -1,0 +1,123 @@
+// ord_id = 784430000000492007;
+ord_rec = zoho.crm.getRecordById("Deals",ord_id);
+ord_name = ord_rec.get("Deal_Name");
+sbtotal = ord_rec.get("Sub_Total");
+gtotal = ord_rec.get("Grand_Total");
+sbjct = "Invoice for " + ord_name;
+inv_date = zoho.currentdate;
+due_date = zoho.currenttime.addDay(1);
+cntct_rec_id = ord_rec.get("Customer").get("id");
+newMap = Map();
+newMap.put("Subject",sbjct);
+newMap.put("Contact_Name",cntct_rec_id);
+newMap.put("Status","Created");
+newMap.put("Deal_Name__s",ord_id);
+newMap.put("Order_Id",ord_id.toText());
+newMap.put("Sub_Total",sbtotal);
+newMap.put("Grand_Total",gtotal);
+newMap.put("Due_Date",due_date.toDate());
+newMap.put("Invoice_Date",inv_date.toDate());
+item_subform = ord_rec.get("Orders_Items");
+for each  itm in item_subform
+{
+	subformmp = Map();
+	subformlist = list();
+	// 	sr_no = itm.get("S_NO");
+	prodct = itm.get("Product_Name").getJSON("id");
+	qunty = itm.get("Quantity");
+	lstprice = itm.get("List_Price");
+	amt = itm.get("Amount");
+	tax = itm.get("Tax");
+	totl = itm.get("Total");
+	subformmp.put("product",prodct);
+	subformmp.put("quantity",qunty);
+	subformmp.put("list_price",lstprice);
+	subformmp.put("total",amt);
+	subformmp.put("Tax",tax);
+	subformmp.put("net_total",totl);
+	subformlist.add(subformmp);
+}
+searchRec = zoho.crm.searchRecords("Invoices","(Order_Id:equals:" + ord_id + ")");
+// info searchRec;
+newMap.put("Product_Details",subformlist);
+if(searchRec.isEmpty() == true || searchRec == null)
+{
+	upRec = zoho.crm.createRecord("Invoices",newMap);
+}
+else
+{
+	rec_id = searchRec.getJSON("id");
+	upRec = zoho.crm.updateRecord("Invoices",rec_id,newMap);
+	info "Record Updated===> " + upRec;
+}
+inv_id = upRec.getJSON("id");
+///////////// Create Invoice in zoho books 
+org_id = 20103053798;
+mp = Map();
+inv_rec = zoho.crm.getRecordById("Invoices",inv_id);
+inv_date = inv_rec.get("Invoice_Date");
+due_Date = inv_rec.get("Due_Date");
+sbjct = inv_rec.get("Subject");
+totl = inv_rec.get("Grand_Total");
+ordr_id = inv_rec.get("Deal_Name__s").get("id");
+ordr_rec = zoho.crm.getRecordById("Deals",ordr_id);
+ordr_nmbr = ordr_rec.get("Order_Number");
+mp.put("salesorder_number",ordr_nmbr);
+mp.put("date",inv_date);
+mp.put("created_date",inv_date);
+mp.put("due_date",due_Date);
+mp.put("subject_content",sbjct);
+mp.put("total",totl);
+cntct_name = inv_rec.get("Contact_Name").get("id");
+info cntct_name;
+// searchParam = Map();
+// searchParam.put("zcrm_contact_id",cntct_name);
+// searchRec = zoho.books.getRecords("contacts",org_id,searchParam,"books_connection");
+searchParam = "zcrm_contact_id=" + cntct_name;
+response = zoho.books.getRecords("Contacts",org_id,searchParam,"books_connection");
+contact = response.get("contacts");
+contact_id = contact.get(0).get("contact_id");
+mp.put("customer_id",contact_id);
+product = inv_rec.get("Product_Details");
+item_list = list();
+for each  prd in product
+{
+	qty = prd.get("quantity");
+	lstPrce = prd.get("list_price");
+	disc = prd.get("Discount");
+	tx = prd.get("Tax");
+	totl = prd.get("total");
+	prdName = prd.get("product").get("name");
+	search_item = Map();
+	search_item.put("name",prdName);
+	search_items = zoho.books.getRecords("items",org_id,search_item,"books_connection");
+	prod_id = search_items.get("items").getJSON("item_id");
+	prodMap = Map();
+	prodMap.put("item_id",prod_id);
+	prodMap.put("quantity",qty);
+	prodMap.put("rate",lstPrce);
+	prodMap.put("discount",disc);
+	prodMap.put("tax_percentage",tx);
+	prodMap.put("item_total",totl);
+	item_list.add(prodMap);
+}
+mp.put("line_items",item_list);
+cstmfield_mp = Map();
+cstmfield_mp.put("cf_crm_invoiceid",inv_id);
+mp.put("custom_field_hash",cstmfield_mp);
+if(inv_rec.get("books_inv_id") == null || inv_rec.get("books_inv_id").isEmpty() == true)
+{
+	info "Record Not found";
+	createInv = zoho.books.createRecord("invoices",org_id,mp,"books_connection");
+	info "Invoice is created====> " + createInv.get("invoice").get("invoice_id");
+	neMp = Map();
+	neMp.put("books_inv_id",createInv.get("invoice").get("invoice_id"));
+	up = zoho.crm.updateRecord("Invoices",inv_id,neMp);
+}
+else
+{
+	info "Record found";
+	inv_rec = inv_rec.get("books_inv_id");
+	updateInv = zoho.books.updateRecord("invoices",org_id,inv_rec,mp,"books_connection");
+	info "Invoice is Updated====> " + updateInv;
+}
